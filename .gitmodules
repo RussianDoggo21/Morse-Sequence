@@ -1,0 +1,3 @@
+[submodule "simplextree-py"]
+	path = simplextree-py
+	url = https://github.com/peekxc/simplextree-py
