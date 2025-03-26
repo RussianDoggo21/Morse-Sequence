@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 using std::vector;
+using std::set;
 
 // Définition du hash pour simplex_t (std::vector<size_t>) (voir fonction principale std::unordered_map)
 namespace std 
@@ -36,6 +37,7 @@ namespace std
 
 
 // Constructeur de la classe MorseSequence
+// Prend en entrée un SimplexTree
 // O(1)
 MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) 
 {
@@ -49,7 +51,7 @@ int MorseSequence::dim(const simplex_t& sigma)
 	return sigma.size() - 1;
 }
 
-// Fonction pour print un simplexe 
+// Fonction pour print un simplexe sigma
 // En notant n = sigma.size() : O(n)
 void MorseSequence::print_simplex(const simplex_t& sigma) const 
 {
@@ -85,11 +87,12 @@ vector<simplex_t> MorseSequence::boundary(const simplex_t& sigma)
     return result;
 }
 
-// Renvoie les cofaces d'un simplexe sigma
-// En notant n = sigma.size() : O(n.log(n))
-vector<simplex_t> MorseSequence::cofaces(const simplex_t& sigma) 
+// Renvoie le cobord d'un simplexe sigma
+// En notant n = sigma.size() et m = cofaces.size() : O(n.log(n) + nm)
+vector<simplex_t> MorseSequence::coboundary(const simplex_t& sigma) 
 {
-	vector<simplex_t> F;
+	vector<simplex_t> cofaces;
+    vector<simplex_t> result;
 
 	// Vérifier si le simplexe est vide
 	if (sigma.empty()) 
@@ -104,7 +107,7 @@ vector<simplex_t> MorseSequence::cofaces(const simplex_t& sigma)
 	}
 
 	// Lambda pour stocker les cofaces, en excluant sigma
-	auto lambda_f = [this, &F, &sigma](node_ptr, idx_t, const simplex_t& s) -> bool
+	auto lambda_f = [this, &cofaces, &sigma](node_ptr, idx_t, const simplex_t& s) -> bool
 	{
 		simplex_t sorted_s = s;
 		simplex_t sorted_sigma = sigma;
@@ -115,7 +118,7 @@ vector<simplex_t> MorseSequence::cofaces(const simplex_t& sigma)
 		// On n'ajoute que les cofaces strictes
 		if (sorted_s != sorted_sigma) // O(n) : comparaison de deux vecteurs de taille n
 		{
-		    F.push_back(sorted_s); // O(n) : copie de sorted_s
+		    cofaces.push_back(sorted_s); // O(n) : copie de sorted_s
 		}
 		return true; // Continuer la traversée
 	};
@@ -124,19 +127,9 @@ vector<simplex_t> MorseSequence::cofaces(const simplex_t& sigma)
 	auto tr = st::cofaces<true>(&simplex_tree, simplex_tree.find(sigma));
 	traverse(tr, lambda_f);
 
+    // Maintenant qu'on a les cofaces, on peut les filtrer par dimension
 
-    return F;
-}
-
-// Renvoie le cobord d'un simplexe
-// En notant n = sigma.size() et m = cofaces.size() : O(n.log(n) + nm)
-vector<simplex_t> MorseSequence::coboundary(const simplex_t& sigma) 
-{
-	vector<simplex_t> result;
-	// Récupération des cofaces
-	vector<simplex_t> cofaces_list = this->cofaces(sigma); // O(n.log(n)) : complexité de cofaces
-
-	for (const simplex_t& s : cofaces_list) // O(m) : longueur de cofaces
+    for (const simplex_t& s : cofaces) // O(m) : longueur de cofaces
 	{
 		if (s.size() == sigma.size() + 1) // O(1)
 		{
@@ -144,19 +137,21 @@ vector<simplex_t> MorseSequence::coboundary(const simplex_t& sigma)
 		}
 	}
 
-	return result;
+    return result;
 }
+
 
 // Permet de trouver le simplexe v qui est dans B mais pas dans S
 // En notant n = S.size() et m = B.size() : O(nm)
-std::optional<simplex_t> MorseSequence::find_out(const vector<simplex_t>& B, vector<simplex_t>& S) 
+std::optional<simplex_t> MorseSequence::find_out(const vector<simplex_t>& B, set<simplex_t>& S) 
 {
 	vector<simplex_t> possibilities;
 
 	for (const simplex_t& v : B) // O(m)
 	{
 		// Vérifie si v n'est pas dans S
-		if (std::find(S.begin(), S.end(), v) == S.end()) // O(n)
+		//if (std::find(S.begin(), S.end(), v) == S.end()) // O(n)
+        if (!S.contains(v))
 		{
 			possibilities.push_back(v); // O(1)
 		}
@@ -235,7 +230,10 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
 {
     // Récupération des simplexes triés par dimension décroissante
     vector<simplex_t> K = this->simplices(); // O(n)
-    this->tri_dim_decroissant(K); // O(nlog(n))
+
+    // Besoin de trier en python aussi
+    this->tri_dim_decroissant(K); // O(nlog(n)) 
+    
 
     // Déclaration et initialisation des variables
     size_t n = K.size();
@@ -243,7 +241,8 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
     int n_crit = 0;
 
     std::unordered_map<simplex_t, int> ro;
-    vector<simplex_t> L, S;
+    vector<simplex_t> L;
+    set<simplex_t> S;
     vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>> W;
 
     // Calcul du nombre de cobords pour chaque simplex
@@ -283,8 +282,8 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
 
             W.push_back(std::make_pair(v, tau));
 
-            S.push_back(v);
-            S.push_back(tau);
+            S.insert(v);
+            S.insert(tau);
 
             // Construction de la liste des bords
             vector<simplex_t> bords;
@@ -324,7 +323,7 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
         W.push_back(critical);
         n_crit++;
 
-        S.push_back(critical);
+        S.insert(critical);
 
         // Mise à jour de ro et ajout des éléments à L si nécessaire
         for (const simplex_t& simplex : this->boundary(critical)) 
@@ -357,7 +356,8 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
     size_t i = 0;
     int n_crit = 0;
     
-    vector<simplex_t> S, L;
+    set<simplex_t> S;
+    vector<simplex_t> L;
     vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>> W;
     std::unordered_map<simplex_t, int> ro;
     
@@ -367,7 +367,7 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
     
     while (i < n - 1) {
         simplex_t sigma = K[i];
-        S.push_back(sigma);
+        S.insert(sigma);
         W.push_back(sigma);
         n_crit++;
         
@@ -376,7 +376,8 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
             L.push_back(tau);
         }
         
-        this->tri_dim_croissant(L);
+        //Besoin de tri en python aussi
+        this->tri_dim_decroissant(L);
         
         while (!L.empty()) {
             simplex_t tau = L.back();
@@ -388,8 +389,8 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
                 simplex_t v = *v_opt;
                 
                 W.push_back(std::make_pair(v, tau));
-                S.push_back(v);
-                S.push_back(tau);
+                S.insert(v);
+                S.insert(tau);
                 
                 vector<simplex_t> cobords;
                 for (const simplex_t& elmt : this->coboundary(v)) {
@@ -410,11 +411,13 @@ std::pair<std::vector<std::variant<simplex_t, std::pair<simplex_t, simplex_t>>>,
                     }
                 }
                 
-                this->tri_dim_croissant(L);
+                this->tri_dim_decroissant(L);
+                // Besoin de tri en python
+                // Tri croissant ou décroissant ??
             }
         }
         
-        while (i < n - 1 && std::find(S.begin(), S.end(), K[i]) != S.end()) {
+        while (i < n - 1 && S.contains(K[i])) {
             i++;
         }
     }
