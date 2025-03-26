@@ -16,3 +16,10 @@ ms_crois, n_crit2 = ms.morse_seq_crois(tree)
 
 print(f"ms_dec :\n {ms_dec},\n n_crit = {n_crit}\n\n")
 print(f"ms_crois :\n {ms_crois},\n n_crit = {n_crit2}\n\n")
+
+"""
+Pour lancer test.py : 
+1) Entrer dans l'environnement virtuel : source venv/bin/activate
+2) Lancer test.py : python3 test.py
+3) Quitter l'environnement virtuel : deactivate
+"""

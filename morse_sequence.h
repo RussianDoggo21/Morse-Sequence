@@ -12,9 +12,8 @@ public:
     void union_(std::vector<simplex_t>& l, const simplex_t& elmt);
     void print_simplex(const simplex_t& sigma) const;
     vector<simplex_t> boundary(const simplex_t& sigma);
-    vector<simplex_t> cofaces(const simplex_t& sigma);
     vector<simplex_t> coboundary(const simplex_t& sigma);
-    std::optional<simplex_t> find_out(const vector<simplex_t>& coboundary, vector<simplex_t>& S);
+    std::optional<simplex_t> find_out(const vector<simplex_t>& B, set<simplex_t>& S);
     vector<simplex_t> tri_dim_decroissant(vector<simplex_t>& L);
     vector<simplex_t> tri_dim_croissant(vector<simplex_t>& L);
     vector<simplex_t> simplices(std::optional<int> p = std::nullopt) const;

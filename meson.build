@@ -1,4 +1,4 @@
-project('morse_sequence', 'cpp', version : '0.1.0', default_options : ['cpp_std=c++17'])
+project('morse_sequence', 'cpp', version : '0.1.0', default_options : ['cpp_std=c++20'])
 
 pybind11_dep = dependency('pybind11')
 python = import('python').find_installation(pure: false)

@@ -112,6 +112,8 @@ int main() {
 }
 
 /* Code de compilation (terminal dans Morse_Frame)
-g++ -o test_morse test2.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++17 -O3 -Wall -lpython3.11
+g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.11
+
+Github token : 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
 */
 

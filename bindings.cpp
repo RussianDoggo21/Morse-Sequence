@@ -11,7 +11,6 @@ PYBIND11_MODULE(morse_sequence, m) {
         .def(py::init<const SimplexTree&>())  // Constructeur avec un SimplexTree
         .def("dim", &MorseSequence::dim)
         .def("boundary", &MorseSequence::boundary)
-        .def("cofaces", &MorseSequence::cofaces)
         .def("coboundary", &MorseSequence::coboundary)
         .def("find_out", &MorseSequence::find_out)
         .def("tri_dim_decroissant", &MorseSequence::tri_dim_decroissant)
