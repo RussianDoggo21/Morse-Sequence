@@ -82,6 +82,7 @@ int main() {
     
     printf("\n\n\n");
  	
+
 	printf("Séquence de Morse croissante\n\n");
 	auto result2 = ms.morse_seq_crois(st);
 
@@ -123,76 +124,17 @@ int main() {
     }
 
 	printf("\n\n\n");
-    
+
 	printf("Fin du main\n");
 	return 0;
 }
 
-/*
-#include <iostream>
-#include "morse_sequence.h"
-
-int main() {
-    SimplexTree st;
-
-    // Insérer des simplexes
-    st.insert(simplex_t {0});
-    st.insert(simplex_t {0,1});
-    st.insert(simplex_t {0,1,2});
-    st.insert(simplex_t {3,1,2});
-
-    MorseSequence ms(st);
-
-    // Trouver les nœuds dans l'arbre
-    auto v0 = st.find(simplex_t {0});
-    auto v1 = st.find(simplex_t {0,1});
-    auto v2 = st.find(simplex_t {0,1,2});
-
-    // Affichage du boundary
-    std::cout << "Affichage du bord de {0, 1, 2}" << std::endl;
-    vector<node_ptr> boundary = ms.boundary(v2);
-    for (node_ptr face_ptr : boundary){
-        st.print_simplex(std::cout, face_ptr, true);
-    }
-
-    //Affichage du coboundary
-    std::cout << "Affichage du cobord de {0}" << std::endl;
-    vector<node_ptr> coboundary = ms.coboundary(v0);
-    for (node_ptr coface_ptr : coboundary) {
-        st.print_simplex(std::cout, coface_ptr, true);
-    }
-
-    return 0;
-}
-*/
 /* Code de compilation (terminal dans Morse_Frame)
 g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.11
 g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.11
 Github token : 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
 */
 
-/*
-    // Tester la fonction depth
-    std::cout << "Depth de {0} : " << st.depth(v0) << std::endl;  // 1
-    std::cout << "Depth de {0,1} : " << st.depth(v1) << std::endl; // 2
-    std::cout << "Depth de {0,1,2} : " << st.depth(v2) << std::endl; // 3
-
-    // Affichage du simplexe
-    st.print_simplex(std::cout, v2, true); // Devrait afficher "{ 0 1 2 }"
 
 
-    // Degré du simplexe
-    // A quel simplexe est lié un id ?
-    for (idx_t i = 0; i <= 3; i++){
-        auto cn = st.find_by_id(st.root->children, i);
-        std::cout << "Print du simplex lié à l'index " << i << std::endl;
-        st.print_simplex(std::cout, cn, true);
-    }
-    
 
-    std::cout << "Degré de 0: " << st.degree(0) << std::endl;
-    std::cout << "Degré de 1: " << st.degree(1) << std::endl;
-    std::cout << "Degré de 2: " << st.degree(2) << std::endl;
-    std::cout << "Degré de 3: " << st.degree(3) << std::endl;
-    std::cout << "Degré de ?: " << st.degree(4) << std::endl;
-*/
