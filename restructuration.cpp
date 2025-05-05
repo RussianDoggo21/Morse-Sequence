@@ -108,13 +108,15 @@ std::optional<node_ptr> MorseSequence::find_out(vector<node_ptr> B, set<node_ptr
 // En notant n = L.size() : O(nlog(n))
 vector<node_ptr> MorseSequence::tri_dim_decroissant(vector<node_ptr> L) 
 {
-	std::sort(L.begin(), L.end(), [this](node_ptr a_ptr, node_ptr b_ptr) // O(nlog(n)) : complexité de std::sort
+    std::sort(L.begin(), L.end(), [this](node_ptr a_ptr, node_ptr b_ptr) // O(nlog(n)) : complexité de std::sort
 	{
-		return simplex_tree.depth(a_ptr) > simplex_tree.depth(b_ptr); // Tri décroissant par dimension
+		return simplex_tree.depth(a_ptr) > simplex_tree.depth(b_ptr); // Tri croissant par dimension
 	});
 
-	return L;
+    return L;
 }
+
+
 
 // Pour trier une liste de simplexe par dimensions croissantes
 // En notant n = L.size() : O(nlog(n))
@@ -162,14 +164,11 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p) const {
 // En notant n = simplextree.size(), m = la taille d'un simplexe : 
 std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::morse_seq_dec(const SimplexTree& st){
     // Récupération des simplexes triés par dimension décroissante
-    vector<node_ptr> K = this->simplices(); // O(n)
-
-
+    vector<node_ptr> K_old = this->simplices(); // O(n)
 
     // Besoin de trier en python aussi
-    this->tri_dim_decroissant(K); // O(nlog(n)) 
+    vector<node_ptr> K = this->tri_dim_decroissant(K_old); // O(nlog(n)) 
     
-
     // Déclaration et initialisation des variables
     size_t n = K.size();
     size_t i = 0;
