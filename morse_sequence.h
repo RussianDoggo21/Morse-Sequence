@@ -13,7 +13,7 @@ public:
     int nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     vector<node_ptr> simplices(std::optional<int> p) const;
-    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> Max(const vector<node_ptr>& S, const unordered_map<simplex_t, int>& F);
+    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F);
 
 private:
     const SimplexTree& simplex_tree;  // Référence au complexe simplicial

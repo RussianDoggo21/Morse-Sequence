@@ -82,7 +82,7 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 	return F;
 }
 
-std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Max(const vector<node_ptr>& S, const unordered_map<simplex_t, int>& F) {
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F) {
     unordered_map<node_ptr, bool> T; // Boolean dictionnary : if T[s] == False, s is still "available to use" for the Morse Sequence
     unordered_map<node_ptr, bool> Sdict;   // Allows to check if the simplice is in S : Sdict[s] = false means it's not the case
     std::deque<node_ptr> U;  // List containing simplices v with only one coface tau : (v, tau) is a free pair for the Morse Sequence
@@ -122,9 +122,7 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
                     }
                 }
                 
-                simplex_t sigma = simplex_tree.full_simplex(sigma_ptr);
-                simplex_t tau = simplex_tree.full_simplex(tau_ptr);
-                if (F.at(sigma) == F.at(tau)){ // Second verification on tau and sigma : is it really a free pair (by the definition of F) 
+                if (F.at(sigma_ptr) == F.at(tau_ptr)){ // Second verification on tau and sigma : is it really a free pair (by the definition of F) 
                     // Update of MorseSequence and T
                     MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
                     T[tau_ptr] = true;
