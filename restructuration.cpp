@@ -44,10 +44,6 @@ MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) {
 }
 
 
-// MorseSequence::dim <=> SimplexTree::depth(node_ptr cn) : c.f. utilisation dans main.cpp
-// MorseSequence::print_simplex <=> SimplexTree::print_simplex : cf main.cpp
-
-
 // Renvoie les pointeurs des simplexes composant le bord d'un simplexe sigma
 vector<node_ptr> MorseSequence::boundary(node_ptr cn) {   
     vector<node_ptr> boundary; // Vecteur à renvoyer

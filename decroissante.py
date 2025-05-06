@@ -62,6 +62,7 @@ def morse_seq_decroissante(K_init):
     # Récupérer les simplexes de K_init 
     K = K_init.simplices()
     K.sort(key=lambda s: dim(s), reverse=True)
+
     n = len(K)
     
     # Initialisation des variables

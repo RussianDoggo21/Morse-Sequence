@@ -4,13 +4,36 @@
 */
 
 #include "morse_sequence.h"
-
+#include <vector>
+#include <unordered_map>
+#include <algorithm> 
+#include <tuple>
+#include <cstddef>
+#include <functional>
 using SimplexList = std::vector<simplex_t>;  // Vecteur de simplexes
+
+// Used in order to create types of the form unordered_map<simplex_t, xyz>
+// Done by Chat GPT
+namespace std {
+    template<>
+    struct hash<std::vector<std::size_t>> {
+        std::size_t operator()(const std::vector<std::size_t>& v) const {
+            std::size_t seed = v.size();
+            for (auto& i : v) {
+                seed ^= std::hash<std::size_t>()(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
+        }
+    };
+}
+
 
 int main() {
 	printf("Début du main\n");
 	SimplexTree st;  // Création d'un complexe simplicial
-	SimplexList L = {
+    SimplexList L = {{0,1,2}};
+	/*
+    SimplexList L = {
         {1, 5, 7}, {1, 2, 7},  // Haut gauche
         {2, 7, 9}, {2, 3, 9},  // Haut milieu
         {3, 5, 9}, {1, 3, 5},  // Haut droit
@@ -21,29 +44,42 @@ int main() {
         {2, 3, 6}, {3, 6, 8},  // Bas milieu
         {1, 3, 8}, {1, 4, 8}   // Bas droit
     	};
-	
+	*/
 	for (simplex_t s : L)
 	{
 		st.insert(s);
 	}
 
-    /*
-    // Trouver les nœuds dans l'arbre
-    node_ptr v0 = st.find(simplex_t {1});
-    auto v1 = st.find(simplex_t {3,1});
-    auto v2 = st.find(simplex_t {3,1,8});
-
-    st.print_simplex(std::cout, v0, true);
-    st.print_simplex(std::cout, v1, true);
-    st.print_simplex(std::cout, v2, true);
-    */
-
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
-	
-	printf("Séquence de Morse décroissante\n\n");
-	auto result = ms.morse_seq_dec(st);
+
+    // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
+    std::vector<node_ptr> S = ms.simplices(std::nullopt);
+
+    std::sort(S.begin(), S.end(), [st](node_ptr a_ptr, node_ptr b_ptr) {
+        if (st.depth(a_ptr) != st.depth(b_ptr)) return st.depth(a_ptr) < st.depth(b_ptr);
+        return a_ptr < b_ptr; // lexicographical comparison
+    });
+
+    // F = dict()
+    std::unordered_map<node_ptr, int> F;
+    for (node_ptr cn : S) {
+        if (st.full_simplex(cn) == {0, 1, 2}){
+            F[cn] = 1;
+        }
+        F[s] = 0;
+    }
+
+    // S = sorted(S, key=lambda s: (F[s], len(s)))
+    std::sort(S.begin(), S.end(), [&F, st](node_ptr a_ptr, node_ptr b_ptr) {
+        if (F[a_ptr] != F[b_ptr]) return F[a_ptr] < F[b_ptr];
+        return st.depth(a_ptr) < st.depth(b_ptr);
+    });
+
+
+	printf("Max : \n\n");
+	auto result = ms.Max(S, F);
     
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence = result.first;  // Vecteur des simplexes et paires
@@ -82,7 +118,7 @@ int main() {
     
     printf("\n\n\n");
  	
-
+/*
 	printf("Séquence de Morse croissante\n\n");
 	auto result2 = ms.morse_seq_crois(st);
 
@@ -124,7 +160,7 @@ int main() {
     }
 
 	printf("\n\n\n");
-
+*/
 	printf("Fin du main\n");
 	return 0;
 }
@@ -132,6 +168,7 @@ int main() {
 /* Code de compilation (terminal dans Morse_Frame)
 g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.11
 g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.11
+g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.11
 Github token : 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
 */
 
