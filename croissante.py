@@ -103,6 +103,21 @@ def morse_seq_croissante(K_init):
 # =============================================================================================================================================================================== #
 
 #K_init = SimplexTree([[1,2,3]])
+def MakeFacesVectorized1(Nr,Nc):
+
+    out = np.empty((Nr-1,Nc-1,2,3),dtype=int)
+
+    r = np.arange(Nr*Nc).reshape(Nr,Nc)
+
+    out[:,:, 0,0] = r[:-1,:-1]
+    out[:,:, 1,0] = r[:-1,1:]
+    out[:,:, 0,1] = r[:-1,1:]
+
+    out[:,:, 1,1] = r[1:,1:]
+    out[:,:, :,2] = r[1:,:-1,None]
+
+    out.shape =(-1,3)
+    return out
 
 K_init = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [2, 7, 9], [2, 3, 9],  # Haut milieu
@@ -115,3 +130,6 @@ K_init = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [1, 3, 8], [1, 4, 8]])  # Bas droit
 
 seq, n_crit = morse_seq_croissante(K_init)
+
+print(seq, "\n")
+print(n_crit)
