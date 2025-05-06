@@ -65,10 +65,11 @@ int main() {
     // F = dict()
     std::unordered_map<node_ptr, int> F;
     for (node_ptr cn : S) {
-        if (st.full_simplex(cn) == {0, 1, 2}){
+        simplex_t s = {0, 1, 2};
+        if (st.full_simplex(cn) == s){
             F[cn] = 1;
         }
-        F[s] = 0;
+        F[cn] = 0;
     }
 
     // S = sorted(S, key=lambda s: (F[s], len(s)))
@@ -166,9 +167,9 @@ int main() {
 }
 
 /* Code de compilation (terminal dans Morse_Frame)
-g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.11
-g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.11
-g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.11
+g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
+g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.13
+g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
 Github token : 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
 */
 
