@@ -1,6 +1,7 @@
 /*
 	Modification du code source st_iterators.hpp, st_filtration.hpp, st.hpp (ligne 4 -import de simplextree modifiée)
 	Modification du code source _simplextree.cpp (ligne 1 à 6 + ligne 17 remplacées)
+    Modification du code source _simplextree.cpp (rajout des lignes 593 à 595)
 */
 
 #include "morse_sequence.h"
@@ -27,33 +28,37 @@ namespace std {
     };
 }
 
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
 
 int main() {
 	printf("Début du main\n");
 	SimplexTree st;  // Création d'un complexe simplicial
-    SimplexList L = {{0,1,2}};
-	/*
+    //SimplexList L = {{0,1,2}};
     SimplexList L = {
-        {1, 5, 7}, {1, 2, 7},  // Haut gauche
-        {2, 7, 9}, {2, 3, 9},  // Haut milieu
-        {3, 5, 9}, {1, 3, 5},  // Haut droit
-        {5, 4, 6}, {5, 6, 7},  // Milieu gauche
-        {7, 6, 8}, {7, 8, 9},  // Milieu centre
-        {9, 8, 4}, {9, 4, 5},  // Milieu droit
-        {1, 2, 4}, {2, 4, 6},  // Bas gauche
-        {2, 3, 6}, {3, 6, 8},  // Bas milieu
-        {1, 3, 8}, {1, 4, 8}   // Bas droit
-    	};
-	*/
-	for (simplex_t s : L)
-	{
+                        {1, 5, 7}, {1, 2, 7},  // Haut gauche
+                        {2, 7, 9}, {2, 3, 9},  // Haut milieu
+                        {3, 5, 9}, {1, 3, 5},  // Haut droit
+                        {5, 4, 6}, {5, 6, 7},  // Milieu gauche
+                        {7, 6, 8}, {7, 8, 9},  // Milieu centre
+                        {9, 8, 4}, {9, 4, 5},  // Milieu droit
+                        {1, 2, 4}, {2, 4, 6},  // Bas gauche
+                        {2, 3, 6}, {3, 6, 8},  // Bas milieu
+                        {1, 3, 8}, {1, 4, 8}   // Bas droit
+                    };
+    
+	for (simplex_t s : L){
 		st.insert(s);
 	}
 
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
+    node_ptr cn = ms.find_node({1,5,7});
+    st.print_simplex(std::cout, cn, true);
 
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+/*
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
     std::vector<node_ptr> S = ms.simplices(std::nullopt);
 
@@ -65,12 +70,10 @@ int main() {
     // F = dict()
     std::unordered_map<node_ptr, int> F;
     for (node_ptr cn : S) {
-        simplex_t s = {0, 1, 2};
-        if (st.full_simplex(cn) == s){
-            F[cn] = 1;
-        }
-        F[cn] = 0;
+       F[cn] = 0;
     }
+
+    // Vérifier si un simplexe est inclus dans un autre => fonction st.is_face(sigma, tau) 
 
     // S = sorted(S, key=lambda s: (F[s], len(s)))
     std::sort(S.begin(), S.end(), [&F, st](node_ptr a_ptr, node_ptr b_ptr) {
@@ -78,8 +81,8 @@ int main() {
         return st.depth(a_ptr) < st.depth(b_ptr);
     });
 
-
-	printf("Max : \n\n");
+	
+    printf("Max : \n\n");
 	auto result = ms.Max(S, F);
     
 	// 3. Extraire les résultats de la fonction
@@ -118,10 +121,34 @@ int main() {
     }
     
     printf("\n\n\n");
- 	
+*/	
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /*
-	printf("Séquence de Morse croissante\n\n");
-	auto result2 = ms.morse_seq_crois(st);
+    // 1. Récupérer les simplexes et les trier par ordre décroissant de dimension puis lexicographiquement décroissant
+    std::vector<node_ptr> S2 = ms.simplices(std::nullopt);
+
+    std::sort(S2.begin(), S2.end(), [st](node_ptr a_ptr, node_ptr b_ptr) {
+        if (st.depth(a_ptr) != st.depth(b_ptr)) return st.depth(a_ptr) > st.depth(b_ptr); // ordre décroissant
+        return b_ptr < a_ptr; // ordre lexicographique décroissant
+    });
+
+    // 2. Initialiser F
+    std::unordered_map<node_ptr, int> F2;
+    for (node_ptr cn : S2) {
+        F2[cn] = 0;
+    }
+
+    // 3. Définir manuellement une valeur de F si besoin (exemple ici : F[(0, 1, 2)] = 0)
+
+    // 4. Trier de nouveau S selon la priorité à F décroissant, puis à dimension décroissante
+    std::sort(S2.begin(), S2.end(), [&F2, st](node_ptr a_ptr, node_ptr b_ptr) {
+        if (F2[a_ptr] != F2[b_ptr]) return F2[a_ptr] > F2[b_ptr]; // priorité à F décroissant
+        return st.depth(a_ptr) > st.depth(b_ptr); // puis dimension décroissante
+    });
+
+
+	printf("Min\n\n");
+	auto result2 = ms.Min(S2, F2);
 
     
 	// 3. Extraire les résultats de la fonction
@@ -162,6 +189,8 @@ int main() {
 
 	printf("\n\n\n");
 */
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
 	printf("Fin du main\n");
 	return 0;
 }
@@ -170,7 +199,9 @@ int main() {
 g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
 g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.13
 g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
+
 Github token : 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
+Utilisé la clé SSH à la place 
 */
 
 

@@ -23,19 +23,36 @@ def MakeFacesVectorized1(Nr,Nc):
     out.shape =(-1,3)
     return out
 
-tree = SimplexTree(MakeFacesVectorized1(100, 100))
+st = SimplexTree(MakeFacesVectorized1(100, 100))
 
 # Créer une instance de MorseSequence
-ms = MorseSequence(tree)
+ms = MorseSequence(st)
 
-# Appeler les méthodes
-ms_dec, n_crit = ms.morse_seq_dec(tree)
-ms_crois, n_crit2 = ms.morse_seq_crois(tree)
+S = sorted(st.simplices(), key=lambda x: (len(x), x))
+F = dict()
+for s in S:
+    cn = ms.find_node(s)
+    F[cn] = 0
+S = sorted(st.simplices(), key=lambda s: (F[ms.find_node(s)], len(s)))
+
+print(f" type de S : {type(S)}, type des éléments de S {type(S[0])}")
+for s in S : 
+    print(f"type de F : {type(F)}, type des clés de F : {type(s)}, type des valeurs de F : {type(F[s])}")
+    break
+"""
+max, n_crit = ms.Max(S, F)
+
+S = sorted(st.simplices(), key=lambda x: (len(x), x))[::-1]
+F = dict()
+for s in S:
+    F[s] = 0
+S = sorted(st.simplices(), key=lambda s: (-F[s], -len(s)))
+min, n_crit2 = ms.Min(S, F)
 
 
-print(f"ms_dec :\n {ms_dec},\n n_crit = {n_crit}\n\n")
-print(f"ms_crois :\n {ms_crois},\n n_crit = {n_crit2}\n\n")
-
+print(f"ms_dec :\n {max},\n n_crit = {n_crit}\n\n")
+print(f"ms_crois :\n {min},\n n_crit = {n_crit2}\n\n")
+"""
 """
 Pour lancer test.py : 
 1) Entrer dans l'environnement virtuel : source venv/bin/activate
