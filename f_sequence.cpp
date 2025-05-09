@@ -1,3 +1,5 @@
+/* IDENTIFIANT DE POINTEURS/DE SIMPLEXES : st.reindex -> st.get_vertices() ? */
+
 #include "morse_sequence.h"
 #include <deque>
 
@@ -82,6 +84,11 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 	return F;
 }
 
+// Renvoie le node_ptr lié au simplexe donné en paramètre
+node_ptr MorseSequence::find_node(simplex_t s){
+    return simplex_tree.find(s);
+}
+
 std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F) {
     unordered_map<node_ptr, bool> T; // Boolean dictionnary : if T[s] == False, s is still "available to use" for the Morse Sequence
     unordered_map<node_ptr, bool> Sdict;   // Allows to check if the simplice is in S : Sdict[s] = false means it's not the case
@@ -164,4 +171,89 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     }
     return {MorseSequence, n_crit};
 }
+
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Min(const std::vector<node_ptr>& S, const std::unordered_map<node_ptr, int>& F) {
+    std::unordered_map<node_ptr, bool> T; // Boolean dictionary: T[s] == False means s is still "available"
+    std::unordered_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
+    std::deque<node_ptr> U; // Contains simplices with only one face: (tau, sigma) is a free pair
+    std::unordered_map<node_ptr, int> rho; // Number of cofaces of a simplex
+    std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>> MorseSequence; // Result to return
+    int N = S.size();
+    int i = 0;
+    int n_crit = 0;
+
+    // Initialization
+    for (node_ptr cn : this->simplices()) {
+        T[cn] = false;
+        Sdict[cn] = false;
+    }
+
+    for (node_ptr cn : S) {
+        Sdict[cn] = true;
+        int nb = this->nbcoboundary(cn, Sdict);
+        rho[cn] = nb;
+        if (nb == 1) {
+            U.push_back(cn);
+        }
+    }
+
+    // Main loop
+    while (i < N) {
+        while (!U.empty()) {
+            node_ptr tau_ptr = U.front();
+            U.pop_front();
+
+            if (rho[tau_ptr] == 1) {
+                std::vector<node_ptr> cofaces = this->coboundary(tau_ptr, Sdict);
+                node_ptr sigma_ptr;
+                for (node_ptr cn : cofaces) {
+                    if (!T[cn]) {
+                        sigma_ptr = cn;
+                        break;
+                    }
+                }
+
+                if (F.at(sigma_ptr) == F.at(tau_ptr)) {
+                    MorseSequence.push_back(std::make_pair(tau_ptr, sigma_ptr));
+                    T[tau_ptr] = true;
+                    T[sigma_ptr] = true;
+
+                    std::vector<node_ptr> combined = this->boundary(sigma_ptr, Sdict);
+                    std::vector<node_ptr> tau_boundary = this->boundary(tau_ptr, Sdict);
+                    combined.insert(combined.end(), tau_boundary.begin(), tau_boundary.end());
+
+                    for (node_ptr mu_ptr : combined) {
+                        rho[mu_ptr] -= 1;
+                        if (rho[mu_ptr] == 1) {
+                            U.push_back(mu_ptr);
+                        }
+                    }
+                }
+            }
+        }
+
+        while (i < N && T[S[i]]) {
+            i++;
+        }
+
+        if (i < N) {
+            node_ptr sigma_ptr = S[i];
+            MorseSequence.push_back(sigma_ptr);
+            n_crit++;
+            T[sigma_ptr] = true;
+
+            for (node_ptr tau_ptr : this->boundary(sigma_ptr, Sdict)) {
+                rho[tau_ptr] -= 1;
+                if (rho[tau_ptr] == 1) {
+                    U.push_back(tau_ptr);
+                }
+            }
+        }
+    }
+
+    // Reverse the MorseSequence before returning
+    std::reverse(MorseSequence.begin(), MorseSequence.end());
+    return {MorseSequence, n_crit};
+}
+
 
