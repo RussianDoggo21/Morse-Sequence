@@ -3,6 +3,8 @@
 #include "morse_sequence.h"
 #include <deque>
 
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
 // Constructeur de la classe MorseSequence
 // Prend en entrée un SimplexTree
 // O(1)
@@ -31,8 +33,6 @@ vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<n
     }
     return boundary;
 }
-
-
 
 // Renvoie les pointeurs des simplexes composant le cobord d'un simplexe sigma avec une filtration sur S
 vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S) {
@@ -89,13 +89,187 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 	return F;
 }
 
-/*
-// Renvoie le node_ptr lié au simplexe donné en paramètre
-node_ptr MorseSequence::find_node(simplex_t s){
-    return simplex_tree.find(s);
-}
-*/
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
+// Création d'une séquence de Morse croissante
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::morse_seq_crois(const SimplexTree& st)
+{
+    std::vector<node_ptr> K = this->simplices(); // Récupération des simplexes
+    std::sort(K.begin(), K.end(), [&](const node_ptr& a, const node_ptr& b){
+        return st.depth(a) < st.depth(b); // Tri croissant par dimension
+    });
+
+    std::unordered_map<node_ptr, bool> T; // Marque les simplexes utilisés
+    std::unordered_map<node_ptr, bool> Sdict; // Pour tester si un simplex est dans S
+    std::deque<node_ptr> L; // Liste des candidats tau libres
+    std::unordered_map<node_ptr, int> rho; // Compte les faces
+    std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>> MorseSequence;
+    
+    int N = K.size();
+    int i = 0;
+    int n_crit = 0;
+
+    for (node_ptr cn : this->simplices()) {
+        T[cn] = false;
+        Sdict[cn] = false;
+    }
+
+    for (node_ptr cn : K) {
+        Sdict[cn] = true;
+        int nb = this->nbboundary(cn, Sdict);
+        rho[cn] = nb;
+        if (nb == 1) {
+            L.push_back(cn);
+        }
+    }
+
+    while (i < N) {
+        while (!L.empty()) {
+            node_ptr tau_ptr = L.back();
+            L.pop_back();
+
+            if (rho[tau_ptr] == 1) {
+                std::vector<node_ptr> bd = this->boundary(tau_ptr, Sdict);
+                node_ptr sigma_ptr = nullptr;
+                for (node_ptr sigma0_ptr : bd) {
+                    if (!T[sigma0_ptr] && st.depth(sigma0_ptr) == (st.depth(tau_ptr) - 1)) {
+                        sigma_ptr = sigma0_ptr;
+                        break;
+                    }
+                }
+
+                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                T[tau_ptr] = true;
+                T[sigma_ptr] = true;
+
+                std::vector<node_ptr> cob1 = this->coboundary(sigma_ptr, Sdict);
+                std::vector<node_ptr> cob2 = this->coboundary(tau_ptr, Sdict);
+                cob1.insert(cob1.end(), cob2.begin(), cob2.end());
+                for (node_ptr mu : cob1) {
+                    rho[mu] -= 1;
+                    if (rho[mu] == 1) {
+                        L.push_back(mu);
+                    }
+                }
+            }
+        }
+
+        while (i < N && T[K[i]]) {
+            i++;
+        }
+
+        if (i < N) {
+            node_ptr sigma_ptr = K[i];
+            MorseSequence.push_back(sigma_ptr);
+            n_crit++;
+            T[sigma_ptr] = true;
+            for (node_ptr tau_ptr : this->coboundary(sigma_ptr, Sdict)) {
+                rho[tau_ptr] -= 1;
+                if (rho[tau_ptr] == 1) {
+                    L.push_back(tau_ptr);
+                }
+            }
+        }
+    }
+
+    return {MorseSequence, n_crit};
+}
+
+
+// Création d'une séquence de Morse décroissante
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::morse_seq_decrois(const SimplexTree& st){
+
+    std::vector<node_ptr> K = this->simplices(); // Récupération des simplexes
+    std::sort(K.begin(), K.end(), [&](const node_ptr& a, const node_ptr& b){
+        return st.depth(a) > st.depth(b); // Tri décroissant par dimension
+    });
+
+    std::unordered_map<node_ptr, bool> T; // Pour marquer les simplexes déjà utilisés
+    std::unordered_map<node_ptr, bool> Sdict; // Pour tester l'appartenance à S
+    std::deque<node_ptr> L; // Liste des paires libres potentielles
+    std::unordered_map<node_ptr, int> rho; // Nombre de cofaces
+
+    std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>> MorseSequence;
+    int N = K.size();
+    int i = 0;
+    int n_crit = 0;
+
+    for (node_ptr cn : this->simplices()) {
+        T[cn] = false;
+        Sdict[cn] = false;
+    }
+
+    for (node_ptr cn : K) {
+        Sdict[cn] = true;
+        int nb = this->nbcoboundary(cn, Sdict); // nombre de cofaces du simplexe cn
+        rho[cn] = nb;
+        if (nb == 1) {
+            L.push_back(cn); // sigma libre
+        }
+    }
+
+    while (i < N) {
+        while (!L.empty()) {
+            node_ptr sigma_ptr = L.back();
+            L.pop_back();
+ 
+            // FONCTION FIND_OUT A IMPLEMENTER
+            if (rho[sigma_ptr] == 1) {
+                std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
+                node_ptr tau_ptr = nullptr;
+
+                for (node_ptr tau0_ptr : cofaces) {
+                    if (!T[tau0_ptr] && st.depth(tau0_ptr) == (st.depth(sigma_ptr) + 1)) {
+                        tau_ptr = tau0_ptr;
+                        break;
+                    }
+                }
+                // Fin de find_out
+
+                
+                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                T[sigma_ptr] = true;
+                T[tau_ptr] = true;
+
+                std::vector<node_ptr> bd1 = this->boundary(sigma_ptr, Sdict);
+                std::vector<node_ptr> bd2 = this->boundary(tau_ptr, Sdict);
+                bd1.insert(bd1.end(), bd2.begin(), bd2.end());
+
+                for (node_ptr mu : bd1) {
+                    rho[mu] -= 1;
+                    if (rho[mu] == 1) {
+                        L.push_back(mu);
+                    }
+                }
+                
+            }
+        }
+
+        while (i < N && T[K[i]]) {
+            i++;
+        }
+
+        if (i == N) break;
+
+        node_ptr sigma_ptr = K[i];
+        MorseSequence.push_back(sigma_ptr); // Simplexe critique
+        n_crit++;
+        T[sigma_ptr] = true;
+
+        for (node_ptr mu : this->boundary(sigma_ptr, Sdict)) {
+            rho[mu] -= 1;
+            if (rho[mu] == 1) {
+                L.push_back(mu);
+            }
+        }
+    }
+
+    return {MorseSequence, n_crit};
+}
+
+
+
+// Création d'une F-séquence maximale
 std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F) {
     unordered_map<node_ptr, bool> T; // Boolean dictionnary : if T[s] == False, s is still "available to use" for the Morse Sequence
     unordered_map<node_ptr, bool> Sdict;   // Allows to check if the simplice is in S : Sdict[s] = false means it's not the case
@@ -179,6 +353,8 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     return {MorseSequence, n_crit};
 }
 
+
+// Création d'une F-séquence minimale
 std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Min(const std::vector<node_ptr>& S, const std::unordered_map<node_ptr, int>& F) {
     std::unordered_map<node_ptr, bool> T; // Boolean dictionary: T[s] == False means s is still "available"
     std::unordered_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
