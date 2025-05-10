@@ -1,7 +1,8 @@
 /*
-	Modification du code source st_iterators.hpp, st_filtration.hpp, st.hpp (ligne 4 -import de simplextree modifiée)
-	Modification du code source _simplextree.cpp (ligne 1 à 6 + ligne 17 remplacées)
-    Modification du code source _simplextree.cpp (rajout des lignes 593 à 595)
+	Modification du code source st_iterators.hpp, st_filtration.hpp, st.hpp (ligne 4 - chemin d'import de simplextree modifiée)
+	Modification du code source _simplextree.cpp - lignes 588 et 589 : rajout des fonctions find_node et full_simplex via pybind11
+    ............................................ - ligne 541 : rajout de la fonction find_node
+    ............................................ - ligne 549 : rajout du type node_ptr via pybind11
 */
 
 #include "morse_sequence.h"
@@ -54,7 +55,8 @@ int main() {
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
-    node_ptr cn = ms.find_node({1,5,7});
+    simplex_t s = {1,5,7};
+    node_ptr cn = st.find(s);
     st.print_simplex(std::cout, cn, true);
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */

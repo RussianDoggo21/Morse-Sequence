@@ -23,24 +23,24 @@ def MakeFacesVectorized1(Nr,Nc):
     out.shape =(-1,3)
     return out
 
-st = SimplexTree(MakeFacesVectorized1(100, 100))
+#st = SimplexTree(MakeFacesVectorized1(100, 100))
+st = SimplexTree([[1,2,3]])
 
 # Créer une instance de MorseSequence
 ms = MorseSequence(st)
 
-S = sorted(st.simplices(), key=lambda x: (len(x), x))
-F = dict()
-for s in S:
-    cn = ms.find_node(s)
-    F[cn] = 0
-S = sorted(st.simplices(), key=lambda s: (F[ms.find_node(s)], len(s)))
+# Liste de pointeurs obtenus via st.find(s)
+S = [s for s in st.simplices()]
 
-print(f" type de S : {type(S)}, type des éléments de S {type(S[0])}")
-for s in S : 
-    print(f"type de F : {type(F)}, type des clés de F : {type(s)}, type des valeurs de F : {type(F[s])}")
-    break
-"""
+# Dictionnaire F avec les pointeurs comme clés
+F = {s: 0 for s in S}
+
+# Tri selon F et la dimension du simplexe (exposée en C++)
+S = sorted(S, key=lambda s: (F[s], len(s)))
+
+
 max, n_crit = ms.Max(S, F)
+print(f"max :\n{max},\n n_crit = {n_crit}\n\n")
 
 S = sorted(st.simplices(), key=lambda x: (len(x), x))[::-1]
 F = dict()
@@ -49,10 +49,8 @@ for s in S:
 S = sorted(st.simplices(), key=lambda s: (-F[s], -len(s)))
 min, n_crit2 = ms.Min(S, F)
 
+print(f"min :\n{min},\n n_crit = {n_crit2}\n\n")
 
-print(f"ms_dec :\n {max},\n n_crit = {n_crit}\n\n")
-print(f"ms_crois :\n {min},\n n_crit = {n_crit2}\n\n")
-"""
 """
 Pour lancer test.py : 
 1) Entrer dans l'environnement virtuel : source venv/bin/activate
