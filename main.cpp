@@ -55,9 +55,91 @@ int main() {
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
-    simplex_t s = {1,5,7};
-    node_ptr cn = st.find(s);
-    st.print_simplex(std::cout, cn, true);
+
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
+    printf("Séquence de Morse croissante : \n\n");
+	auto result = ms.morse_seq_crois(st);
+    
+	// 3. Extraire les résultats de la fonction
+	auto& morse_sequence = result.first;  // Vecteur des simplexes et paires
+	int n_crit = result.second;  // Le critère n_crit
+
+	// Afficher les résultats
+	std::cout << "Number of critical points: " << n_crit << std::endl;
+	
+	for (const auto& item : morse_sequence) {
+        // Vérifier le type de l'élément
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr face_ptr = std::get<node_ptr>(item);
+            // Vérifie ici si face_ptr n'est pas un pointeur nul avant de l'utiliser
+            if (face_ptr) {
+                std::cout << "Critical simplex : ";
+                st.print_simplex(std::cout, face_ptr, true);
+            } else {
+                std::cout << "Null pointer encountered!" << std::endl;
+            }
+        }
+        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
+            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
+            
+            if (pair.first && pair.second) {
+                std::cout << "Pair of simplexes: ";
+                st.print_simplex(std::cout, pair.first, false);
+                std::cout <<  " and ";
+                st.print_simplex(std::cout, pair.second, true);
+                std::cout << std::endl;
+            } else {
+                std::cout << "Null pointer in pair!" << std::endl;
+            }
+        }
+        
+    }
+    
+    printf("\n\n\n");
+
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
+    printf("Séquence de Morse décroissante : \n\n");
+	auto result_dec = ms.morse_seq_decrois(st);
+    
+    
+	// 3. Extraire les résultats de la fonction
+	auto& morse_sequence_dec = result_dec.first;  // Vecteur des simplexes et paires
+	int n_crit_dec = result_dec.second;  // Le critère n_crit
+
+	// Afficher les résultats
+	std::cout << "Number of critical points: " << n_crit_dec << std::endl;
+	
+	for (const auto& item : morse_sequence_dec) {
+        // Vérifier le type de l'élément
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr face_ptr = std::get<node_ptr>(item);
+            // Vérifie ici si face_ptr n'est pas un pointeur nul avant de l'utiliser
+            if (face_ptr) {
+                std::cout << "Critical simplex : ";
+                st.print_simplex(std::cout, face_ptr, true);
+            } else {
+                std::cout << "Null pointer encountered!" << std::endl;
+            }
+        }
+        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
+            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
+            
+            if (pair.first && pair.second) {
+                std::cout << "Pair of simplexes: ";
+                st.print_simplex(std::cout, pair.first, false);
+                std::cout <<  " and ";
+                st.print_simplex(std::cout, pair.second, true);
+                std::cout << std::endl;
+            } else {
+                std::cout << "Null pointer in pair!" << std::endl;
+            }
+        }
+        
+    }
+    
+    printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /*
