@@ -10,6 +10,12 @@ MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) {
 	std::cout << "MorseSequence créée" << std::endl;
 }
 
+// Getter du SimplexTree lié à l'objet MorseSequence
+const SimplexTree& MorseSequence::get_simplex_tree() {
+    return simplex_tree;
+}
+
+// Renvoie les pointeurs des simplexes composant le bord d'un simplexe sigma avec une filtration sur S
 vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
     vector<node_ptr> boundary;
     faces<> bord(&simplex_tree, cn);
@@ -23,7 +29,6 @@ vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<n
             }
         }
     }
-    
     return boundary;
 }
 
@@ -84,10 +89,12 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 	return F;
 }
 
+/*
 // Renvoie le node_ptr lié au simplexe donné en paramètre
 node_ptr MorseSequence::find_node(simplex_t s){
     return simplex_tree.find(s);
 }
+*/
 
 std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F) {
     unordered_map<node_ptr, bool> T; // Boolean dictionnary : if T[s] == False, s is still "available to use" for the Morse Sequence
