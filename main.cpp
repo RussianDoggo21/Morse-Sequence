@@ -142,7 +142,7 @@ int main() {
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-/*
+
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
     std::vector<node_ptr> S = ms.simplices(std::nullopt);
 
@@ -167,16 +167,16 @@ int main() {
 
 	
     printf("Max : \n\n");
-	auto result = ms.Max(S, F);
+	auto result_max = ms.Max(S, F);
     
 	// 3. Extraire les résultats de la fonction
-	auto& morse_sequence = result.first;  // Vecteur des simplexes et paires
-	int n_crit = result.second;  // Le critère n_crit
+	auto& morse_sequence_max = result_max.first;  // Vecteur des simplexes et paires
+	int n_crit_max = result_max.second;  // Le critère n_crit
 
 	// Afficher les résultats
-	std::cout << "Number of critical points: " << n_crit << std::endl;
+	std::cout << "Number of critical points: " << n_crit_max << std::endl;
 	
-	for (const auto& item : morse_sequence) {
+	for (const auto& item : morse_sequence_max) {
         // Vérifier le type de l'élément
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr face_ptr = std::get<node_ptr>(item);
@@ -205,9 +205,9 @@ int main() {
     }
     
     printf("\n\n\n");
-*/	
+
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-/*
+
     // 1. Récupérer les simplexes et les trier par ordre décroissant de dimension puis lexicographiquement décroissant
     std::vector<node_ptr> S2 = ms.simplices(std::nullopt);
 
@@ -272,7 +272,7 @@ int main() {
     }
 
 	printf("\n\n\n");
-*/
+
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 	printf("Fin du main\n");
@@ -280,7 +280,7 @@ int main() {
 }
 
 /* Code de compilation (terminal dans Morse_Frame)
-g++ -o test_morse main.cpp morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
+g++ -o test_morse main.cpp old_morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
 g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.13
 g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
 

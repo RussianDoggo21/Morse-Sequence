@@ -1,7 +1,6 @@
 /* IDENTIFIANT DE POINTEURS/DE SIMPLEXES : st.reindex -> st.get_vertices() ? */
 
 #include "morse_sequence.h"
-#include <deque>
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
@@ -89,6 +88,38 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 	return F;
 }
 
+// Retourne le pointeur d'un simplex qui se trouve dans simplex_list et qui vérifie une condition de T et de s_ptr
+node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T, std::vector<node_ptr> simplex_list, std::string order, node_ptr s_ptr){
+    node_ptr v = nullptr;
+    if (order == "décroissante"){
+        for (node_ptr v0 : simplex_list){
+            if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
+                v = v0;
+            }
+        }
+    }
+    else if (order == "croissante"){
+        for (node_ptr v0 : simplex_list){
+            if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
+                v = v0;
+            }
+        }
+    }
+    return v;
+}
+
+// Retourne le pointeur d'un simplex qui se trouve dans simplex_list et qui vérifie une condition de T, de s_ptr et de F
+node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T,std::vector<node_ptr> simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
+    node_ptr v = nullptr;
+    for (node_ptr v0 : simplex_list){
+        if (!T[v0] && F.at(v0) == F.at(s_ptr)) {
+            v = v0;
+        }
+    }
+    
+    return v;
+}
+
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 // Création d'une séquence de Morse croissante
@@ -130,13 +161,7 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
 
             if (rho[tau_ptr] == 1) {
                 std::vector<node_ptr> bd = this->boundary(tau_ptr, Sdict);
-                node_ptr sigma_ptr = nullptr;
-                for (node_ptr sigma0_ptr : bd) {
-                    if (!T[sigma0_ptr] && st.depth(sigma0_ptr) == (st.depth(tau_ptr) - 1)) {
-                        sigma_ptr = sigma0_ptr;
-                        break;
-                    }
-                }
+                node_ptr sigma_ptr = this->find_out(T, bd, "croissante", tau_ptr);
 
                 MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
                 T[tau_ptr] = true;
@@ -213,19 +238,10 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
             node_ptr sigma_ptr = L.back();
             L.pop_back();
  
-            // FONCTION FIND_OUT A IMPLEMENTER
+            
             if (rho[sigma_ptr] == 1) {
                 std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
-                node_ptr tau_ptr = nullptr;
-
-                for (node_ptr tau0_ptr : cofaces) {
-                    if (!T[tau0_ptr] && st.depth(tau0_ptr) == (st.depth(sigma_ptr) + 1)) {
-                        tau_ptr = tau0_ptr;
-                        break;
-                    }
-                }
-                // Fin de find_out
-
+                node_ptr tau_ptr = this->find_out(T, cofaces, "décroissante", sigma_ptr);
                 
                 MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
                 T[sigma_ptr] = true;
@@ -300,33 +316,26 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
             node_ptr tau_ptr = U.front();
             U.pop_front(); 
 
-            if (rho[tau_ptr] == 1){
+            if (rho[tau_ptr] == 1){                
                 vector<node_ptr> boundary = this->boundary(tau_ptr, Sdict); // N.B. : boundary(tau, Sdict) should return only a single simplex 
-                node_ptr sigma_ptr;
-                for (node_ptr cn : boundary){
-                    if (!T[cn]){ // The condition "if not T[s]" allows us to work with a changing simplicial complex
-                        sigma_ptr = cn;
-                        break;
+                node_ptr sigma_ptr = this->find_out(T, boundary, tau_ptr, F);
+                
+                // Update of MorseSequence and T
+                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                T[tau_ptr] = true;
+                T[sigma_ptr] = true;
+
+                // Update of rho and then of U
+                vector<node_ptr> combined = this->coboundary(sigma_ptr, Sdict);
+                vector<node_ptr> tau_coboundary = this->coboundary(tau_ptr, Sdict);
+                combined.insert(combined.end(), tau_coboundary.begin(), tau_coboundary.end());
+                for (node_ptr mu_ptr : combined){
+                    rho[mu_ptr] -= 1;
+                    if (rho[mu_ptr] == 1){
+                        U.push_back(mu_ptr);
                     }
                 }
                 
-                if (F.at(sigma_ptr) == F.at(tau_ptr)){ // Second verification on tau and sigma : is it really a free pair (by the definition of F) 
-                    // Update of MorseSequence and T
-                    MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
-                    T[tau_ptr] = true;
-                    T[sigma_ptr] = true;
-
-                    // Update of rho and then of U
-                    vector<node_ptr> combined = this->coboundary(sigma_ptr, Sdict);
-                    vector<node_ptr> tau_coboundary = this->coboundary(tau_ptr, Sdict);
-                    combined.insert(combined.end(), tau_coboundary.begin(), tau_coboundary.end());
-                    for (node_ptr mu_ptr : combined){
-                        rho[mu_ptr] -= 1;
-                        if (rho[mu_ptr] == 1){
-                            U.push_back(mu_ptr);
-                        }
-                    }
-                }
             }
         }
 
@@ -383,33 +392,26 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     // Main loop
     while (i < N) {
         while (!U.empty()) {
-            node_ptr tau_ptr = U.front();
+            node_ptr sigma_ptr = U.front();
             U.pop_front();
 
-            if (rho[tau_ptr] == 1) {
-                std::vector<node_ptr> cofaces = this->coboundary(tau_ptr, Sdict);
-                node_ptr sigma_ptr;
-                for (node_ptr cn : cofaces) {
-                    if (!T[cn]) {
-                        sigma_ptr = cn;
-                        break;
-                    }
-                }
+            if (rho[sigma_ptr] == 1) {
+                std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
+                node_ptr tau_ptr = this->find_out(T, cofaces, sigma_ptr, F);
+                
 
-                if (F.at(sigma_ptr) == F.at(tau_ptr)) {
-                    MorseSequence.push_back(std::make_pair(tau_ptr, sigma_ptr));
-                    T[tau_ptr] = true;
-                    T[sigma_ptr] = true;
+                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                T[tau_ptr] = true;
+                T[sigma_ptr] = true;
 
-                    std::vector<node_ptr> combined = this->boundary(sigma_ptr, Sdict);
-                    std::vector<node_ptr> tau_boundary = this->boundary(tau_ptr, Sdict);
-                    combined.insert(combined.end(), tau_boundary.begin(), tau_boundary.end());
+                std::vector<node_ptr> combined = this->boundary(sigma_ptr, Sdict);
+                std::vector<node_ptr> tau_boundary = this->boundary(tau_ptr, Sdict);
+                combined.insert(combined.end(), tau_boundary.begin(), tau_boundary.end());
 
-                    for (node_ptr mu_ptr : combined) {
-                        rho[mu_ptr] -= 1;
-                        if (rho[mu_ptr] == 1) {
-                            U.push_back(mu_ptr);
-                        }
+                for (node_ptr mu_ptr : combined) {
+                    rho[mu_ptr] -= 1;
+                    if (rho[mu_ptr] == 1) {
+                        U.push_back(mu_ptr);
                     }
                 }
             }

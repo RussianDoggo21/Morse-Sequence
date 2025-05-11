@@ -14,6 +14,10 @@ public:
     int nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     vector<node_ptr> simplices(std::optional<int> p) const;
+    node_ptr find_out(std::unordered_map<node_ptr, bool> T, std::vector<node_ptr> simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(std::unordered_map<node_ptr, bool> T,std::vector<node_ptr> simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
+
+
 
     std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> morse_seq_crois(const SimplexTree& st);
     std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> morse_seq_decrois(const SimplexTree& st);
