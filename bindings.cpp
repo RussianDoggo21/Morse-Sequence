@@ -86,6 +86,44 @@ py::tuple _Max(MorseSequence &ms, py::list py_S, py::dict py_F) {
     return py::make_tuple(out_list, n);
 }
 
+py::tuple _crois(MorseSequence &ms, SimplexTree& st){
+    auto [output, n] = ms.morse_seq_crois(st);
+
+    py::list out_list;
+    for (const auto& v : output) {
+        if (std::holds_alternative<node_ptr>(v)) {
+            auto simplex = st.full_simplex(std::get<node_ptr>(v));
+            out_list.append(simplex);
+        } else {
+            auto [a, b] = std::get<std::pair<node_ptr, node_ptr>>(v);
+            auto sigma = st.full_simplex(a);
+            auto tau = st.full_simplex(b);
+            out_list.append(py::make_tuple(sigma, tau));
+        }
+    }
+
+    return py::make_tuple(out_list, n);
+}
+
+py::tuple _decrois(MorseSequence &ms, SimplexTree& st){
+    auto [output, n] = ms.morse_seq_decrois(st);
+
+    py::list out_list;
+    for (const auto& v : output) {
+        if (std::holds_alternative<node_ptr>(v)) {
+            auto simplex = st.full_simplex(std::get<node_ptr>(v));
+            out_list.append(simplex);
+        } else {
+            auto [a, b] = std::get<std::pair<node_ptr, node_ptr>>(v);
+            auto sigma = st.full_simplex(a);
+            auto tau = st.full_simplex(b);
+            out_list.append(py::make_tuple(sigma, tau));
+        }
+    }
+
+    return py::make_tuple(out_list, n);
+}
+
 
 PYBIND11_MODULE(morse_sequence, m) {
     m.doc() = "Interface Python pour MorseSequence";
@@ -99,5 +137,7 @@ PYBIND11_MODULE(morse_sequence, m) {
         .def("simplices", &MorseSequence::simplices)
         .def("Max", _Max)
         .def("Min", _Min)
+        .def("morse_seq_decrois", _decrois)
+        .def("morse_seq_crois", _crois)
         ;
 }
