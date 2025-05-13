@@ -101,7 +101,7 @@ def morse_seq_croissante(K_init):
     return W, n_crit
     
 # =============================================================================================================================================================================== #
-
+"""
 #K_init = SimplexTree([[1,2,3]])
 def MakeFacesVectorized1(Nr,Nc):
 
@@ -133,3 +133,4 @@ seq, n_crit = morse_seq_croissante(K_init)
 
 print(seq, "\n")
 print(n_crit)
+"""

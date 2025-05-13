@@ -12,6 +12,8 @@
 #include <tuple>
 #include <cstddef>
 #include <functional>
+#include <chrono>
+#include <iomanip>
 using SimplexList = std::vector<simplex_t>;  // Vecteur de simplexes
 
 // Used in order to create types of the form unordered_map<simplex_t, xyz>
@@ -29,13 +31,101 @@ namespace std {
     };
 }
 
-/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+std::vector<simplex_t> MakeFacesVectorized1(int Nr, int Nc) {
+    std::vector<simplex_t> out;
+    out.reserve(2 * (Nr - 1) * (Nc - 1));  // On sait à l'avance le nombre de triangles
 
+    auto r = [=](int i, int j) -> unsigned long { 
+        return static_cast<unsigned long>(i * Nc + j); 
+    };
+
+    for (int i = 0; i < Nr - 1; ++i) {
+        for (int j = 0; j < Nc - 1; ++j) {
+            // Premier triangle
+            simplex_t tri1 = {r(i, j), r(i, j + 1), r(i + 1, j)};
+            // Deuxième triangle
+            simplex_t tri2 = {r(i + 1, j), r(i, j + 1), r(i + 1, j + 1)};
+            out.push_back(tri1);
+            out.push_back(tri2);
+        }
+    }
+
+    return out;
+}
+
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+void timer_comparison() {
+    std::vector<int> list_faces = {10, 20, 50, 60, 75};
+
+    for (int k : list_faces) {
+        std::cout << "\n======================= Cas grille " << k << " x " << k << " =======================\n\n";
+
+        SimplexList L = MakeFacesVectorized1(k, k);
+        SimplexTree st;
+        for (simplex_t s : L){
+            st.insert(s);
+        }
+        MorseSequence ms(st);
+
+        // Décroissante
+        auto start_dec = std::chrono::high_resolution_clock::now();
+        auto [ms_dec, n_crit_dec] = ms.morse_seq_decrois(st);
+        auto end_dec = std::chrono::high_resolution_clock::now();
+        double time_dec = std::chrono::duration<double>(end_dec - start_dec).count();
+        std::cout << "décroissante C++ : " << std::fixed << std::setprecision(6) << time_dec << " secondes\n";
+
+        // Croissante
+        auto start_crois = std::chrono::high_resolution_clock::now();
+        auto [ms_crois, n_crit_crois] = ms.morse_seq_crois(st);
+        auto end_crois = std::chrono::high_resolution_clock::now();
+        double time_crois = std::chrono::duration<double>(end_crois - start_crois).count();
+        std::cout << "croissante C++ : " << time_crois << " secondes\n";
+
+        // Max
+        auto S_max = ms.simplices(std::nullopt);
+        std::sort(S_max.begin(), S_max.end(), [&st](const node_ptr& a, const node_ptr& b) {
+            return (st.depth(a) < st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) < st.full_simplex(b) );
+        });
+        std::unordered_map<node_ptr, int> F_max;
+        for (const auto& s : S_max){
+            F_max[s] = 0;
+        } 
+        std::sort(S_max.begin(), S_max.end(), [&st, &F_max](const node_ptr& a, const node_ptr& b) {
+            return (F_max[a] < F_max[b]) || (F_max[a] == F_max[b] && st.full_simplex(a) < st.full_simplex(b));
+        });
+
+        auto start_max = std::chrono::high_resolution_clock::now();
+        auto [max, n_crit_max] = ms.Max(S_max, F_max);
+        auto end_max = std::chrono::high_resolution_clock::now();
+        double time_max = std::chrono::duration<double>(end_max - start_max).count();
+        std::cout << "max C++ : " << time_max << " secondes\n";
+
+        // Min
+        auto S_min = ms.simplices(std::nullopt);
+        std::sort(S_min.begin(), S_min.end(), [&st](const node_ptr& a, const node_ptr& b) {
+            return (st.depth(a) > st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) > st.full_simplex(b));
+        });
+        std::unordered_map<node_ptr, int> F_min;
+        for (const auto& s : S_min) F_min[s] = 0;
+        std::sort(S_min.begin(), S_min.end(), [&st, &F_min](const node_ptr& a, const node_ptr& b) {
+            return (F_min[a] > F_min[b]) || (F_min[a] == F_min[b] && st.full_simplex(a) > st.full_simplex(b));
+        });
+
+        auto start_min = std::chrono::high_resolution_clock::now();
+        auto [min, n_crit_min] = ms.Min(S_min, F_min);
+        auto end_min = std::chrono::high_resolution_clock::now();
+        double time_min = std::chrono::duration<double>(end_min - start_min).count();
+        std::cout << "Min C++ : " << time_min << " secondes\n";
+    }
+}
 
 int main() {
 	printf("Début du main\n");
+    timer_comparison();
+    /*
 	SimplexTree st;  // Création d'un complexe simplicial
     //SimplexList L = {{0,1,2}};
+    
     SimplexList L = {
                         {1, 5, 7}, {1, 2, 7},  // Haut gauche
                         {2, 7, 9}, {2, 3, 9},  // Haut milieu
@@ -48,6 +138,7 @@ int main() {
                         {1, 3, 8}, {1, 4, 8}   // Bas droit
                     };
     
+    SimplexList L = MakeFacesVectorized1(10, 10);
 	for (simplex_t s : L){
 		st.insert(s);
 	}
@@ -55,16 +146,22 @@ int main() {
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
-
+    */
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-
+/*
     printf("Séquence de Morse croissante : \n\n");
+    auto start_crois = std::chrono::high_resolution_clock::now();
 	auto result = ms.morse_seq_crois(st);
-    
+    auto end_crois = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration_crois = end_crois - start_crois;
+    std::cout << "Temps d'exécution : " << duration_crois.count() << " ms" << std::endl;
+*/  
+    /*
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence = result.first;  // Vecteur des simplexes et paires
 	int n_crit = result.second;  // Le critère n_crit
 
+    
 	// Afficher les résultats
 	std::cout << "Number of critical points: " << n_crit << std::endl;
 	
@@ -95,15 +192,19 @@ int main() {
         }
         
     }
-    
+    */
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-
+/*
     printf("Séquence de Morse décroissante : \n\n");
+    auto start_dec = std::chrono::high_resolution_clock::now();
 	auto result_dec = ms.morse_seq_decrois(st);
-    
-    
+    auto end_dec = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration_dec = end_dec - start_dec;
+    std::cout << "Temps d'exécution : " << duration_dec.count() << " ms" << std::endl;
+*/    
+    /*
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence_dec = result_dec.first;  // Vecteur des simplexes et paires
 	int n_crit_dec = result_dec.second;  // Le critère n_crit
@@ -138,11 +239,11 @@ int main() {
         }
         
     }
-    
+    */
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-
+/*
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
     std::vector<node_ptr> S = ms.simplices(std::nullopt);
 
@@ -167,8 +268,13 @@ int main() {
 
 	
     printf("Max : \n\n");
+    auto start_max = std::chrono::high_resolution_clock::now();
 	auto result_max = ms.Max(S, F);
-    
+    auto end_max = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration_max = end_max - start_max;
+    std::cout << "Temps d'exécution : " << duration_max.count() << " ms" << std::endl;
+*/    
+    /*
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence_max = result_max.first;  // Vecteur des simplexes et paires
 	int n_crit_max = result_max.second;  // Le critère n_crit
@@ -203,11 +309,11 @@ int main() {
         }
         
     }
-    
+    */
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-
+/*
     // 1. Récupérer les simplexes et les trier par ordre décroissant de dimension puis lexicographiquement décroissant
     std::vector<node_ptr> S2 = ms.simplices(std::nullopt);
 
@@ -232,9 +338,13 @@ int main() {
 
 
 	printf("Min\n\n");
+    auto start_min = std::chrono::high_resolution_clock::now();
 	auto result2 = ms.Min(S2, F2);
-
-    
+    auto end_min = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration_min = end_min - start_min;
+    std::cout << "Temps d'exécution : " << duration_min.count() << " ms" << std::endl;
+*/
+    /*
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence2 = result2.first;  // Vecteur des simplexes et paires
 	int n_crit2 = result2.second;  // Le critère n_crit
@@ -270,7 +380,7 @@ int main() {
         }
         
     }
-
+    */
 	printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */

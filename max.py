@@ -94,7 +94,7 @@ def Max(S, st, F):
     return MorseSequence
 
 # =============================================================================================================================================================================== #
-
+"""
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [2, 7, 9], [2, 3, 9],  # Haut milieu
                         [3, 5, 9], [1, 3, 5],  # Haut droit
@@ -113,3 +113,4 @@ S = sorted(st.simplices(), key=lambda s: (F[s], len(s)))
 #print(f"st = {st.simplices()}")
 #print(f"S = {S}")
 print(f" Max = {Max(S, st, F)} ")
+"""
