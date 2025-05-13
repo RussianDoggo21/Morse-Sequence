@@ -120,7 +120,7 @@ def morse_seq_decroissante(K_init):
             print("=================== End of the programm ===================")
             
 # ================================================================================================================================================== #
-
+"""
 K_init = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [2, 7, 9], [2, 3, 9],  # Haut milieu
                         [3, 5, 9], [1, 3, 5],  # Haut droit
@@ -136,3 +136,4 @@ seq, n_crit = morse_seq_decroissante(K_init)
 
 print(f"n_crit = {n_crit}")
 print(f"seq = \n {seq}") 
+"""
