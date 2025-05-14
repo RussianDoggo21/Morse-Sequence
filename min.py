@@ -19,17 +19,7 @@ def nbcoboundary(st, sigma, S):
 def nbboundary(st, sigma, S): 
     return len(boundary(sigma, S))
 
-def difflist(list1, list2): 
-    # Can be used to obtain the differences of two simplicial complexes
-    ## st1 = SimplexTree([[0,1,2]])
-    ## st2 = SimplexTree([[1,2]])
-    ## S = [[0], [0,1], [0,2], [0,1,2]]
-    ## assert S == difflist(st1.simplices(), st2.simplices())
 
-    s1 = {tuple(i) for i in list1}
-    s2 = {tuple(i) for i in list2}
-    l = list(list(i) for i in (s1 - s2))
-    return sorted(l, key=len)
 
 # =============================================================================================================================================================================== #
 
