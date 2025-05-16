@@ -1,18 +1,16 @@
 from simplextree import SimplexTree
+from itertools import combinations
 
-# Return the dimension of a simplex
-def dim(simplex):
-    return len(simplex) - 1
-
-
+"""
 # Return the boundary of a simplex
 def boundary(simplex):
     n = dim(simplex)
     st = SimplexTree([simplex])
     boundary = [sigma for sigma in st.simplices(n-1)]
     return boundary
+"""
 
-
+"""
 # Return the coboundary of a simplex
 def coboundary(simplexe, K_init):
     coboundary = K_init.cofaces(simplexe)
@@ -24,7 +22,29 @@ def coboundary(simplexe, K_init):
         else:
             i += 1  # Go to the next element only if no element has been removed
     return coboundary
+"""
 
+# Return the dimension of a simplex
+def dim(simplex):
+    return len(simplex) - 1
+
+# Compute the boundary of the simplexe sigma in the complex S
+def boundary(sigma):
+    if len(sigma) > 1:
+        return [tuple(s) for s in combinations(sigma,len(sigma)-1)]
+    return list()
+
+# Compute the coboundary of the simplexe sigma in the complex S
+def coboundary(sigma, st): 
+    return [s for s in st.cofaces(sigma) if (len(s) == len(sigma) + 1)]
+
+# Compute the length of the coboundary of the simplexe sigma (its number of cofaces) in the complex S
+def nbcoboundary(sigma, st): 
+    return len(coboundary(sigma, st))
+
+# Compute the length of the boundary of the simplexe sigma (its number of faces) in the complex S
+def nbboundary(st, sigma): 
+    return len(boundary(sigma))
 
 # Return the simplex v such that :
 #   - v is in s_list
@@ -126,7 +146,7 @@ K_init = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [2, 3, 6], [3, 6, 8],  # Bas milieu
                         [1, 3, 8], [1, 4, 8]])  # Bas droit
 
-seq, n_crit = morse_seq_croissante(K_init)
+seq, n_crit = morse_seq_increasing(K_init)
 
 print(seq, "\n")
 print(n_crit)
