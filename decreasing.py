@@ -1,16 +1,16 @@
 from simplextree import SimplexTree
+from itertools import combinations
 
-# Return the dimension of a simplex
-def dim(simplex):
-    return len(simplex) - 1
-
+"""
 # Return the boundary of a simplex
 def boundary(simplex):
     n = dim(simplex)
     st = SimplexTree([simplex])
     boundary = [sigma for sigma in st.simplices(n-1)]
     return boundary
+"""
 
+"""
 # Return the coboundary of a simplex
 def coboundary(simplex, K_init):
     coboundary = K_init.cofaces(simplex)
@@ -22,6 +22,29 @@ def coboundary(simplex, K_init):
         else:
             i += 1  # Go to the next element only if no element has been removed
     return coboundary
+"""
+
+# Return the dimension of a simplex
+def dim(simplex):
+    return len(simplex) - 1
+
+# Compute the boundary of the simplexe sigma in the complex S
+def boundary(sigma):
+    if len(sigma) > 1:
+        return [tuple(s) for s in combinations(sigma,len(sigma)-1)]
+    return list()
+
+# Compute the coboundary of the simplexe sigma in the complex S
+def coboundary(sigma, st): 
+    return [s for s in st.cofaces(sigma) if (len(s) == len(sigma) + 1)]
+
+# Compute the length of the coboundary of the simplexe sigma (its number of cofaces) in the complex S
+def nbcoboundary(st, sigma, S): 
+    return len(coboundary(st, sigma, S))
+
+# Compute the length of the boundary of the simplexe sigma (its number of faces) in the complex S
+def nbboundary(st, sigma, S): 
+    return len(boundary(sigma, S))
 
 # Return the simplex v such that:
 #   - v is in s_list
