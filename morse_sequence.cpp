@@ -121,7 +121,7 @@ node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T,std::vecto
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 // Creation of an increasing Morse sequence
-std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::morse_seq_crois(const SimplexTree& st){
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::increasing(const SimplexTree& st){
 
     // Sort simplices by increasing dimension
     std::vector<node_ptr> K = this->simplices(); 
@@ -213,7 +213,7 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
 
 
 // Creation of a decreasing Morse sequence
-std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::morse_seq_decrois(const SimplexTree& st){
+std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> MorseSequence::decreasing(const SimplexTree& st){
 
     // Sort simplices by decreasing dimension
     std::vector<node_ptr> K = this->simplices(); 
