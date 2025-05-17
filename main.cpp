@@ -121,10 +121,11 @@ void timer_comparison() {
 
 int main() {
 	printf("Début du main\n");
-    timer_comparison();
-    /*
+    //timer_comparison();
+    
 	SimplexTree st;  // Création d'un complexe simplicial
     //SimplexList L = {{0,1,2}};
+    //SimplexList L = MakeFacesVectorized1(10, 10);
     
     SimplexList L = {
                         {1, 5, 7}, {1, 2, 7},  // Haut gauche
@@ -138,7 +139,6 @@ int main() {
                         {1, 3, 8}, {1, 4, 8}   // Bas droit
                     };
     
-    SimplexList L = MakeFacesVectorized1(10, 10);
 	for (simplex_t s : L){
 		st.insert(s);
 	}
@@ -146,7 +146,7 @@ int main() {
 	MorseSequence ms(st); 
 	
 	printf("\n\n\n");
-    */
+    
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /*
     printf("Séquence de Morse croissante : \n\n");
@@ -155,8 +155,8 @@ int main() {
     auto end_crois = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_crois = end_crois - start_crois;
     std::cout << "Temps d'exécution : " << duration_crois.count() << " ms" << std::endl;
-*/  
-    /*
+ 
+    
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence = result.first;  // Vecteur des simplexes et paires
 	int n_crit = result.second;  // Le critère n_crit
@@ -192,9 +192,9 @@ int main() {
         }
         
     }
-    */
+    
     printf("\n\n\n");
-
+*/
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /*
     printf("Séquence de Morse décroissante : \n\n");
@@ -203,8 +203,8 @@ int main() {
     auto end_dec = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_dec = end_dec - start_dec;
     std::cout << "Temps d'exécution : " << duration_dec.count() << " ms" << std::endl;
-*/    
-    /*
+
+    
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence_dec = result_dec.first;  // Vecteur des simplexes et paires
 	int n_crit_dec = result_dec.second;  // Le critère n_crit
@@ -239,11 +239,11 @@ int main() {
         }
         
     }
-    */
+    
     printf("\n\n\n");
-
+*/
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-/*
+
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
     std::vector<node_ptr> S = ms.simplices(std::nullopt);
 
@@ -273,8 +273,8 @@ int main() {
     auto end_max = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_max = end_max - start_max;
     std::cout << "Temps d'exécution : " << duration_max.count() << " ms" << std::endl;
-*/    
-    /*
+   
+    
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence_max = result_max.first;  // Vecteur des simplexes et paires
 	int n_crit_max = result_max.second;  // Le critère n_crit
@@ -309,11 +309,11 @@ int main() {
         }
         
     }
-    */
+    
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
-/*
+
     // 1. Récupérer les simplexes et les trier par ordre décroissant de dimension puis lexicographiquement décroissant
     std::vector<node_ptr> S2 = ms.simplices(std::nullopt);
 
@@ -343,8 +343,7 @@ int main() {
     auto end_min = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_min = end_min - start_min;
     std::cout << "Temps d'exécution : " << duration_min.count() << " ms" << std::endl;
-*/
-    /*
+
 	// 3. Extraire les résultats de la fonction
 	auto& morse_sequence2 = result2.first;  // Vecteur des simplexes et paires
 	int n_crit2 = result2.second;  // Le critère n_crit
@@ -380,7 +379,7 @@ int main() {
         }
         
     }
-    */
+
 	printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -392,7 +391,7 @@ int main() {
 /* Code de compilation (terminal dans Morse_Frame)
 g++ -o test_morse main.cpp old_morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
 g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.13
-g++ -o f_sequence main.cpp f_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
+g++ -o f_sequence main.cpp morse_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
 
 Github token : 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
 Utilisé la clé SSH à la place 

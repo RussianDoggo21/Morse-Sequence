@@ -19,47 +19,38 @@ def nbcoboundary(st, sigma, S):
 def nbboundary(st, sigma, S): 
     return len(boundary(sigma, S))
 
-def difflist(list1, list2): 
-    # Can be used to obtain the differences of two simplicial complexes
-    ## st1 = SimplexTree([[0,1,2]])
-    ## st2 = SimplexTree([[1,2]])
-    ## S = [[0], [0,1], [0,2], [0,1,2]]
-    ## assert S == difflist(st1.simplices(), st2.simplices())
-
-    s1 = {tuple(i) for i in list1}
-    s2 = {tuple(i) for i in list2}
-    l = list(list(i) for i in (s1 - s2))
-    return sorted(l, key=len)
-
 # =============================================================================================================================================================================== #
 
 # computes a maximal increasing Morse sequence obtained 
 # from a cosimplicial complex S weighted by a function F.
 
 def Max(S, st, F):
+
     T = dict() # Boolean dictionnary : if T[s] == False, s is still "available to use" for the Morse Sequence
-    Sdict = dict() # ??????
-    U = list() # List containing simplices v with only one coface tau : (v, tau) is a free pair for the Morse Sequence
+    Sdict = dict() # Boolean dictionnary : if Sdict[s] == True, s is in S
+    U = list() # List containing simplices tau with only one face v : (v, tau) is a free pair for the Morse Sequence
     MorseSequence=list() # Morse Sequence to return 
-    N = len(S) # Number of simplices in S (and st)
+    N = len(S) # Number of simplices in S 
+    rho = dict() # Dictionnary : if rho[s] == n, it means s has n faces
+    i = 0 # Indew to browse the simplices in S
+    n_crit = 0 # Counts the number of critical simplices in W
 
     for s in st.simplices():
         T[s] = False # No simplices has been "used" yet
-        Sdict[s] = False # ??
+        Sdict[s] = False # At first approach, s being in st doesn't mean that s is in S
 
-    rho = dict() # Dictionnary : if rho[s] == n, it means s has n faces
     for s in S:
-        Sdict[s] = True # ???
+        Sdict[s] = True # s is indeed in S
         nb = nbboundary(st, s, Sdict)
         rho[s] = nb
+        # if nb == 1, s verifies the condition to be in U
         if nb == 1:
-             U.append(s)
+             U.append(s) 
 
-    i = 0
-    while i<N: # While we haven't used all simplices in S (and st)
+    while i<N: # While we haven't used all simplices in S 
 
         while U: # While we can still add free pairs
-            tau = U.pop(0) 
+            tau = U.pop(0) # Possible first element of the pair
             if rho[tau] == 1: # First verification on tau
                 sigma = next(s for s in boundary(tau, Sdict) if not T[s]) # boundary(tau, Sdict) should return only a single simplex
                                                                           # The condition "if not T[s]" allows us to work with a changing simplicial complex
@@ -85,16 +76,17 @@ def Max(S, st, F):
         if i<N:
             sigma = S[i]
             MorseSequence.append([sigma])
+            n_crit += 1
             T[sigma] = True
             for tau in coboundary(st, sigma, Sdict):
                     rho[tau] = rho[tau] - 1
                     if rho[tau] == 1:
                         U.append(tau)
 
-    return MorseSequence
+    return MorseSequence, n_crit
 
 # =============================================================================================================================================================================== #
-"""
+
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
                         [2, 7, 9], [2, 3, 9],  # Haut milieu
                         [3, 5, 9], [1, 3, 5],  # Haut droit
@@ -112,5 +104,5 @@ F[(0, 1, 2)] = 1
 S = sorted(st.simplices(), key=lambda s: (F[s], len(s)))
 #print(f"st = {st.simplices()}")
 #print(f"S = {S}")
-print(f" Max = {Max(S, st, F)} ")
-"""
+max, n_crit = Max(S, st, F)
+print(f" n_crit = {n_crit}\n Max = {max} ")

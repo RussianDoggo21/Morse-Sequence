@@ -1,9 +1,12 @@
+# File to measure the time complexity of each of the 4 algorithms
+# In both pure python and hybrid code
+
 from simplextree import SimplexTree
 from morse_sequence import MorseSequence
 from max import Max
 from min import Min
-from croissante import morse_seq_croissante
-from decroissante import morse_seq_decroissante
+from increasing import morse_seq_croissante
+from decreasing import morse_seq_decroissante
 import numpy as np
 import time
 
