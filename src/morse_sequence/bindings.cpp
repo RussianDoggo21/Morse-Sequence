@@ -87,7 +87,7 @@ py::tuple _Max(MorseSequence &ms, py::list py_S, py::dict py_F) {
 }
 
 py::tuple _crois(MorseSequence &ms, SimplexTree& st){
-    auto [output, n] = ms.morse_seq_crois(st);
+    auto [output, n] = ms.increasing(st);
 
     py::list out_list;
     for (const auto& v : output) {
@@ -106,7 +106,7 @@ py::tuple _crois(MorseSequence &ms, SimplexTree& st){
 }
 
 py::tuple _decrois(MorseSequence &ms, SimplexTree& st){
-    auto [output, n] = ms.morse_seq_decrois(st);
+    auto [output, n] = ms.decreasing(st);
 
     py::list out_list;
     for (const auto& v : output) {
