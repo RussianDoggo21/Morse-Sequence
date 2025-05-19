@@ -86,7 +86,7 @@ py::tuple _Max(MorseSequence &ms, py::list py_S, py::dict py_F) {
     return py::make_tuple(out_list, n);
 }
 
-py::tuple _crois(MorseSequence &ms, SimplexTree& st){
+py::tuple _increasing(MorseSequence &ms, SimplexTree& st){
     auto [output, n] = ms.increasing(st);
 
     py::list out_list;
@@ -105,7 +105,7 @@ py::tuple _crois(MorseSequence &ms, SimplexTree& st){
     return py::make_tuple(out_list, n);
 }
 
-py::tuple _decrois(MorseSequence &ms, SimplexTree& st){
+py::tuple _decreasing(MorseSequence &ms, SimplexTree& st){
     auto [output, n] = ms.decreasing(st);
 
     py::list out_list;
@@ -137,7 +137,7 @@ PYBIND11_MODULE(morse_sequence, m) {
         .def("simplices", &MorseSequence::simplices)
         .def("Max", _Max)
         .def("Min", _Min)
-        .def("morse_seq_decrois", _decrois)
-        .def("morse_seq_crois", _crois)
+        .def("ms_decreasing", _decreasing)
+        .def("ms_increasing", _increasing)
         ;
 }

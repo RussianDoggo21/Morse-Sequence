@@ -18,6 +18,7 @@ def MakeFacesVectorized1(Nr,Nc):
     out.shape =(-1,3)
     return out
 
+"""
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [2, 7, 9], [2, 3, 9],    # Top middle
                  [3, 5, 9], [1, 3, 5],    # Top right
@@ -27,10 +28,12 @@ st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [1, 2, 4], [2, 4, 6],    # Bottom left
                  [2, 3, 6], [3, 6, 8],    # Bottom middle
                  [1, 3, 8], [1, 4, 8]])   # Bottom right
-
+"""
+st = SimplexTree([[1,2,3]])
 seq, n_crit = morse_seq_increasing(st)
 
-print(seq, "\n")
 print(n_crit)
+print(seq, "\n")
+
 
 # To run the file from the root : python3 -m morse_sequence.tests.test_increasing
