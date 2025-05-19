@@ -1,2 +1,0 @@
-MorseSequence créée
-<class 'list'> <class 'dict'>

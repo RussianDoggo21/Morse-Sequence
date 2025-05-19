@@ -124,21 +124,6 @@ def morse_seq_decreasing(K_init):
     return W, n_crit
 
             
-# ================================================================================================================================================== #
 
-K_init = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
-                        [2, 7, 9], [2, 3, 9],  # Haut milieu
-                        [3, 5, 9], [1, 3, 5],  # Haut droit
-                        [5, 4, 6], [5, 6, 7],  # Milieu gauche
-                        [7, 6, 8], [7, 8, 9],  # Milieu centre
-                        [9, 8, 4], [9, 4, 5],  # Milieu droit
-                        [1, 2, 4], [2, 4, 6],  # Bas gauche
-                        [2, 3, 6], [3, 6, 8],  # Bas milieu
-                        [1, 3, 8], [1, 4, 8]])  # Bas droit
 
-#K_init = SimplexTree([[1,2,3], [2,3,4], [2,4,1]])
-seq, n_crit = morse_seq_decreasing(K_init)
-
-print(f"n_crit = {n_crit}")
-print(f"seq = \n {seq}") 
 

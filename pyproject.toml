@@ -1,3 +1,12 @@
 [build-system]
-requires = ["meson-python"]
+requires = ["meson-python", "pybind11"]
 build-backend = "mesonpy"
+
+[project]
+name = "morse_sequence"
+version = "0.1.0"
+description = "Interface Python pour les fonctions Morse en C++"
+authors = [
+    { name = "Thomas Pernot" }
+]
+dependencies = []

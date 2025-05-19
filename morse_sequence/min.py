@@ -93,26 +93,3 @@ def Min(S, st, F):
 
 
 
-# =============================================================================================================================================================================== #
-
-st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Haut gauche
-                        [2, 7, 9], [2, 3, 9],  # Haut milieu
-                        [3, 5, 9], [1, 3, 5],  # Haut droit
-                        [5, 4, 6], [5, 6, 7],  # Milieu gauche
-                        [7, 6, 8], [7, 8, 9],  # Milieu centre
-                        [9, 8, 4], [9, 4, 5],  # Milieu droit
-                        [1, 2, 4], [2, 4, 6],  # Bas gauche
-                        [2, 3, 6], [3, 6, 8],  # Bas milieu
-                        [1, 3, 8], [1, 4, 8]])  # Bas droit
-S = sorted(st.simplices(), key=lambda x: (len(x), x))[::-1]
-F = dict()
-for s in S:
-    F[s] = 0
-F[(0, 1, 2)] = 0
-S = sorted(st.simplices(), key=lambda s: (-F[s], -len(s)))
-Min(S, st, F)
-
-#print(f"st = {st.simplices()}")
-#print(f"S = {S}")
-min, n_crit = Min(S, st, F)
-print(f"n_crit = {n_crit}\n Min = {min} ")

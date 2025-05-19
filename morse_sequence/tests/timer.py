@@ -2,11 +2,11 @@
 # In both pure python and hybrid code
 
 from simplextree import SimplexTree
-from morse_sequence import MorseSequence
-from max import Max
-from min import Min
-from increasing import morse_seq_croissante
-from decreasing import morse_seq_decroissante
+from morse_sequence.morse_sequence import MorseSequence
+from ..max import Max
+from ..min import Min
+from ..increasing import morse_seq_increasing
+from ..decreasing import morse_seq_decreasing
 import numpy as np
 import time
 
@@ -31,7 +31,7 @@ def timer_comparison():
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
 
         start_dec2 = time.time()
-        ms_dec2, n_crit_dec2 = morse_seq_decroissante(st)
+        ms_dec2, n_crit_dec2 = morse_seq_decreasing(st)
         end_dec2 = time.time()
         time_dec2 = end_dec2 - start_dec2
         print(f"décroissante python pur : {time_dec2:.6f} secondes")
@@ -47,7 +47,7 @@ def timer_comparison():
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
 
         start_crois2 = time.time()
-        ms_crois2, n_crit_crois2 = morse_seq_croissante(st)
+        ms_crois2, n_crit_crois2 = morse_seq_increasing(st)
         end_crois2 = time.time()
         time_crois2 = end_crois2 - start_crois2
         print(f"croissante python pur : {time_crois2:.6f} secondes")
