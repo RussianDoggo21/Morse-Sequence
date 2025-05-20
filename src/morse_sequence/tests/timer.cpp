@@ -1,11 +1,8 @@
 /*
     Modification of source code st_iterators.hpp, st_filtration.hpp, st.hpp (line 4 - changed import path of simplextree)
-    Modification of source code _simplextree.cpp - lines 588 and 589: added functions find_node and full_simplex via pybind11
-    ............................................ - line 541: added the function find_node
-    ............................................ - line 549: added the node_ptr type via pybind11
 */
 
-#include "morse_sequence.h"
+#include "../morse_sequence.h"
 #include <vector>
 #include <unordered_map>
 #include <algorithm> 
@@ -385,10 +382,8 @@ int main() {
 	return 0;
 }
 
-/* Compilation commands (terminal in Morse_Frame)
-g++ -o test_morse main.cpp old_morse_sequence.cpp simplextree-py/simplextree/_simplextree.cpp -std=c++20 -O3 -Wall -lpython3.13
-g++ -o test_restruct main.cpp restructuration.cpp -std=c++20 -O3 -Wall -lpython3.13
-g++ -o f_sequence main.cpp morse_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
+/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence)
+g++ -o f_sequence tests/timer.cpp morse_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
 
 Github token : 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
 Used SSH key instead 

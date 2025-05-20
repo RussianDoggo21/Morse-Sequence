@@ -1,7 +1,7 @@
 #ifndef MORSE_SEQUENCE_H
 #define MORSE_SEQUENCE_H
 
-#include "simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
+#include "../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
 
