@@ -1,0 +1,39 @@
+==========================================================================================================================================================================
+HOW TO MAKE THE LIBRARY AVAILABLE VIA pip install morse-sequence
+==========================================================================================================================================================================
+
+Step 1: Make Changes to Your Code
+Update Your Code: Make the necessary changes to your codebase. This could include bug fixes, new features, or improvements.
+
+Update Documentation: Ensure that any relevant documentation is updated to reflect the changes you've made. 
+This includes updating the README.md file, docstrings, and any other documentation.
+
+Step 2: Update the Version Number
+Versioning: Increment the version number in your pyproject.toml, setup.py and setup.cfg files. 
+Follow semantic versioning (e.g., 0.1.0 to 0.1.1 for a patch, 0.2.0 for a minor update, or 1.0.0 for a major update).
+
+rm -rf dist build
+
+Build the Package: Build the updated package using the following command:
+python setup.py sdist bdist_wheel
+
+Step 4: Test the Updated Package Locally
+Install Locally: Install the updated package locally to test it.
+pip install -e .
+
+Run Tests: Run any tests you have to ensure that the changes work as expected.
+
+Step 5: Upload the Updated Package to PyPI
+Upload with Twine: Use twine to upload the updated package to PyPI.
+python -m twine upload --username __token__ --password token_to_replace dist/*
+
+
+Step 6: Verify the Upload
+Check PyPI: Go to your package's page on PyPI to ensure that the new version is available.
+
+Install the Updated Package: Install the updated package in a clean environment to verify that it works as expected.
+pip install morse-sequence==0.1.1
+
+==========================================================================================================================================================================
+
+==========================================================================================================================================================================

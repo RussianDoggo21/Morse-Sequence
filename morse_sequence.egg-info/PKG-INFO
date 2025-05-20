@@ -1,3 +1,27 @@
+Metadata-Version: 2.4
+Name: morse-sequence
+Version: 0.1.0
+Summary: Python interface to compute Morse Sequence in C++
+Author: Thomas Pernot
+License: MIT
+Project-URL: Homepage, https://github.com/RussianDoggo21/morse-sequence
+Project-URL: Repository, https://github.com/RussianDoggo21/morse-sequence.git
+Project-URL: Documentation, https://github.com/RussianDoggo21/morse-sequence/docs
+Keywords: morse,sequence,cpp,interface
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+
 # Morse-Sequence
 
 Repository created for the report of an internship as an assistant of research at ESIEE PARIS under Mr. NAJMAN L.
@@ -10,28 +34,31 @@ Refer to the following for more information: [simplextree-py](https://github.com
 
 C++ and Python compilers are also necessary.
 
-## Install 
+## How to install morse_sequence
 
-The easiest way to install the package is via the platform-specific [wheels](https://pythonwheels.com/) on [pypi](https://pypi.org/project/morse-sequence/).
-
-```bash
-pip install morse-sequence
-```
-
-### Building & Developing
-
-If you would like to build the package yourself for development reasons, a typical workflow is to install the [build-time dependencies](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/#build-time-dependencies) first:
-
-```bash
-python -m pip install meson-python ninja pybind11 numpy
-```
-
-Then, build and install the package
+### Clone with submodules
 
 ```bash
 git clone --recurse-submodules https://github.com/RussianDoggo21/Morse_Sequence.git
 cd Morse-Sequence
-python -m pip install --no-build-isolation --editable .
+```
+
+### Installation (standard)
+
+To build and install the package, run:
+
+```bash
+pip install .
+```
+
+This will compile the C++ code via Meson and install the package.
+
+### Installation in development mode (editable)
+
+If you want to install the package in editable mode to develop locally:
+
+```bash
+pip install --no-build-isolation --editable .
 ```
 
 This allows you to modify the code without reinstalling after every change.
