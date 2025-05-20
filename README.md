@@ -16,7 +16,7 @@ C++ and Python compilers are also necessary.
 
 ```bash
 git clone --recurse-submodules https://github.com/RussianDoggo21/Morse_Sequence.git
-cd morse_frame
+cd Morse-Sequence
 ```
 
 ### Installation (standard)
