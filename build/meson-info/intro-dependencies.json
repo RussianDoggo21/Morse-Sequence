@@ -1,0 +1,35 @@
+[
+  {
+    "name": "pybind11",
+    "type": "config-tool",
+    "version": "2.13.6",
+    "compile_args": [
+      "-I/usr/include/python3.13",
+      "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include"
+    ],
+    "link_args": [],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "pybind11_dep"
+    ]
+  },
+  {
+    "name": "python",
+    "type": "system",
+    "version": "3.13",
+    "compile_args": [
+      "-I/usr/include/python3.13"
+    ],
+    "link_args": [],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  }
+]

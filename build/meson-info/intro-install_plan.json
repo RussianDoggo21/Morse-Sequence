@@ -1,0 +1,10 @@
+{
+  "targets": {
+    "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence.cpython-313-x86_64-linux-gnu.so": {
+      "destination": "{py_platlib}/morse_sequence.cpython-313-x86_64-linux-gnu.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null
+    }
+  }
+}

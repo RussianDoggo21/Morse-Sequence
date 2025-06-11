@@ -1,0 +1,20 @@
+[
+  {
+    "directory": "/home/kali/Téléchargements/Morse-Sequence/build",
+    "command": "c++ -Imorse_sequence.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence -I../simplextree-py/include -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++17 -O0 -g -fPIC -MD -MQ morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o -MF morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o.d -o morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o -c ../src/morse_sequence/bindings.cpp",
+    "file": "../src/morse_sequence/bindings.cpp",
+    "output": "morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o"
+  },
+  {
+    "directory": "/home/kali/Téléchargements/Morse-Sequence/build",
+    "command": "c++ -Imorse_sequence.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence -I../simplextree-py/include -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++17 -O0 -g -fPIC -MD -MQ morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o -MF morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o.d -o morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o -c ../src/morse_sequence/morse_sequence.cpp",
+    "file": "../src/morse_sequence/morse_sequence.cpp",
+    "output": "morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o"
+  },
+  {
+    "directory": "/home/kali/Téléchargements/Morse-Sequence/build",
+    "command": "c++ -Imorse_sequence.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence -I../simplextree-py/include -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++17 -O0 -g -fPIC -MD -MQ morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o -MF morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o.d -o morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o -c ../simplextree-py/simplextree/_simplextree.cpp",
+    "file": "../simplextree-py/simplextree/_simplextree.cpp",
+    "output": "morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o"
+  }
+]

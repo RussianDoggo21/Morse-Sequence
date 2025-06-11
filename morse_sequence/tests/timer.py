@@ -36,14 +36,15 @@ def timer_comparison():
         time_dec2 = end_dec2 - start_dec2
         print(f"décroissante python pur : {time_dec2:.6f} secondes")
 
+        """
         start_dec = time.time()
-        ms_dec, n_crit_dec = ms.morse_seq_decrois(st)
+        ms_dec, n_crit_dec = ms.ms_decreasing(st)
         end_dec = time.time()
         time_dec = end_dec - start_dec
         print(f"décroissante C++/python : {time_dec:.6f} secondes")
 
         print(f"Différence : {time_dec2 - time_dec:.6f} secondes | Ratio (python pur / C++): {time_dec2 / time_dec:.2f}\n")
-
+        """
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
 
         start_crois2 = time.time()
@@ -52,14 +53,15 @@ def timer_comparison():
         time_crois2 = end_crois2 - start_crois2
         print(f"croissante python pur : {time_crois2:.6f} secondes")
 
+        """
         start_crois = time.time()
-        ms_crois, n_crit_crois = ms.morse_seq_crois(st)
+        ms_crois, n_crit_crois = ms.ms_increasing(st)
         end_crois = time.time()
         time_crois = end_crois - start_crois
         print(f"croissante C++/python : {time_crois:.6f} secondes")
 
         print(f"Différence : {time_crois2 - time_crois:.6f} secondes | Ratio (python pur / C++): {time_crois2 / time_crois:.2f}\n")
-
+        """
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
 
         S_max = sorted(st.simplices(), key=lambda x: (len(x), x))
@@ -72,6 +74,7 @@ def timer_comparison():
         time_max2 = end_max2 - start_max2
         print(f"max python pur : {time_max2:.6f} secondes")
 
+        """
         start_max = time.time()
         max, n_crit_max = ms.Max(S_max, F_max)
         end_max = time.time()
@@ -79,6 +82,7 @@ def timer_comparison():
         print(f"max C++/python : {time_max:.6f} secondes")
 
         print(f"Différence : {time_max2 - time_max:.6f} secondes | Ratio (python pur / C++): {time_max2 / time_max:.2f}\n")
+        """
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
 
@@ -92,6 +96,7 @@ def timer_comparison():
         time_min2 = end_min2 - start_min2
         print(f"Min python pur : {time_min2:.6f} secondes")
 
+        """
         start_min = time.time()
         min, n_crit_min = ms.Min(S_min, F_min)
         end_min = time.time()
@@ -99,9 +104,11 @@ def timer_comparison():
         print(f"Min C++/python : {time_min:.6f} secondes")
 
         print(f"Différence : {time_min2 - time_min:.6f} secondes | Ratio (python pur / C++): {time_min2 / time_min:.2f}\n")
+        """
 
 timer_comparison()
 
+# To run the file from the root : python3 -m morse_sequence.tests.timer
 
 """
 #st = SimplexTree(MakeFacesVectorized1(10, 10))

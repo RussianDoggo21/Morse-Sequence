@@ -16,6 +16,7 @@ const SimplexTree& MorseSequence::get_simplex_tree() {
     return simplex_tree;
 }
 
+/* Function too costly due to the construction of the object faces<>
 // Returns the pointers of the simplices forming the boundary of a simplex sigma with a filtration on S
 vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
     vector<node_ptr> boundary;
@@ -31,6 +32,42 @@ vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<n
     }
     return boundary;
 }
+*/
+
+vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
+    vector<node_ptr> boundary;
+    simplex_t sigma = simplex_tree.full_simplex(cn); // récupère [v₀, ..., vₚ]
+
+    for (size_t i = 0; i < sigma.size(); ++i) {
+        simplex_t face = sigma;
+        face.erase(face.begin() + i); // enlève le i-ème sommet pour créer une face
+
+        node_ptr f = simplex_tree.find(face); // retrouve le pointeur de la face
+        if (f && S.find(f) != S.end() && S.at(f)) {
+            boundary.push_back(f);
+        }
+    }
+    return boundary;
+}
+
+/*
+NE FONCTIONNE PAS
+vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
+    vector<node_ptr> coboundary;
+
+    for (const auto& child_uptr : cn->children) {
+        node_ptr child = child_uptr.get(); // pointeur brut vers l'enfant
+
+        // On vérifie que le simplexe enfant est bien dans S et actif
+        if (S.find(child) != S.end() && S.at(child)) {
+            coboundary.push_back(child);
+        }
+    }
+
+    return coboundary;
+}
+*/
+
 
 // Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
 vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S) {
@@ -47,6 +84,7 @@ vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const unordered_map<node
     }
     return coboundary;
 }
+
 
 // Returns the number of faces of the simplex linked to pointer cn with a filtration on S
 int MorseSequence::nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
@@ -238,6 +276,8 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
         Sdict[cn] = false;
     }
 
+    //printf("First use of coboundary...\n");
+
     // Initialization of Sdict, rho and L
     for (node_ptr cn : K) {
         Sdict[cn] = true;
@@ -248,6 +288,8 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
         }
     }
 
+    //printf("Done\n");
+
     while (i < N) { // while we still haven't used all the simplices of st
         while (!L.empty()) { // while we still can add free pairs
             
@@ -257,11 +299,20 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
  
             
             if (rho[sigma_ptr] == 1) { // if sigma_ptr has only one coface
+                
+                // std::cout << "coboundary (free pair), i = " << i << std::endl;
 
                 // tau_ptr: upper element of the free pair
                 std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
                 node_ptr tau_ptr = this->find_out(T, cofaces, "decreasing", sigma_ptr);
-                
+
+                /*
+                std::cout << "sigma = ";
+                st.print_simplex(std::cout, sigma_ptr, false);
+                std::cout << "tau = ";
+                st.print_simplex(std::cout, tau_ptr, true);
+                */
+
                 // Update MorseSequence and T
                 MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
                 T[sigma_ptr] = true;

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "morse_sequence.cpython-313-x86_64-linux-gnu",
+    "id": "morse_sequence.cpython-313-x86_64-linux-gnu.so@sha",
+    "type": "shared module",
+    "defined_in": "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/meson.build",
+    "filename": [
+      "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence.cpython-313-x86_64-linux-gnu.so"
+    ],
+    "build_by_default": true,
+    "target_sources": [
+      {
+        "language": "cpp",
+        "machine": "host",
+        "compiler": [
+          "c++"
+        ],
+        "parameters": [
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence.cpython-313-x86_64-linux-gnu.so.p",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/simplextree-py/include",
+          "-I/usr/include/python3.13",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include",
+          "-fvisibility=hidden",
+          "-fvisibility-inlines-hidden",
+          "-fdiagnostics-color=always",
+          "-D_GLIBCXX_ASSERTIONS=1",
+          "-D_FILE_OFFSET_BITS=64",
+          "-Wall",
+          "-Winvalid-pch",
+          "-std=c++17",
+          "-O0",
+          "-g",
+          "-fPIC"
+        ],
+        "sources": [
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/bindings.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/morse_sequence.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/simplextree-py/simplextree/_simplextree.cpp"
+        ],
+        "generated_sources": [],
+        "unity_sources": []
+      },
+      {
+        "linker": [
+          "c++"
+        ],
+        "parameters": [
+          "-Wl,--as-needed",
+          "-Wl,--allow-shlib-undefined",
+          "-shared",
+          "-fPIC"
+        ]
+      }
+    ],
+    "extra_files": [],
+    "subproject": null,
+    "dependencies": [
+      "pybind11",
+      "python"
+    ],
+    "depends": [],
+    "installed": true,
+    "install_filename": [
+      "/usr/local/lib/python3/dist-packages/morse_sequence.cpython-313-x86_64-linux-gnu.so"
+    ]
+  }
+]
