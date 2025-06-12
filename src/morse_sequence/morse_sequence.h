@@ -10,12 +10,16 @@ public:
     explicit MorseSequence(const SimplexTree& st);  
     const SimplexTree& get_simplex_tree();
     vector<node_ptr> boundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    vector<node_ptr> boundary(node_ptr cn); 
     vector<node_ptr> coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    vector<node_ptr> coboundary(node_ptr cn);
     int nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    int nbboundary(node_ptr cn);
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    int nbcoboundary(node_ptr cn);
     vector<node_ptr> simplices(std::optional<int> p) const;
-    node_ptr find_out(std::unordered_map<node_ptr, bool> T, std::vector<node_ptr> simplex_list, std::string order, node_ptr s_ptr);
-    node_ptr find_out(std::unordered_map<node_ptr, bool> T,std::vector<node_ptr> simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const std::vector<node_ptr>& simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const std::vector<node_ptr>& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
     std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> increasing(const SimplexTree& st);
     std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> decreasing(const SimplexTree& st);
     std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F);

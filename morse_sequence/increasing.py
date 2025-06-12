@@ -43,7 +43,7 @@ def nbcoboundary(sigma, st):
     return len(coboundary(sigma, st))
 
 # Compute the length of the boundary of the simplexe sigma (its number of faces) in the complex S
-def nbboundary(st, sigma): 
+def nbboundary(sigma): 
     return len(boundary(sigma))
 
 # Return the simplex v such that :

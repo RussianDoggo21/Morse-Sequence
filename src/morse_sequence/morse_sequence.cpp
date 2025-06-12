@@ -50,6 +50,26 @@ vector<node_ptr> MorseSequence::boundary(node_ptr cn, const std::unordered_map<n
     return boundary;
 }
 
+vector<node_ptr> MorseSequence::boundary(node_ptr cn) {
+    vector<node_ptr> boundary;
+    simplex_t sigma = simplex_tree.full_simplex(cn); // récupère [v₀, ..., vₚ]
+    
+    if (sigma.size() == 1){
+        return {};
+    }
+
+    for (size_t i = 0; i < sigma.size(); ++i) {
+        simplex_t face = sigma;
+        face.erase(face.begin() + i); // enlève le i-ème sommet pour créer une face
+
+        node_ptr f = simplex_tree.find(face); // retrouve le pointeur de la face
+        if (f && f != nullptr) {
+            boundary.push_back(f);
+        }
+    }
+    return boundary;
+}
+
 /*
 NE FONCTIONNE PAS
 vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
@@ -85,15 +105,36 @@ vector<node_ptr> MorseSequence::coboundary(node_ptr cn, const unordered_map<node
     return coboundary;
 }
 
+vector<node_ptr> MorseSequence::coboundary(node_ptr cn) {
+    vector<node_ptr> coboundary;
+    cofaces<> cobord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
+
+    for (auto& coface : cobord) { // Iterating on each coface of cn
+        node_ptr coface_ptr = std::get<0>(coface); // Retrieving the coface
+        if (simplex_tree.depth(coface_ptr) == simplex_tree.depth(cn) + 1) { // First verification    
+            coboundary.push_back(coface_ptr); // Adding the coface to the coboundary
+        }
+    }
+    return coboundary;
+}
+
 
 // Returns the number of faces of the simplex linked to pointer cn with a filtration on S
 int MorseSequence::nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
     return (this->boundary(cn,S)).size();
 }
 
+int MorseSequence::nbboundary(node_ptr cn){
+    return (this->boundary(cn)).size();
+}
+
 // Returns the number of cofaces of the simplex linked to pointer cn with a filtration on S
 int MorseSequence::nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
     return (this->coboundary(cn, S)).size();
+}
+
+int MorseSequence::nbcoboundary(node_ptr cn){
+    return (this->coboundary(cn)).size();
 }
 
 // Returns the p-simplices of the simplicial complex if p is specified
@@ -125,18 +166,22 @@ vector<node_ptr> MorseSequence::simplices(std::optional<int> p = std::nullopt) c
 }
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
-node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T, std::vector<node_ptr> simplex_list, std::string order, node_ptr s_ptr){
+node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, const std::vector<node_ptr>& simplex_list, std::string order, node_ptr s_ptr){
     node_ptr v = nullptr;
     if (order == "decreasing"){
         for (node_ptr v0 : simplex_list){
-            if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
+            auto it = T.find(v0);
+            //if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
+            if (it != T.end() && !it->second && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
                 v = v0;
-            }
+            }       
         }
     }
     else if (order == "increasing"){
         for (node_ptr v0 : simplex_list){
-            if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
+            auto it = T.find(v0);
+            //if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
+             if (it != T.end() && !it->second && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
                 v = v0;
             }
         }
@@ -145,10 +190,12 @@ node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T, std::vect
 }
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T, s_ptr, and F
-node_ptr MorseSequence::find_out(std::unordered_map<node_ptr, bool> T,std::vector<node_ptr> simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
+node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,const std::vector<node_ptr>& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
-        if (!T[v0] && F.at(v0) == F.at(s_ptr)) {
+        auto it = T.find(v0);
+        //if (!T[v0] && F.at(v0) == F.at(s_ptr)) {
+        if (it != T.end() && !it->second && F.at(v0) == F.at(s_ptr)) {
             v = v0;
         }
     }
@@ -170,79 +217,143 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     // Declaration of variables
     std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>> MorseSequence; // Morse sequence to be returned
     std::unordered_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
+    //std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free tau candidates of dimension p that can form a free pair (p-1, p)
     std::unordered_map<node_ptr, int> rho; // rho[tau] == n means that tau has n faces
     int N = K.size(); // Number of simplices in st
     int i = 0; // Index to browse simplices of st
     int n_crit = 0; // Counts the number of critical simplices in MorseSequence
 
+    T.reserve(N);
+    rho.reserve(N);
+    //Sdict.reserve(N);
+
     // Initialization of T and Sdict
     for (node_ptr cn : this->simplices()) {
         T[cn] = false;
-        Sdict[cn] = false;
+        //Sdict[cn] = false;
     }
 
     // Initialization of Sdict, rho, and L
     for (node_ptr cn : K) {
-        Sdict[cn] = true;
-        int nb = this->nbboundary(cn, Sdict); // number of faces of cn
+        //Sdict[cn] = true;
+        //int nb = this->nbboundary(cn, Sdict); // number of faces of cn
+        int nb = this->nbboundary(cn); // number of faces of cn
         rho[cn] = nb;
         if (nb == 1) {
             L.push_back(cn); // possible upper element of a free pair
         }
     }
 
+    /*
+    for (node_ptr cn : K){
+        printf("nbboundary of ");
+        st.print_simplex(std::cout, cn, false);
+        std::cout << " = " << rho[cn];
+        printf(" Boundary of ");
+        st.print_simplex(std::cout, cn, false);
+        printf(": ");
+        for (node_ptr c : this->boundary(cn)){
+            st.print_simplex(std::cout, c, false);
+            if (c == nullptr){
+                printf(" null ptr detected in boundary of ");
+                st.print_simplex(std::cout, cn, false);
+            }
+        }
+        printf("\n");
+    }
+    */
+
+    //printf("increasing : Initialisation terminée\n ");
     while (i < N) { // while we still haven't used all the simplices of st
-        while (!L.empty()) { // while we can still add free pairs
-            
-            // tau_ptr: upper element of the free pair
-            node_ptr tau_ptr = L.back(); 
-            L.pop_back();
+        //std::cout << "i = " << i << std::endl;
+        //std::cout << "size of L = " << L.size() << std::endl;
+        try {
+            while (!L.empty()) { // while we can still add free pairs
+                //printf("Entrée dans L");
+                // tau_ptr: upper element of the free pair
+                node_ptr tau_ptr = L.back(); 
+                L.pop_back();
 
-            if (rho[tau_ptr] == 1) { // if tau_ptr only has one face
+                /*
+                printf("\ntau = ");
+                st.print_simplex(std::cout, tau_ptr, true);
+                printf("rho[");
+                st.print_simplex(std::cout, tau_ptr, false);
+                std::cout << "] = " << rho[tau_ptr] <<  " \n";
+                */
 
-                // sigma_ptr: lower element of the free pair
-                std::vector<node_ptr> bd = this->boundary(tau_ptr, Sdict);
-                node_ptr sigma_ptr = this->find_out(T, bd, "increasing", tau_ptr);
+                if (rho[tau_ptr] == 1) { // if tau_ptr only has one face
 
-                // Update MorseSequence and T
-                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
-                T[tau_ptr] = true;
-                T[sigma_ptr] = true;
+                    // sigma_ptr: lower element of the free pair
+                    
+                    //printf("Boundary");
+                    //std::vector<node_ptr> bd = this->boundary(tau_ptr, Sdict);
+                    std::vector<node_ptr> bd = this->boundary(tau_ptr);
+                    
+                    /*
+                    printf("Boundary of ");
+                    st.print_simplex(std::cout, tau_ptr, false);
+                    printf(": ");
+                    for (node_ptr cn : bd){
+                        st.print_simplex(std::cout, cn, false);
+                        std::cout << "T value = " << T[cn] << "\n";
+                    }
+                    */
+                    
 
-                // Update rho and L
-                std::vector<node_ptr> cob1 = this->coboundary(sigma_ptr, Sdict);
-                std::vector<node_ptr> cob2 = this->coboundary(tau_ptr, Sdict);
-                cob1.insert(cob1.end(), cob2.begin(), cob2.end());
-                for (node_ptr mu : cob1) {
-                    rho[mu] -= 1;
-                    if (rho[mu] == 1) {
-                        L.push_back(mu);
+                    node_ptr sigma_ptr = this->find_out(T, bd, "increasing", tau_ptr);
+
+                    
+                    //printf("sigma = ");
+                    //st.print_simplex(std::cout, sigma_ptr, true);
+                    
+
+                    // Update MorseSequence and T
+                    MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                    T[tau_ptr] = true;
+                    T[sigma_ptr] = true;
+
+                    // Update rho and L
+                    //printf("Update rho and L");
+                    //std::vector<node_ptr> cob1 = this->coboundary(sigma_ptr, Sdict);
+                    //std::vector<node_ptr> cob2 = this->coboundary(tau_ptr, Sdict);
+                    std::vector<node_ptr> cob1 = this->coboundary(sigma_ptr);
+                    std::vector<node_ptr> cob2 = this->coboundary(tau_ptr);
+                    cob1.insert(cob1.end(), cob2.begin(), cob2.end());
+                    for (node_ptr mu : cob1) {
+                        rho[mu] -= 1;
+                        if (rho[mu] == 1) {
+                            L.push_back(mu);
+                        }
                     }
                 }
             }
-        }
 
-        while (i < N && T[K[i]]) { // while we still haven't used all the simplices of st
-            i++;
-        }
+            while (i < N && T[K[i]]) { // while we still haven't used all the simplices of st
+                i++;
+            }
 
-        if (i < N) { // At that point, L is empty
-            node_ptr sigma_ptr = K[i]; // sigma_ptr is a critical simplex
+            if (i < N) { // At that point, L is empty
+                node_ptr sigma_ptr = K[i]; // sigma_ptr is a critical simplex
 
-            // Update MorseSequence, n_crit and T
-            MorseSequence.push_back(sigma_ptr); 
-            n_crit++;
-            T[sigma_ptr] = true;
+                // Update MorseSequence, n_crit and T
+                MorseSequence.push_back(sigma_ptr); 
+                n_crit++;
+                T[sigma_ptr] = true;
 
-            // Update rho and L
-            for (node_ptr tau_ptr : this->coboundary(sigma_ptr, Sdict)) {
-                rho[tau_ptr] -= 1;
-                if (rho[tau_ptr] == 1) {
-                    L.push_back(tau_ptr);
+                // Update rho and L
+                //printf("Update rho and L");
+                //for (node_ptr tau_ptr : this->coboundary(sigma_ptr, Sdict)) {
+                for (node_ptr tau_ptr : this->coboundary(sigma_ptr)) {
+                    rho[tau_ptr] -= 1;
+                    if (rho[tau_ptr] == 1) {
+                        L.push_back(tau_ptr);
+                    }
                 }
             }
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Exception attrapée dans L : " << e.what() << std::endl;
         }
     }
 
@@ -262,26 +373,30 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     // Declaration of variables
     std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>> MorseSequence; // Morse sequence to be returned
     std::unordered_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
+    //std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free sigma candidates of dimension p that can form a free pair (p, p+1)
     std::unordered_map<node_ptr, int> rho; // rho[sigma] == n means that sigma has n cofaces
     int N = K.size(); // Number of simplices in st
     int i = 0; // Index to browse simplices of st
     int n_crit = 0; // Counts the number of critical simplices in MorseSequence
  
+    T.reserve(N);
+    rho.reserve(N);
+    //Sdict.reserve(N);
 
     // Initialization of T and Sdict 
     for (node_ptr cn : this->simplices()) {
         T[cn] = false;
-        Sdict[cn] = false;
+        //Sdict[cn] = false;
     }
 
     //printf("First use of coboundary...\n");
 
     // Initialization of Sdict, rho and L
     for (node_ptr cn : K) {
-        Sdict[cn] = true;
-        int nb = this->nbcoboundary(cn, Sdict); // number of cofaces of cn
+        //Sdict[cn] = true;
+        //int nb = this->nbcoboundary(cn, Sdict); // number of cofaces of cn
+        int nb = this->nbcoboundary(cn); // number of cofaces of cn
         rho[cn] = nb;
         if (nb == 1) {
             L.push_back(cn); // possible lower element of a free pair
@@ -303,7 +418,8 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
                 // std::cout << "coboundary (free pair), i = " << i << std::endl;
 
                 // tau_ptr: upper element of the free pair
-                std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
+                //std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr, Sdict);
+                std::vector<node_ptr> cofaces = this->coboundary(sigma_ptr);
                 node_ptr tau_ptr = this->find_out(T, cofaces, "decreasing", sigma_ptr);
 
                 /*
@@ -319,8 +435,10 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
                 T[tau_ptr] = true;
 
                 // Update rho and L
-                std::vector<node_ptr> bd1 = this->boundary(sigma_ptr, Sdict);
-                std::vector<node_ptr> bd2 = this->boundary(tau_ptr, Sdict);
+                //std::vector<node_ptr> bd1 = this->boundary(sigma_ptr, Sdict);
+                //std::vector<node_ptr> bd2 = this->boundary(tau_ptr, Sdict);
+                std::vector<node_ptr> bd1 = this->boundary(sigma_ptr);
+                std::vector<node_ptr> bd2 = this->boundary(tau_ptr);
                 bd1.insert(bd1.end(), bd2.begin(), bd2.end());
                 for (node_ptr mu : bd1) {
                     rho[mu] -= 1;
@@ -344,7 +462,8 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
             T[sigma_ptr] = true;
 
             // Update rho and L
-            for (node_ptr mu : this->boundary(sigma_ptr, Sdict)) {
+            //for (node_ptr mu : this->boundary(sigma_ptr, Sdict)) {
+            for (node_ptr mu : this->boundary(sigma_ptr)) {
                 rho[mu] -= 1;
                 if (rho[mu] == 1) {
                     L.push_back(mu);
@@ -366,6 +485,10 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     int N = S.size();
     int i = 0;
     int n_crit = 0;
+
+    T.reserve(N);
+    rho.reserve(N);
+    Sdict.reserve(N);
 
     // Initialization
     for (node_ptr cn : this->simplices()) {
@@ -443,6 +566,10 @@ std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, in
     int N = S.size();
     int i = 0;
     int n_crit = 0;
+    
+    T.reserve(N);
+    rho.reserve(N);
+    Sdict.reserve(N);
 
     // Initialization
     for (node_ptr cn : this->simplices()) {

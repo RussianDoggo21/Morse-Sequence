@@ -122,7 +122,7 @@ void timer_comparison() {
 void test(){
 	SimplexTree st;  // Creation of a simplicial complex
     //SimplexList L = {{0,1,2}};
-    //SimplexList L = MakeFacesVectorized1(10, 10);
+    //SimplexList L = MakeFacesVectorized1(75, 75);
     
     SimplexList L = {
                         {1, 5, 7}, {1, 2, 7},  // Top left
@@ -135,7 +135,6 @@ void test(){
                         {2, 3, 6}, {3, 6, 8},  // Bottom middle
                         {1, 3, 8}, {1, 4, 8}   // Bottom right
                     };
-    
 	for (simplex_t s : L){
 		st.insert(s);
 	}
@@ -191,13 +190,14 @@ void test(){
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
     printf("Increasing Morse sequence: \n\n");
     auto start_crois = std::chrono::high_resolution_clock::now();
 	auto result = ms.increasing(st);
     auto end_crois = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_crois = end_crois - start_crois;
     std::cout << "Execution time: " << duration_crois.count() << " ms" << std::endl;
- 
+  
     // 3. Extract results from the function
 	auto& morse_sequence = result.first;  // Vector of simplices and pairs
 	int n_crit = result.second;  // The criterion n_crit
@@ -234,6 +234,7 @@ void test(){
     }
     
     printf("\n\n\n");
+
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
@@ -430,6 +431,11 @@ int main() {
 
 /* Compilation commands (terminal in Morse-Sequence/src/morse_sequence)
 g++ -o timer tests/timer.cpp morse_sequence.cpp -std=c++20 -O3 -Wall -lpython3.13
+
+Pour lancer perf :
+sudo sysctl kernel.perf_event_paranoid=1
+perf record --call-graph=dwarf -F 100 ./timer 100 2000
+
 
 Github token : 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
 Used SSH key instead 
