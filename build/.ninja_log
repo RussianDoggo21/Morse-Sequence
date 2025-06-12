@@ -1,5 +1,8 @@
 # ninja log v5
-6	3159	1749134187508176666	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o	51e574d1ac07f08e
-1	6466	1749134190458700610	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
+3	4652	1749737081526025778	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
 9	9071	1749134193501178623	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o	5e7a38b793a9e4bc
-9072	9406	1749134193853002627	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
+4652	5080	1749737081945815788	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
+19	2707	1749736097994025662	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o	51e574d1ac07f08e
+1	689	1749741945253044959	build.ninja	1d2b28c38a4071dc
+0	541	1749741945253044959	build.ninja	1d2b28c38a4071dc
+3	501	1749741990434443525	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad

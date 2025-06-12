@@ -35,5 +35,17 @@ Install the Updated Package: Install the updated package in a clean environment 
 pip install morse-sequence==0.1.1
 
 ==========================================================================================================================================================================
-
+HOW TO BUILD AND INSTALL MORSE-SEQUENCE LOCALLY
 ==========================================================================================================================================================================
+Step 1 : Go to the racine of the projet ~/Téléchargements/Morse-Sequence
+
+Step 2 : Update your files if necessary
+        - bindings.cpp for exposing C++ code to python
+        - pyproject.toml to modify the number of the version
+
+Step 3 : - meson setup build (if necessary)
+         - cd build
+         - meson compile 
+         - meson install
+
+Step 4 : copy the file .so in the build directory into the morse_sequence directory (python)

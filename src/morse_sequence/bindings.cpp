@@ -124,16 +124,48 @@ py::tuple _decreasing(MorseSequence &ms, SimplexTree& st){
     return py::make_tuple(out_list, n);
 }
 
+namespace {
+    using boundary_fn_1 = std::vector<node_ptr> (MorseSequence::*)(node_ptr) ;
+    using boundary_fn_2 = std::vector<node_ptr> (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+
+    using coboundary_fn_1 = std::vector<node_ptr> (MorseSequence::*)(node_ptr) ;
+    using coboundary_fn_2 = std::vector<node_ptr> (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+
+    using nbboundary_fn_1 = int (MorseSequence::*)(node_ptr);
+    using nbboundary_fn_2 = int (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+
+    using nbcoboundary_fn_1 = int (MorseSequence::*)(node_ptr);
+    using nbcoboundary_fn_2 = int (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+}
+
+
 
 PYBIND11_MODULE(morse_sequence, m) {
     m.doc() = "Interface Python pour MorseSequence";
 
     py::class_<MorseSequence>(m, "MorseSequence")
         .def(py::init<const SimplexTree&>())
-        .def("boundary", &MorseSequence::boundary)
-        .def("coboundary", &MorseSequence::coboundary)
-        .def("nbboundary", &MorseSequence::nbboundary)
-        .def("nbcoboundary", &MorseSequence::nbcoboundary)
+        //.def("boundary", &MorseSequence::boundary)
+        //.def("coboundary", &MorseSequence::coboundary)
+        //.def("nbboundary", &MorseSequence::nbboundary)
+        //.def("nbcoboundary", &MorseSequence::nbcoboundary)
+
+        // Boundary methods
+        .def("boundary", static_cast<boundary_fn_1>(&MorseSequence::boundary))
+        .def("boundary2", static_cast<boundary_fn_2>(&MorseSequence::boundary))
+
+        // Coboundary methods
+        .def("coboundary", static_cast<coboundary_fn_1>(&MorseSequence::coboundary))
+        .def("coboundary2", static_cast<coboundary_fn_2>(&MorseSequence::coboundary))
+
+        // Nbboundary methods
+        .def("nbboundary", static_cast<nbboundary_fn_1>(&MorseSequence::nbboundary))
+        .def("nbboundary2", static_cast<nbboundary_fn_2>(&MorseSequence::nbboundary))
+
+        // Nbcoboundary methods
+        .def("nbcoboundary", static_cast<nbcoboundary_fn_1>(&MorseSequence::nbcoboundary))
+        .def("nbcoboundary2", static_cast<nbcoboundary_fn_2>(&MorseSequence::nbcoboundary))
+
         .def("simplices", &MorseSequence::simplices)
         .def("Max", _Max)
         .def("Min", _Min)
