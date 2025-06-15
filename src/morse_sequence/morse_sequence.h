@@ -4,9 +4,11 @@
 #include "../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
+using node_pair = std::pair<node_ptr, node_ptr>;
+using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
 using morse_frame = std::unordered_map<node_ptr, node_list>;
+
 
 class MorseSequence {
 public:
@@ -21,8 +23,6 @@ public:
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbcoboundary(node_ptr cn);
     node_list simplices(std::optional<int> p) const;
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
     std::pair<m_sequence, int> increasing(const SimplexTree& st);
     std::pair<m_sequence, int> decreasing(const SimplexTree& st);
     std::pair<m_sequence, int> Max(const node_list& S, const unordered_map<node_ptr, int>& F);
@@ -34,6 +34,11 @@ public:
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
+    node_list sym_diff(const node_list& A, const node_list& B);
+    enum class GammaMode { Reference, Coreference };
+    node_list Gamma(node_ptr sigma_ptr, const std::unordered_map<node_ptr,node_ptr>& sigma2tau, std::unordered_map<node_ptr,node_list>& cache, GammaMode mode);
 };
 
 #endif 

@@ -1,7 +1,9 @@
 #include "morse_sequence.h"
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
+using node_pair = std::pair<node_ptr, node_ptr>;
+using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
 using morse_frame = std::unordered_map<node_ptr, node_list>;
+
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 // Constructor of the MorseSequence class
@@ -169,6 +171,7 @@ node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 }
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
+// Private function
 node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr){
     node_ptr v = nullptr;
     if (order == "decreasing"){
@@ -193,6 +196,7 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, co
 }
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T, s_ptr, and F
+// Private function
 node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
@@ -664,8 +668,8 @@ void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool
                 std::cout << "Null pointer encountered!" << std::endl;
             }
         }
-        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
-            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
+        else if (std::holds_alternative<node_pair>(item)) {
+            node_pair pair = std::get<node_pair>(item);
             
             if (pair.first && pair.second) {
                 std::cout << "Pair of simplices: ";
@@ -681,8 +685,9 @@ void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool
 }
 
 
-// Define the symetric diffrence : A△B = AUB \ AnB
-node_list sym_diff(const node_list& A, const node_list& B){
+// Define the symetric diffrence : A△B = AUB \ AnB 
+// Private function
+node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
 
     node_list result; // Final symmetric difference to be returned
     result.reserve(A.size() + B.size()); // To avoid re‑alloc
@@ -715,14 +720,284 @@ node_list sym_diff(const node_list& A, const node_list& B){
     }
 }
 
+// Computes the reference/coreference of a single simplex 
+// (in particular lower simplices in reference map and upper simplices in coreference map)
+// Private function
+node_list MorseSequence::Gamma(node_ptr cn, const std::unordered_map<node_ptr,node_ptr>& pair_link, std::unordered_map<node_ptr,node_list>& cache, GammaMode mode) {
+
+    // cn : simplex on which we need to compute the reference
+    // sigma_to_tau : map containings all free pairs (sigma, tau)
+    // cache : used in the process of memoization
+    // order : to know if we compute a reference or a coreference
+
+    // Special case : gamma(cn) has already been computed before,
+    // gamma(cn) is stored in cache -> We make use of memoization
+    auto hit = cache.find(cn);
+    if (hit != cache.end())
+        return hit->second;
+
+    // General case : we do not know gamma(cn)
+    node_ptr sigma_ptr, tau_ptr;
+
+    // Function pointer or lambda to get the traversal list (boundary or coboundary)
+    std::function<node_list(node_ptr)> traversal;
+    node_ptr erase_ptr;
+    node_ptr root;
+
+    // Case distinction 
+    // Are we computing a reference for a lower simplex sigma_ptr or a coreference for an upper simplex 
+    if (mode == GammaMode::Reference) {
+        sigma_ptr = cn; // The simplex on which we want to compute the reference
+        tau_ptr = pair_link.at(sigma_ptr); // The second element of the free pair (sigma_ptr, tau_ptr)
+        traversal = [&](node_ptr n) { return this->boundary(n); }; // The function needed to compute the reference
+        erase_ptr = sigma_ptr; // Variable generated to update cache outside of this if/else statement
+        root = tau_ptr; // Variable to call traversal correctly outside of this if/else statement
+    } else {
+        tau_ptr = cn; // The simplex on which we want to compute the coreference
+        sigma_ptr = pair_link.at(tau_ptr); // The second element of the free pair (sigma_ptr, tau_ptr)
+        traversal = [&](node_ptr n) { return this->coboundary(n); }; // The function needed to compute the coreference
+        erase_ptr = tau_ptr; // Variable generated to update cache outside of this if/else statement
+        root = sigma_ptr; // Variable to call traversal correctly outside of this if/else statement
+
+    }
+
+    // Get ∂τ\{σ} or δσ\{τ}
+    node_list bd = traversal(root);
+    bd.erase(std::remove(bd.begin(), bd.end(), erase_ptr), bd.end());
+
+    // Initialization of the final result at "0"
+    node_list result{nullptr};
+
+    // Computation of the final result
+    // Recursive call of Gamma on each node_ptr in bd to "add them up" afterwards, using the symmetrical difference
+    for (node_ptr v : bd) {
+        node_list gamma_v = Gamma(v, pair_link, cache, mode); // Recursive call
+
+        // Trivial case, gamma_v = "0" (node_list{null_ptr})
+        // A △ "0" = A : No need to compute the symmetrical difference
+        if (gamma_v == node_list{nullptr}) continue;
+
+        // General case, gamma_v != "0"
+        if (result == node_list{nullptr}) {
+            result = gamma_v; // Special case, no need to compute the symmetrical difference
+        } else {
+            result = sym_diff(result, gamma_v);
+        }
+    }
+
+    cache[erase_ptr] = result;
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+    // First design, left because it didn't respect the DRY (Don't Repeat Yourself) principle
+    /*
+
+    // We then pair cn with either its upper pair tau or its lower pair sigma
+    // We act in consequence afterwards 
+    if (order == "reference"){
+        node_ptr sigma_ptr = cn;
+        std::unordered_map<node_ptr, node_ptr> sigma2tau = pair_link;
+        auto it_pair = sigma2tau.find(sigma_ptr);
+        node_ptr tau_ptr = it_pair->second;
+
+        // Compute ∂τ\{σ}  
+        node_list bd = this->boundary(tau_ptr);
+        bd.erase(std::remove(bd.begin(), bd.end(), sigma_ptr), bd.end());
+
+        // Computation of the final result
+        // Recursive call of Gamma on each node_ptr in bd to "add them up" afterwards, using the symmetrical difference
+        for (node_ptr v : bd) {
+            node_list gamma_v = Gamma(v, sigma2tau, cache, "reference");  // Recursive call
+
+            // Trivial case, gamma_v = "0" (node_list{null_ptr})
+            // A △ "0" = A : No need to compute the symmetrical difference
+            if (gamma_v == node_list{nullptr}) continue;
+
+            // General case, gamma_v != "0"
+            if (result == node_list{nullptr}) {
+                result = gamma_v; // Special case, no need to compute the symmetrical difference
+            } else {
+                result = sym_diff(result, gamma_v);
+            }
+        }
+        // Update of cache for the memoization
+        cache[sigma_ptr] = result;
+    }
+
+    else if (order == "coreference") { 
+        node_ptr tau_ptr = cn;
+        std::unordered_map<node_ptr, node_ptr> tau2sigma = pair_link;
+        auto it_pair = tau2sigma.find(tau_ptr);
+        node_ptr sigma_ptr = it_pair->second;
+
+        // Compute δ(σ)∖τ
+        node_list cbd = this->coboundary(sigma_ptr);
+        cbd.erase(std::remove(cbd.begin(), cbd.end(), tau_ptr), cbd.end());
+
+        // Computation of the final result
+        // Recursive call of Gamma on each node_ptr in bd to "add them up" afterwards, using the symmetrical difference
+        for (node_ptr v : cbd) {
+            node_list gamma_v = Gamma(v, tau2sigma, cache, "coreference");  // Recursive call
+
+            // Trivial case, gamma_v = "0" (node_list{null_ptr})
+            // A △ "0" = A : No need to compute the symmetrical difference
+            if (gamma_v == node_list{nullptr}) continue;
+
+            // General case, gamma_v != "0"
+            if (result == node_list{nullptr}) {
+                result = gamma_v; // Special case, no need to compute the symmetrical difference
+            } else {
+                result = sym_diff(result, gamma_v);
+            }
+        }
+        // Update of cache for the memoization
+        cache[tau_ptr] = result;
+    }
+    */
+
+// Computes the reference map from a morse sequence W
+morse_frame MorseSequence::reference_map(const m_sequence& W){
+    
+    morse_frame ref_map;
+    ref_map.reserve(W.size());
+
+    // Generation of the table of the free pairs that will be used by the function Gamma
+    std::unordered_map<node_ptr,node_ptr> sigma2tau;
+    for (const auto& item : W)
+        if (std::holds_alternative<node_pair>(item)) {
+            auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
+            sigma2tau[sigma_ptr]  = tau_ptr;
+        }
+
+    // Generation of the cache that will be used by the function Gamma
+    std::unordered_map<node_ptr,node_list> cache;
+
+    // Case of critical simplices
+    for (const auto& item : W){
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr c = std::get<node_ptr>(item);
+
+            //Update of both the cache and ref_map
+            cache[c] = {c};                 
+            ref_map[c] = {c};                 
+        }
+    }
+
+    // Case of regular pairs
+    // Use of Gamma()
+    for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
+        ref_map[tau_ptr] = {nullptr}; // Υ′(τ) = 0
+        ref_map[sigma_ptr] = Gamma(sigma_ptr, sigma2tau, cache, GammaMode::Reference);
+    }
+
+    return ref_map;
+}
+
+// Computes the coreference map from a morse sequence W
+morse_frame MorseSequence::coreference_map(const m_sequence& W){
+    
+    morse_frame coref_map;
+    coref_map.reserve(W.size());
+
+    // Generation of the table of the free pairs that will be used by the function Gamma
+    std::unordered_map<node_ptr,node_ptr> tau2sigma;
+    for (const auto& item : W)
+        if (std::holds_alternative<node_pair>(item)) {
+            auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
+            tau2sigma[tau_ptr]  = sigma_ptr;
+        }
+
+    // Generation of the cache that will be used by the function Gamma
+    std::unordered_map<node_ptr,node_list> cache;
+
+    // Case of critical simplices
+    for (const auto& item : W){
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr c = std::get<node_ptr>(item);
+
+            //Update of both the cache and ref_map
+            cache[c] = {c};                 
+            coref_map[c] = {c};                 
+        }
+    }
+
+    // Case of regular pairs
+    // Use of Gamma()
+    for (const auto& [sigma_ptr, tau_ptr] : tau2sigma) {
+        coref_map[sigma_ptr] = {nullptr}; // Υ′′(sigma) = 0
+        coref_map[tau_ptr] = Gamma(sigma_ptr, tau2sigma, cache, GammaMode::Coreference);
+    }
+
+    return coref_map;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// Computes the value of a free pair in a reference map
+node_list MorseSequence::Gamma(node_ptr sigma_ptr, node_ptr tau_ptr, std::string mode){
+
+    if (mode == "reference"){
+        // Compute ∂τ\{σ}
+        node_list bd = this->boundary(tau_ptr);
+        bd.erase(std::remove(bd.begin(), bd.end(), sigma_ptr), bd.end());
+        node_list gamma_sigma = this->Gamma()
+        // COMMENT FAIRE L'APPEL RECCURSIF ???
+    }
+    else if (mode == "coreference")
+    {
+        // code 
+    }
+    
+
+}
+
 // Computes a reference map from a morse sequence
 morse_frame MorseSequence::reference_map(const m_sequence& W){
 
-    using pair_type = std::pair<node_ptr, node_ptr>;
+    using pair_type = node_pair;
     morse_frame ref_map;
     ref_map.reserve(W.size());           
 
-    /*----- 1. critical simplices first ------------------------------------*/
+    //----- 1. critical simplices first ------------------------------------
     for (const auto& item : W){
         if (std::holds_alternative<node_ptr>(item)){
             node_ptr cn = std::get<node_ptr>(item);
@@ -730,18 +1005,28 @@ morse_frame MorseSequence::reference_map(const m_sequence& W){
         }
     }
 
-    /*----- 2. free pairs after ----------------------------------------------*/
+    //----- 2. free pairs after ----------------------------------------------
     for (const auto& item : W){
         if (std::holds_alternative<pair_type>(item)){
 
             auto [sigma_ptr, tau_ptr] = std::get<pair_type>(item);
 
+            // FAIRE LA DIFFERENCE ENTRE LA FONCTION QUI CALCULE LES VALEURS (gamma) ET LE DICT QUI LES STOCKE (ref_map)
+            // APPEL RECURSIF A gamma_ref : gamma_ref(σ) = gamma_ref(∂τ\{σ})
+            ref_map[tau_ptr] = node_list{nullptr};
+            ref_map[sigma_ptr] = Gamma(sigma_ptr, tau_ptr, "reference");
+
+            /*
             ref_map[tau_ptr] = node_list{nullptr};  // ref_map[tau_ptr] = 0
 
             // Compute ∂τ\{σ}
             node_list bd = boundary(tau_ptr);
             bd.erase(std::remove(bd.begin(), bd.end(), sigma_ptr), bd.end());
             
+            
+
+            
+            /*
             // Initialize ref_map[sigma_ptr] = 0
             ref_map[sigma_ptr] = node_list{nullptr};  
 
@@ -752,53 +1037,13 @@ morse_frame MorseSequence::reference_map(const m_sequence& W){
                 }
                 ref_map[sigma_ptr] = sym_diff(ref_map[sigma_ptr], it->second);
             }
-        }
-    }
-    return ref_map;
-}
-
-
-// Computes a coreference map from a morse sequence
-morse_frame MorseSequence::coreference_map(const m_sequence& W){
-
-    using pair_type = std::pair<node_ptr, node_ptr>;
-    morse_frame ref_map;
-    ref_map.reserve(W.size());           
-
-    /*----- 1. critical simplices first ------------------------------------*/
-    for (const auto& item : W){
-        if (std::holds_alternative<node_ptr>(item)){
-            node_ptr cn = std::get<node_ptr>(item);
-            ref_map[cn] = {cn};            // f(cn) = cn
-        }
-    }
-
-    /*----- 2. free pairs after ----------------------------------------------*/
-    for (const auto& item : W){
-        if (std::holds_alternative<pair_type>(item)){
-
-            auto [sigma_ptr, tau_ptr] = std::get<pair_type>(item);
-
-            ref_map[sigma_ptr] = node_list{nullptr};  // ref_map[sigma_ptr] = 0
-
-            // Compute ∂τ\{σ}
-            node_list cbd = coboundary(sigma_ptr);
-            cbd.erase(std::remove(cbd.begin(), cbd.end(), tau_ptr), cbd.end());
             
-            // Initialize ref_map[tau_ptr] = 0
-            ref_map[tau_ptr] = node_list{nullptr};  
-
-            for (node_ptr cn : cbd) {
-                auto it = ref_map.find(cn);
-                if (it == ref_map.end() || it->second == node_list{nullptr}) {
-                    continue;  // skip undefined or sentinel cases
-                }
-                ref_map[tau_ptr] = sym_diff(ref_map[tau_ptr], it->second);
-            }
         }
     }
     return ref_map;
 }
+*/
+
 
 // Print a Morse Frame (in particular a reference map or a coreference map)
 void MorseSequence::print_morse_frame(morse_frame map){
