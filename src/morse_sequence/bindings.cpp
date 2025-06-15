@@ -5,6 +5,9 @@
 #include "morse_sequence.h"
 using simplex_t = SimplexTree::simplex_t;
 using node_ptr = SimplexTree::node*;
+using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
+using node_list = std::vector<node_ptr>;
+using morse_frame = std::unordered_map<node_ptr, node_list>;
 
 namespace py = pybind11;
 
@@ -12,8 +15,8 @@ py::tuple _Min(MorseSequence &ms, py::list py_S, py::dict py_F) {
     
     const SimplexTree& st = ms.get_simplex_tree();
     
-    // Conversion py::list -> std::vector<node_ptr>
-    std::vector<node_ptr> S;
+    // Conversion py::list -> node_list
+    node_list S;
     for (auto item : py_S) {
         auto simplex = item.cast<simplex_t>();
         S.push_back(st.find(simplex));  // conversion implicite
@@ -51,8 +54,8 @@ py::tuple _Max(MorseSequence &ms, py::list py_S, py::dict py_F) {
     
     const SimplexTree& st = ms.get_simplex_tree();
     
-    // Conversion py::list -> std::vector<node_ptr>
-    std::vector<node_ptr> S;
+    // Conversion py::list -> node_list
+    node_list S;
     for (auto item : py_S) {
         auto simplex = item.cast<simplex_t>();
         S.push_back(st.find(simplex));  // conversion implicite
@@ -125,11 +128,11 @@ py::tuple _decreasing(MorseSequence &ms, SimplexTree& st){
 }
 
 namespace {
-    using boundary_fn_1 = std::vector<node_ptr> (MorseSequence::*)(node_ptr) ;
-    using boundary_fn_2 = std::vector<node_ptr> (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+    using boundary_fn_1 = node_list (MorseSequence::*)(node_ptr) ;
+    using boundary_fn_2 = node_list (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
 
-    using coboundary_fn_1 = std::vector<node_ptr> (MorseSequence::*)(node_ptr) ;
-    using coboundary_fn_2 = std::vector<node_ptr> (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
+    using coboundary_fn_1 = node_list (MorseSequence::*)(node_ptr) ;
+    using coboundary_fn_2 = node_list (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);
 
     using nbboundary_fn_1 = int (MorseSequence::*)(node_ptr);
     using nbboundary_fn_2 = int (MorseSequence::*)(node_ptr, const std::unordered_map<node_ptr, bool>&);

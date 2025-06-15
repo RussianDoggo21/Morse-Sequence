@@ -3,8 +3,6 @@
 
 from simplextree import SimplexTree
 from morse_sequence import MorseSequence
-#import morse_sequence
-#print(dir(morse_sequence))
 from ..max import Max
 from ..min import Min
 from ..increasing import morse_seq_increasing

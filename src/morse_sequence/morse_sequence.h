@@ -4,26 +4,33 @@
 #include "../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
+using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
+using node_list = std::vector<node_ptr>;
+using morse_frame = std::unordered_map<node_ptr, node_list>;
 
 class MorseSequence {
 public:
     explicit MorseSequence(const SimplexTree& st);  
     const SimplexTree& get_simplex_tree();
-    vector<node_ptr> boundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    vector<node_ptr> boundary(node_ptr cn); 
-    vector<node_ptr> coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    vector<node_ptr> coboundary(node_ptr cn);
+    node_list boundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    node_list boundary(node_ptr cn); 
+    node_list coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
+    node_list coboundary(node_ptr cn);
     int nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbboundary(node_ptr cn);
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbcoboundary(node_ptr cn);
-    vector<node_ptr> simplices(std::optional<int> p) const;
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const std::vector<node_ptr>& simplex_list, std::string order, node_ptr s_ptr);
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const std::vector<node_ptr>& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
-    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> increasing(const SimplexTree& st);
-    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> decreasing(const SimplexTree& st);
-    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> Max(const vector<node_ptr>& S, const unordered_map<node_ptr, int>& F);
-    std::pair<std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>, int> Min(const std::vector<node_ptr>& S, const std::unordered_map<node_ptr, int>& F);
+    node_list simplices(std::optional<int> p) const;
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
+    std::pair<m_sequence, int> increasing(const SimplexTree& st);
+    std::pair<m_sequence, int> decreasing(const SimplexTree& st);
+    std::pair<m_sequence, int> Max(const node_list& S, const unordered_map<node_ptr, int>& F);
+    std::pair<m_sequence, int> Min(const node_list& S, const std::unordered_map<node_ptr, int>& F);
+    void print_morse_sequence(std::pair<m_sequence, int> result, bool n_crit = false);
+    morse_frame reference_map(const m_sequence& W);
+    morse_frame coreference_map(const m_sequence& W);
+    void print_morse_frame(morse_frame map);
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input

@@ -12,6 +12,9 @@
 #include <chrono>
 #include <iomanip>
 using SimplexList = std::vector<simplex_t>;  // Vector of simplices
+using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
+using node_list = std::vector<node_ptr>;
+using morse_frame = std::unordered_map<node_ptr, node_list>;
 
 /*
 // Used in order to create types of the form unordered_map<simplex_t, xyz>
@@ -30,8 +33,8 @@ namespace std {
 }
 */
 
-std::vector<simplex_t> MakeFacesVectorized1(int Nr, int Nc) {
-    std::vector<simplex_t> out;
+SimplexList MakeFacesVectorized1(int Nr, int Nc) {
+    SimplexList out;
     out.reserve(2 * (Nr - 1) * (Nc - 1));  // We know in advance the number of triangles
 
     auto r = [=](int i, int j) -> unsigned long { 
@@ -152,40 +155,7 @@ void test(){
     std::chrono::duration<double> duration_dec = end_dec - start_dec;
     std::cout << "Execution time: " << duration_dec.count() << " ms" << std::endl;
 
-    // 3. Extract results from the function
-	auto& morse_sequence_dec = result_dec.first;  // Vector of simplices and pairs
-	int n_crit_dec = result_dec.second;  // The criterion n_crit
-
-	// Display results
-	std::cout << "Number of critical points: " << n_crit_dec << std::endl;
-	
-	for (const auto& item : morse_sequence_dec) {
-        // Check the type of the element
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
-            if (face_ptr) {
-                std::cout << "Critical simplex: ";
-                st.print_simplex(std::cout, face_ptr, true);
-            } else {
-                std::cout << "Null pointer encountered!" << std::endl;
-            }
-        }
-        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
-            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
-            
-            if (pair.first && pair.second) {
-                std::cout << "Pair of simplices: ";
-                st.print_simplex(std::cout, pair.first, false);
-                std::cout <<  " and ";
-                st.print_simplex(std::cout, pair.second, true);
-                std::cout << std::endl;
-            } else {
-                std::cout << "Null pointer in pair!" << std::endl;
-            }
-        }
-        
-    }
+    ms.print_morse_sequence(result_dec);
     
     printf("\n\n\n");
 
@@ -193,52 +163,19 @@ void test(){
 
     printf("Increasing Morse sequence: \n\n");
     auto start_crois = std::chrono::high_resolution_clock::now();
-	auto result = ms.increasing(st);
+	auto result_increasing = ms.increasing(st);
     auto end_crois = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_crois = end_crois - start_crois;
     std::cout << "Execution time: " << duration_crois.count() << " ms" << std::endl;
   
-    // 3. Extract results from the function
-	auto& morse_sequence = result.first;  // Vector of simplices and pairs
-	int n_crit = result.second;  // The criterion n_crit
-
-    // Display results
-	std::cout << "Number of critical points: " << n_crit << std::endl;
-	
-	for (const auto& item : morse_sequence) {
-        // Check the type of the element
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
-            if (face_ptr) {
-                std::cout << "Critical simplex: ";
-                st.print_simplex(std::cout, face_ptr, true);
-            } else {
-                std::cout << "Null pointer encountered!" << std::endl;
-            }
-        }
-        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
-            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
-            
-            if (pair.first && pair.second) {
-                std::cout << "Pair of simplices: ";
-                st.print_simplex(std::cout, pair.first, false);
-                std::cout <<  " and ";
-                st.print_simplex(std::cout, pair.second, true);
-                std::cout << std::endl;
-            } else {
-                std::cout << "Null pointer in pair!" << std::endl;
-            }
-        }
-        
-    }
+    ms.print_morse_sequence(result_increasing);
     
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
     // S = sorted(ms.simplices(), key=lambda x: (len(x), x))
-    std::vector<node_ptr> S = ms.simplices(std::nullopt);
+    node_list S = ms.simplices(std::nullopt);
 
     std::sort(S.begin(), S.end(), [st](node_ptr a_ptr, node_ptr b_ptr) {
         if (st.depth(a_ptr) != st.depth(b_ptr)) return st.depth(a_ptr) < st.depth(b_ptr);
@@ -267,47 +204,14 @@ void test(){
     std::chrono::duration<double> duration_max = end_max - start_max;
     std::cout << "Execution time: " << duration_max.count() << " ms" << std::endl;
    
-    // 3. Extract results from the function
-	auto& morse_sequence_max = result_max.first;  // Vector of simplices and pairs
-	int n_crit_max = result_max.second;  // The criterion n_crit
-
-	// Display results
-	std::cout << "Number of critical points: " << n_crit_max << std::endl;
-	
-	for (const auto& item : morse_sequence_max) {
-        // Check the type of the element
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
-            if (face_ptr) {
-                std::cout << "Critical simplex: ";
-                st.print_simplex(std::cout, face_ptr, true);
-            } else {
-                std::cout << "Null pointer encountered!" << std::endl;
-            }
-        }
-        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
-            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
-            
-            if (pair.first && pair.second) {
-                std::cout << "Pair of simplices: ";
-                st.print_simplex(std::cout, pair.first, false);
-                std::cout <<  " and ";
-                st.print_simplex(std::cout, pair.second, true);
-                std::cout << std::endl;
-            } else {
-                std::cout << "Null pointer in pair!" << std::endl;
-            }
-        }
-        
-    }
+    ms.print_morse_sequence(result_max);
     
     printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
     // 1. Retrieve simplices and sort by decreasing dimension then lexicographically decreasing
-    std::vector<node_ptr> S2 = ms.simplices(std::nullopt);
+    node_list S2 = ms.simplices(std::nullopt);
 
     std::sort(S2.begin(), S2.end(), [st](node_ptr a_ptr, node_ptr b_ptr) {
         if (st.depth(a_ptr) != st.depth(b_ptr)) return st.depth(a_ptr) > st.depth(b_ptr); // decreasing order
@@ -331,55 +235,22 @@ void test(){
 
 	printf("Min\n\n");
     auto start_min = std::chrono::high_resolution_clock::now();
-	auto result2 = ms.Min(S2, F2);
+	auto result_min = ms.Min(S2, F2);
     auto end_min = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_min = end_min - start_min;
     std::cout << "Execution time: " << duration_min.count() << " ms" << std::endl;
 
-	// 3. Extract results from the function
-	auto& morse_sequence2 = result2.first;  // Vector of simplices and pairs
-	int n_crit2 = result2.second;  // The criterion n_crit
-
-	// Display results
-	std::cout << "Number of critical points: " << n_crit2 << std::endl;
-	
-	
-	for (const auto& item : morse_sequence2) {
-        // Check the type of the element
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
-            if (face_ptr) {
-                std::cout << "Critical simplex: ";
-                st.print_simplex(std::cout, face_ptr, true);
-            } else {
-                std::cout << "Null pointer encountered!" << std::endl;
-            }
-        }
-        else if (std::holds_alternative<std::pair<node_ptr, node_ptr>>(item)) {
-            std::pair<node_ptr, node_ptr> pair = std::get<std::pair<node_ptr, node_ptr>>(item);
-            
-            if (pair.first && pair.second) {
-                std::cout << "Pair of simplices: ";
-                st.print_simplex(std::cout, pair.first, false);
-                std::cout << " and ";
-                st.print_simplex(std::cout, pair.second, true);
-                std::cout << std::endl;
-            } else {
-                std::cout << "Null pointer in pair!" << std::endl;
-            }
-        }
-        
-    }
+	ms.print_morse_sequence(result_min);
 
 	printf("\n\n\n");
 
 /* ----------------------------------------------------------------------------------------------------------------------------------------------------------- */
 }
 
-void test_coboundary(){
+void test_reference_map(){
     SimplexTree st;  // Creation of a simplicial complex
-    //SimplexList L = {{0,1,2}, {0,1,3}};
+    SimplexList L = {{0,1,2}};
+    /*
     SimplexList L = {
                         {1, 5, 7}, {1, 2, 7},  // Top left
                         {2, 7, 9}, {2, 3, 9},  // Top middle
@@ -391,6 +262,7 @@ void test_coboundary(){
                         {2, 3, 6}, {3, 6, 8},  // Bottom middle
                         {1, 3, 8}, {1, 4, 8}   // Bottom right
                     };
+    */
     
 	for (simplex_t s : L){
 		st.insert(s);
@@ -398,34 +270,27 @@ void test_coboundary(){
 
 	MorseSequence ms(st); 
 
-    std::unordered_map<node_ptr, bool> Sdict;
+    auto result = ms.increasing(st);
 
-    for (node_ptr cn : ms.simplices(std::nullopt)){
-        Sdict[cn] = true;
-    }
+    ms.print_morse_sequence(result, true);
 
+    morse_frame reference_map = ms.reference_map(result.first);
+    morse_frame coreference_map = ms.coreference_map(result.first);
 
-    for (unsigned long i = 1; i < 10; ++i) {
-        simplex_t sigma = {i};
-        node_ptr cn = st.find(sigma);
-        vector<node_ptr> coboundary = ms.coboundary(cn, Sdict);
+    std::cout << "Reference Map:\n";
+    ms.print_morse_frame(reference_map);
 
-        std::cout << "Coboundary of ";
-        st.print_simplex(std::cout, cn, false );
-        std::cout << " = ";
-        for (node_ptr c : coboundary){
-            st.print_simplex(std::cout, c, false);
-        }
-        printf("\n");
-    }
+    std::cout << "Coreference Map:\n";
+    ms.print_morse_frame(coreference_map);
+   
 }
 
 int main() {
-	printf("Start of main\n");
-    //test_coboundary();
+	printf("Start of main\n\n");
+    test_reference_map();
     //test();
-    timer_comparison();
-    printf("End of main\n");
+    //timer_comparison();
+    printf("End of main");
     return 0;
 }
 
