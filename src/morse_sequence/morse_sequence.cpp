@@ -13,51 +13,32 @@ MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) {
 	std::cout << "MorseSequence created\n" << std::endl;
 }
 
+
 // Getter for the SimplexTree associated with the MorseSequence object
 const SimplexTree& MorseSequence::get_simplex_tree() {
     return simplex_tree;
 }
 
-/*
-//Function too costly due to the construction of the object faces<>
-// Returns the pointers of the simplices forming the boundary of a simplex sigma with a filtration on S
-node_list MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
-    node_list boundary;
-    faces<> bord(&simplex_tree, cn); // Iterators on the faces of the simplex cn
-    
-    for (auto& face : bord) { // Iterating on each face of cn
-        node_ptr face_ptr = std::get<0>(face); // Retrieving the face
-        if (simplex_tree.depth(face_ptr) == simplex_tree.depth(cn) - 1) { // First verification: dim(face_ptr) == dim(cn) - 1
-            if (S.find(face_ptr) != S.end() && S.at(face_ptr)) { // Second verification: face_ptr is in S and S[face_ptr] == true
-                boundary.push_back(face_ptr); // Adding the face to the boundary
-            }
-        }
-    }
-    return boundary;
-}
-*/
-
 
 node_list MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
     node_list boundary;
-    simplex_t sigma = simplex_tree.full_simplex(cn); // récupère [v₀, ..., vₚ]
+    simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
 
     for (size_t i = 0; i < sigma.size(); ++i) {
         simplex_t face = sigma;
-        face.erase(face.begin() + i); // enlève le i-ème sommet pour créer une face
+        face.erase(face.begin() + i); // delete the i-th vertex to create a face 
 
-        node_ptr f = simplex_tree.find(face); // retrouve le pointeur de la face
+        node_ptr f = simplex_tree.find(face); // find the pointer of the face
         if (f && S.find(f) != S.end() && S.at(f)) {
             boundary.push_back(f);
         }
     }
     return boundary;
 }
-    
 
 node_list MorseSequence::boundary(node_ptr cn) {
     node_list boundary;
-    simplex_t sigma = simplex_tree.full_simplex(cn); // récupère [v₀, ..., vₚ]
+    simplex_t sigma = simplex_tree.full_simplex(cn); 
     
     if (sigma.size() == 1){
         return {};
@@ -65,33 +46,15 @@ node_list MorseSequence::boundary(node_ptr cn) {
 
     for (size_t i = 0; i < sigma.size(); ++i) {
         simplex_t face = sigma;
-        face.erase(face.begin() + i); // enlève le i-ème sommet pour créer une face
+        face.erase(face.begin() + i); 
 
-        node_ptr f = simplex_tree.find(face); // retrouve le pointeur de la face
+        node_ptr f = simplex_tree.find(face); 
         if (f && f != nullptr) {
             boundary.push_back(f);
         }
     }
     return boundary;
 }
-
-/*
-NE FONCTIONNE PAS
-node_list MorseSequence::coboundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
-    node_list coboundary;
-
-    for (const auto& child_uptr : cn->children) {
-        node_ptr child = child_uptr.get(); // pointeur brut vers l'enfant
-
-        // On vérifie que le simplexe enfant est bien dans S et actif
-        if (S.find(child) != S.end() && S.at(child)) {
-            coboundary.push_back(child);
-        }
-    }
-
-    return coboundary;
-}
-*/
 
 
 // Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
@@ -133,6 +96,7 @@ int MorseSequence::nbboundary(node_ptr cn){
     return (this->boundary(cn)).size();
 }
 
+
 // Returns the number of cofaces of the simplex linked to pointer cn with a filtration on S
 int MorseSequence::nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
     return (this->coboundary(cn, S)).size();
@@ -141,6 +105,7 @@ int MorseSequence::nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>
 int MorseSequence::nbcoboundary(node_ptr cn){
     return (this->coboundary(cn)).size();
 }
+
 
 // Returns the p-simplices of the simplicial complex if p is specified
 // Returns all simplices if p is not specified
@@ -170,6 +135,7 @@ node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 	return F;
 }
 
+
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
 // Private function
 node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr){
@@ -177,7 +143,6 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, co
     if (order == "decreasing"){
         for (node_ptr v0 : simplex_list){
             auto it = T.find(v0);
-            //if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
             if (it != T.end() && !it->second && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) + 1)) {
                 v = v0;
             }       
@@ -186,8 +151,7 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, co
     else if (order == "increasing"){
         for (node_ptr v0 : simplex_list){
             auto it = T.find(v0);
-            //if (!T[v0] && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
-             if (it != T.end() && !it->second && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
+            if (it != T.end() && !it->second && simplex_tree.depth(v0) == (simplex_tree.depth(s_ptr) - 1)) {
                 v = v0;
             }
         }
@@ -201,7 +165,6 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,con
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
         auto it = T.find(v0);
-        //if (!T[v0] && F.at(v0) == F.at(s_ptr)) {
         if (it != T.end() && !it->second && F.at(v0) == F.at(s_ptr)) {
             v = v0;
         }
@@ -252,115 +215,61 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
         }
     }
 
-    /*
-    for (node_ptr cn : K){
-        printf("nbboundary of ");
-        st.print_simplex(std::cout, cn, false);
-        std::cout << " = " << rho[cn];
-        printf(" Boundary of ");
-        st.print_simplex(std::cout, cn, false);
-        printf(": ");
-        for (node_ptr c : this->boundary(cn)){
-            st.print_simplex(std::cout, c, false);
-            if (c == nullptr){
-                printf(" null ptr detected in boundary of ");
-                st.print_simplex(std::cout, cn, false);
-            }
-        }
-        printf("\n");
-    }
-    */
-
-    //printf("increasing : Initialisation terminée\n ");
     while (i < N) { // while we still haven't used all the simplices of st
-        //std::cout << "i = " << i << std::endl;
-        //std::cout << "size of L = " << L.size() << std::endl;
-        try {
-            while (!L.empty()) { // while we can still add free pairs
-                //printf("Entrée dans L");
-                // tau_ptr: upper element of the free pair
-                node_ptr tau_ptr = L.back(); 
-                L.pop_back();
 
-                /*
-                printf("\ntau = ");
-                st.print_simplex(std::cout, tau_ptr, true);
-                printf("rho[");
-                st.print_simplex(std::cout, tau_ptr, false);
-                std::cout << "] = " << rho[tau_ptr] <<  " \n";
-                */
+        while (!L.empty()) { // while we can still add free pairs
+            // tau_ptr: upper element of the free pair
+            node_ptr tau_ptr = L.back(); 
+            L.pop_back();
 
-                if (rho[tau_ptr] == 1) { // if tau_ptr only has one face
+            if (rho[tau_ptr] == 1) { // if tau_ptr only has one face
 
-                    // sigma_ptr: lower element of the free pair
-                    
-                    //printf("Boundary");
-                    //node_list bd = this->boundary(tau_ptr, Sdict);
-                    node_list bd = this->boundary(tau_ptr);
-                    
-                    /*
-                    printf("Boundary of ");
-                    st.print_simplex(std::cout, tau_ptr, false);
-                    printf(": ");
-                    for (node_ptr cn : bd){
-                        st.print_simplex(std::cout, cn, false);
-                        std::cout << "T value = " << T[cn] << "\n";
-                    }
-                    */
-                    
+                // sigma_ptr: lower element of the free pair
+                
+                //node_list bd = this->boundary(tau_ptr, Sdict);
+                node_list bd = this->boundary(tau_ptr);                
+                node_ptr sigma_ptr = this->find_out(T, bd, "increasing", tau_ptr);
 
-                    node_ptr sigma_ptr = this->find_out(T, bd, "increasing", tau_ptr);
-
-                    
-                    //printf("sigma = ");
-                    //st.print_simplex(std::cout, sigma_ptr, true);
-                    
-
-                    // Update MorseSequence and T
-                    MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
-                    T[tau_ptr] = true;
-                    T[sigma_ptr] = true;
-
-                    // Update rho and L
-                    //printf("Update rho and L");
-                    //std::node_list cob1 = this->coboundary(sigma_ptr, Sdict);
-                    //std::node_list cob2 = this->coboundary(tau_ptr, Sdict);
-                    node_list cob1 = this->coboundary(sigma_ptr);
-                    node_list cob2 = this->coboundary(tau_ptr);
-                    cob1.insert(cob1.end(), cob2.begin(), cob2.end());
-                    for (node_ptr mu : cob1) {
-                        rho[mu] -= 1;
-                        if (rho[mu] == 1) {
-                            L.push_back(mu);
-                        }
-                    }
-                }
-            }
-
-            while (i < N && T[K[i]]) { // while we still haven't used all the simplices of st
-                i++;
-            }
-
-            if (i < N) { // At that point, L is empty
-                node_ptr sigma_ptr = K[i]; // sigma_ptr is a critical simplex
-
-                // Update MorseSequence, n_crit and T
-                MorseSequence.push_back(sigma_ptr); 
-                n_crit++;
+                // Update MorseSequence and T
+                MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
+                T[tau_ptr] = true;
                 T[sigma_ptr] = true;
 
                 // Update rho and L
-                //printf("Update rho and L");
-                //for (node_ptr tau_ptr : this->coboundary(sigma_ptr, Sdict)) {
-                for (node_ptr tau_ptr : this->coboundary(sigma_ptr)) {
-                    rho[tau_ptr] -= 1;
-                    if (rho[tau_ptr] == 1) {
-                        L.push_back(tau_ptr);
+                //std::node_list cob1 = this->coboundary(sigma_ptr, Sdict);
+                //std::node_list cob2 = this->coboundary(tau_ptr, Sdict);
+                node_list cob1 = this->coboundary(sigma_ptr);
+                node_list cob2 = this->coboundary(tau_ptr);
+                cob1.insert(cob1.end(), cob2.begin(), cob2.end());
+                for (node_ptr mu : cob1) {
+                    rho[mu] -= 1;
+                    if (rho[mu] == 1) {
+                        L.push_back(mu);
                     }
                 }
             }
-        } catch (const std::invalid_argument& e) {
-            std::cerr << "Exception attrapée dans L : " << e.what() << std::endl;
+        }
+
+        while (i < N && T[K[i]]) { // while we still haven't used all the simplices of st
+            i++;
+        }
+
+        if (i < N) { // At that point, L is empty
+            node_ptr sigma_ptr = K[i]; // sigma_ptr is a critical simplex
+
+            // Update MorseSequence, n_crit and T
+            MorseSequence.push_back(sigma_ptr); 
+            n_crit++;
+            T[sigma_ptr] = true;
+
+            // Update rho and L
+            //for (node_ptr tau_ptr : this->coboundary(sigma_ptr, Sdict)) {
+            for (node_ptr tau_ptr : this->coboundary(sigma_ptr)) {
+                rho[tau_ptr] -= 1;
+                if (rho[tau_ptr] == 1) {
+                    L.push_back(tau_ptr);
+                }
+            }
         }
     }
 
@@ -397,8 +306,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
         //Sdict[cn] = false;
     }
 
-    //printf("First use of coboundary...\n");
-
     // Initialization of Sdict, rho and L
     for (node_ptr cn : K) {
         //Sdict[cn] = true;
@@ -410,8 +317,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
         }
     }
 
-    //printf("Done\n");
-
     while (i < N) { // while we still haven't used all the simplices of st
         while (!L.empty()) { // while we still can add free pairs
             
@@ -421,20 +326,11 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
  
             
             if (rho[sigma_ptr] == 1) { // if sigma_ptr has only one coface
-                
-                // std::cout << "coboundary (free pair), i = " << i << std::endl;
 
                 // tau_ptr: upper element of the free pair
                 //std::node_list cofaces = this->coboundary(sigma_ptr, Sdict);
                 node_list cofaces = this->coboundary(sigma_ptr);
                 node_ptr tau_ptr = this->find_out(T, cofaces, "decreasing", sigma_ptr);
-
-                /*
-                std::cout << "sigma = ";
-                st.print_simplex(std::cout, sigma_ptr, false);
-                std::cout << "tau = ";
-                st.print_simplex(std::cout, tau_ptr, true);
-                */
 
                 // Update MorseSequence and T
                 MorseSequence.push_back(std::make_pair(sigma_ptr, tau_ptr));
@@ -481,6 +377,7 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 
     return {MorseSequence, n_crit};
 }
+
 
 // Build a maximal F-sequence
 std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::unordered_map<node_ptr, int>& F) {
@@ -560,7 +457,6 @@ std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::uno
 
     return {MorseSequence, n_crit};
 }
-
 
 
 // Build a minimal F-sequence
@@ -644,6 +540,7 @@ std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const std::uno
     return {MorseSequence, n_crit};
 }
 
+
 // Print the morse_reference and the number of critical simplices
 void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool n_crit){
     
@@ -658,7 +555,8 @@ void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool
 	
 	for (const auto& item : morse_sequence) {
         // Check the type of the element
-        if (std::holds_alternative<node_ptr>(item)) {
+
+        if (std::holds_alternative<node_ptr>(item)) { // Critical simplex
             node_ptr face_ptr = std::get<node_ptr>(item);
             // Check here if face_ptr is not a null pointer before using it
             if (face_ptr) {
@@ -668,7 +566,7 @@ void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool
                 std::cout << "Null pointer encountered!" << std::endl;
             }
         }
-        else if (std::holds_alternative<node_pair>(item)) {
+        else if (std::holds_alternative<node_pair>(item)) { // Free pair
             node_pair pair = std::get<node_pair>(item);
             
             if (pair.first && pair.second) {
@@ -691,7 +589,6 @@ node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
 
     node_list result; // Final symmetric difference to be returned
     result.reserve(A.size() + B.size()); // To avoid re‑alloc
-
     std::unordered_set<node_ptr> node_buffer; // Contains the nodes seen in A 
 
     // Firstly, we memorize every node that is in A
@@ -712,8 +609,7 @@ node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
     // Remove nullptr if present in result (optional safety)
     result.erase(std::remove(result.begin(), result.end(), nullptr), result.end());
 
-    // If symmetric difference is empty, return list containing nullptr
-    if (result.empty()) {
+    if (result.empty()) { // If symmetric difference is empty, return list containing nullptr
         return node_list{nullptr};
     } else {
         return result; // A△B
@@ -790,80 +686,6 @@ node_list MorseSequence::Gamma(node_ptr cn, const std::unordered_map<node_ptr,no
 }
 
 
-
-
-
-
-
-
-
-
-    // First design, left because it didn't respect the DRY (Don't Repeat Yourself) principle
-    /*
-
-    // We then pair cn with either its upper pair tau or its lower pair sigma
-    // We act in consequence afterwards 
-    if (order == "reference"){
-        node_ptr sigma_ptr = cn;
-        std::unordered_map<node_ptr, node_ptr> sigma2tau = pair_link;
-        auto it_pair = sigma2tau.find(sigma_ptr);
-        node_ptr tau_ptr = it_pair->second;
-
-        // Compute ∂τ\{σ}  
-        node_list bd = this->boundary(tau_ptr);
-        bd.erase(std::remove(bd.begin(), bd.end(), sigma_ptr), bd.end());
-
-        // Computation of the final result
-        // Recursive call of Gamma on each node_ptr in bd to "add them up" afterwards, using the symmetrical difference
-        for (node_ptr v : bd) {
-            node_list gamma_v = Gamma(v, sigma2tau, cache, "reference");  // Recursive call
-
-            // Trivial case, gamma_v = "0" (node_list{null_ptr})
-            // A △ "0" = A : No need to compute the symmetrical difference
-            if (gamma_v == node_list{nullptr}) continue;
-
-            // General case, gamma_v != "0"
-            if (result == node_list{nullptr}) {
-                result = gamma_v; // Special case, no need to compute the symmetrical difference
-            } else {
-                result = sym_diff(result, gamma_v);
-            }
-        }
-        // Update of cache for the memoization
-        cache[sigma_ptr] = result;
-    }
-
-    else if (order == "coreference") { 
-        node_ptr tau_ptr = cn;
-        std::unordered_map<node_ptr, node_ptr> tau2sigma = pair_link;
-        auto it_pair = tau2sigma.find(tau_ptr);
-        node_ptr sigma_ptr = it_pair->second;
-
-        // Compute δ(σ)∖τ
-        node_list cbd = this->coboundary(sigma_ptr);
-        cbd.erase(std::remove(cbd.begin(), cbd.end(), tau_ptr), cbd.end());
-
-        // Computation of the final result
-        // Recursive call of Gamma on each node_ptr in bd to "add them up" afterwards, using the symmetrical difference
-        for (node_ptr v : cbd) {
-            node_list gamma_v = Gamma(v, tau2sigma, cache, "coreference");  // Recursive call
-
-            // Trivial case, gamma_v = "0" (node_list{null_ptr})
-            // A △ "0" = A : No need to compute the symmetrical difference
-            if (gamma_v == node_list{nullptr}) continue;
-
-            // General case, gamma_v != "0"
-            if (result == node_list{nullptr}) {
-                result = gamma_v; // Special case, no need to compute the symmetrical difference
-            } else {
-                result = sym_diff(result, gamma_v);
-            }
-        }
-        // Update of cache for the memoization
-        cache[tau_ptr] = result;
-    }
-    */
-
 // Computes the reference map from a morse sequence W
 morse_frame MorseSequence::reference_map(const m_sequence& W){
     
@@ -901,6 +723,7 @@ morse_frame MorseSequence::reference_map(const m_sequence& W){
 
     return ref_map;
 }
+
 
 // Computes the coreference map from a morse sequence W
 morse_frame MorseSequence::coreference_map(const m_sequence& W){
