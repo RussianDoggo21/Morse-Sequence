@@ -628,8 +628,9 @@ node_list MorseSequence::Gamma(node_ptr cn, const node_map& sigma2tau, const nod
     // cache : used in the process of memoization
     // mode : to know if we compute a reference or a coreference
 
-    printf("cache :\n");
-    this->print_morse_frame(cache);
+    //printf("cache :\n");
+    //this->print_morse_frame(cache);
+
     // Special case : gamma(cn) has already been computed before,
     // gamma(cn) is stored in cache -> We make use of memoization
     auto hit = cache.find(cn);
@@ -654,24 +655,24 @@ node_list MorseSequence::Gamma(node_ptr cn, const node_map& sigma2tau, const nod
 
         // if cn is critical
         if (it == sigma2tau.end() && it2 == tau2sigma.end()) {   
-            printf("Simplexe critique trouvé : ");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe critique trouvé : ");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{cn}; // σ is critical -> Γ'(σ) = {σ}
             return node_list{cn}; // We are done
         }
 
         // if cn is an upper simplex 
         else if (it2 != tau2sigma.end()){ 
-            printf("Simplexe supérieur trouvé : ");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe supérieur trouvé : ");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{nullptr}; // Γ'(cn) = "0"
             return node_list{nullptr}; // We are done
         }
 
         // if cn is a lower simplex
         else { 
-            printf("Simplexe inférieur trouvé (cas général)");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe inférieur trouvé (cas général)");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             sigma_ptr = cn; // The simplex on which we want to compute the reference
             tau_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
             traversal = [&](node_ptr n) { return this->boundary(n); }; // The function needed to compute the reference
@@ -689,24 +690,24 @@ node_list MorseSequence::Gamma(node_ptr cn, const node_map& sigma2tau, const nod
 
         // if cn is critical
         if (it == tau2sigma.end() && it2 == sigma2tau.end()) {   
-            printf("Simplexe critique trouvé : ");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe critique trouvé : ");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{cn}; // Γ''(σ) = {σ}
             return node_list{cn}; // We are done
         }
 
         // if cn is a lower simplex
         else if (it2 != sigma2tau.end()){ 
-            printf("Simplexe inférieur trouvé : ");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe inférieur trouvé : ");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{nullptr}; // Γ''(cn) = "0"
             return node_list{nullptr}; // We are done
         }
 
         // if cn is a upper simplex
         else{
-            printf("Simplexe supérieur trouvé (cas général)");
-            simplex_tree.print_simplex(std::cout, cn, true);
+            //printf("Simplexe supérieur trouvé (cas général)");
+            //simplex_tree.print_simplex(std::cout, cn, true);
             tau_ptr = cn; // The simplex on which we want to compute the coreference
             sigma_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
             traversal = [&](node_ptr n) { return this->coboundary(n); }; // The function needed to compute the coreference
@@ -740,7 +741,7 @@ node_list MorseSequence::Gamma(node_ptr cn, const node_map& sigma2tau, const nod
         }
     }
 
-    printf("\n\n");
+    //printf("\n\n");
 
     cache[erase_ptr] = result;
     return result;
@@ -832,15 +833,60 @@ morse_frame MorseSequence::coreference_map(const m_sequence& W){
 
 
 // Print a Morse Frame (in particular a reference map or a coreference map)
-void MorseSequence::print_morse_frame(morse_frame map){
-    for (const auto& [key, val] : map) {
-        std::cout << "  Key: ";
-        simplex_tree.print_simplex(std::cout, key, false);
-        std::cout << " -> Value: ";
-        for (node_ptr cn : val){
-            simplex_tree.print_simplex(std::cout, cn, false);
-        }  
-        std::cout << "\n";
+void MorseSequence::print_morse_frame(morse_frame& map, const m_sequence& W){
+    for (const auto& item : W){
+
+        if (std::holds_alternative<node_ptr>(item)) { // Critical simplex
+            node_ptr face_ptr = std::get<node_ptr>(item);
+            // Check here if face_ptr is not a null pointer before using it
+            if (face_ptr) {
+                std::cout << "Key (Critical simplex): ";
+                simplex_tree.print_simplex(std::cout, face_ptr, false);
+                std::cout << " -> Value: ";
+                for (node_ptr cn : map[face_ptr]){
+                    simplex_tree.print_simplex(std::cout, cn, false);
+                }  
+            } else {
+                std::cout << "Null pointer encountered!" << std::endl;
+            }
+            printf("\n");
+        }
+        else if (std::holds_alternative<node_pair>(item)) { // Free pair
+            node_pair pair = std::get<node_pair>(item);
+            
+            if (pair.first && pair.second) {
+                std::cout << "Pair of simplices: \n";
+                std::cout << "Key (Lower pair)";
+                simplex_tree.print_simplex(std::cout, pair.first, false);
+                std::cout << " -> Value: ";
+                for (node_ptr cn : map[pair.first]){
+                    simplex_tree.print_simplex(std::cout, cn, false);
+                }  
+                printf("\n");
+                std::cout << "Key (Upper pair) ";
+                simplex_tree.print_simplex(std::cout, pair.second, false);
+                std::cout << " -> Value: ";
+                for (node_ptr cn : map[pair.second]){
+                    simplex_tree.print_simplex(std::cout, cn, false);
+                }  
+            } else {
+                std::cout << "Null pointer in pair!" << std::endl;
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        /*
+        for (const auto& [key, val] : map) {
+            std::cout << "  Key: ";
+            simplex_tree.print_simplex(std::cout, key, false);
+            std::cout << " -> Value: ";
+            for (node_ptr cn : val){
+                simplex_tree.print_simplex(std::cout, cn, false);
+            }  
+            std::cout << "\n";
+        }
+        */
     }
     printf("\n");
 }

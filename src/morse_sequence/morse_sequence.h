@@ -31,7 +31,7 @@ public:
     void print_morse_sequence(std::pair<m_sequence, int> result, bool n_crit = false);
     morse_frame reference_map(const m_sequence& W);
     morse_frame coreference_map(const m_sequence& W);
-    void print_morse_frame(morse_frame map);
+    void print_morse_frame(morse_frame& map, const m_sequence& W);
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
