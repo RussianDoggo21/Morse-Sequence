@@ -275,7 +275,6 @@ void test_reference_map(){
 
     ms.print_morse_sequence(result, true);
 
-
     morse_frame reference_map = ms.reference_map(W);
     morse_frame coreference_map = ms.coreference_map(W);
 

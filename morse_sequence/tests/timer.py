@@ -38,7 +38,7 @@ def timer_comparison():
 
         
         start_dec = time.time()
-        ms_dec, n_crit_dec = ms.ms_decreasing(st)
+        ms_dec, n_crit_dec = ms.decreasing(st)
         end_dec = time.time()
         time_dec = end_dec - start_dec
         print(f"décroissante C++/python : {time_dec:.6f} secondes")
@@ -55,7 +55,7 @@ def timer_comparison():
 
         
         start_crois = time.time()
-        ms_crois, n_crit_crois = ms.ms_increasing(st)
+        ms_crois, n_crit_crois = ms.increasing(st)
         end_crois = time.time()
         time_crois = end_crois - start_crois
         print(f"croissante C++/python : {time_crois:.6f} secondes")

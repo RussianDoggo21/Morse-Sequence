@@ -823,9 +823,9 @@ morse_frame MorseSequence::coreference_map(const m_sequence& W){
 
     // Case of regular pairs
     // Use of Gamma()
-    for (const auto& [sigma_ptr, tau_ptr] : tau2sigma) {
+    for (const auto& [tau_ptr, sigma_ptr] : tau2sigma) {
         coref_map[sigma_ptr] = {nullptr}; // Υ′′(sigma) = 0
-        coref_map[tau_ptr] = Gamma(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference);
+        coref_map[tau_ptr] = Gamma(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference);
     }
 
     return coref_map;
@@ -875,18 +875,6 @@ void MorseSequence::print_morse_frame(morse_frame& map, const m_sequence& W){
             printf("\n");
         }
         printf("\n");
-
-        /*
-        for (const auto& [key, val] : map) {
-            std::cout << "  Key: ";
-            simplex_tree.print_simplex(std::cout, key, false);
-            std::cout << " -> Value: ";
-            for (node_ptr cn : val){
-                simplex_tree.print_simplex(std::cout, cn, false);
-            }  
-            std::cout << "\n";
-        }
-        */
     }
     printf("\n");
 }
