@@ -1,11 +1,11 @@
 [
   {
-    "name": "morse_sequence.cpython-313-x86_64-linux-gnu",
-    "id": "morse_sequence.cpython-313-x86_64-linux-gnu.so@sha",
+    "name": "morse_sequence._core.cpython-313-x86_64-linux-gnu",
+    "id": "morse_sequence._core.cpython-313-x86_64-linux-gnu.so@sha",
     "type": "shared module",
     "defined_in": "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/meson.build",
     "filename": [
-      "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence.cpython-313-x86_64-linux-gnu.so"
+      "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence._core.cpython-313-x86_64-linux-gnu.so"
     ],
     "build_by_default": true,
     "target_sources": [
@@ -16,10 +16,10 @@
           "c++"
         ],
         "parameters": [
-          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence.cpython-313-x86_64-linux-gnu.so.p",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build/morse_sequence._core.cpython-313-x86_64-linux-gnu.so.p",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/build",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence",
-          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/_core",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/simplextree-py/include",
           "-I/usr/include/python3.13",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include",
@@ -36,8 +36,9 @@
           "-fPIC"
         ],
         "sources": [
-          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/bindings.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/morse_sequence.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/_core/bindings.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/_core/morse_sequence.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/simplex_batch/batch.cpp",
           "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/simplextree-py/simplextree/_simplextree.cpp"
         ],
         "generated_sources": [],
@@ -64,7 +65,7 @@
     "depends": [],
     "installed": true,
     "install_filename": [
-      "/usr/local/lib/python3/dist-packages/morse_sequence.cpython-313-x86_64-linux-gnu.so"
+      "/usr/local/lib/python3/dist-packages/morse_sequence._core.cpython-313-x86_64-linux-gnu.so"
     ]
   }
 ]

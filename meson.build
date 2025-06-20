@@ -18,14 +18,15 @@ simplextree_sources = files(
 )
 
 # Define the Python extension module
-py.extension_module('morse_sequence',
+py.extension_module('morse_sequence._core',
   sources: [
-    'src/morse_sequence/bindings.cpp',
-    'src/morse_sequence/morse_sequence.cpp',
+    'src/morse_sequence/_core/bindings.cpp',
+    'src/morse_sequence/_core/morse_sequence.cpp',
+    'src/morse_sequence/simplex_batch/batch.cpp',
     simplextree_sources
   ],
   include_directories: [
-    include_directories('src/morse_sequence'),
+    include_directories('src/morse_sequence/_core'),
     simplextree_inc
   ],
   dependencies: [pybind11_dep],

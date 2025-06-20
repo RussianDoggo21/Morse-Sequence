@@ -1,15 +1,6 @@
 # ninja log v5
-3	4652	1749737081526025778	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
-9	9071	1749134193501178623	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o	5e7a38b793a9e4bc
-4652	5080	1749737081945815788	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
-19	2707	1749736097994025662	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o	51e574d1ac07f08e
-1	689	1749741945253044959	build.ninja	1d2b28c38a4071dc
-0	541	1749741945253044959	build.ninja	1d2b28c38a4071dc
-3	501	1749741990434443525	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
-9	4739	1750191586388834747	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_morse_sequence.cpp.o	51e574d1ac07f08e
-3	7168	1750192148213720295	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
-7168	7627	1750192148681486301	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
-2	5673	1750193445384826341	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
-5673	6013	1750193445736650346	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
-3	5330	1750194017758503501	morse_sequence.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_bindings.cpp.o	5fab9b2aec98db59
-5331	5639	1750194018070347520	morse_sequence.cpython-313-x86_64-linux-gnu.so	4fc0b453dd2b84ad
+1	3384	1750426860811634550	morse_sequence._core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o	dd5fb45e14402ec9
+1	4856	1750426862294892555	morse_sequence._core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_simplex_batch_batch.cpp.o	78d8cb1e69872537
+0	6726	1750426864129974561	morse_sequence._core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o	a51bfa752635f9c4
+6	8525	1750426865953062586	morse_sequence._core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o	ccbd540321f35deb
+8525	8959	1750426866404836597	morse_sequence._core.cpython-313-x86_64-linux-gnu.so	a9ef3029323c053d
