@@ -43,9 +43,7 @@ Step 2 : Update your files if necessary
         - bindings.cpp for exposing C++ code to python
         - pyproject.toml to modify the number of the version
 
-Step 3 : - meson setup build OU meson setup build --reconfigure(if necessary)
-         - cd build
-         - meson compile 
-         - sudo meson install
-
-Step 4 : Delete the old .so file and copy the new .so file from the build directory to the morse_sequence directory (python)
+Step 3: rm -rf build
+        meson setup build --prefix=$VIRTUAL_ENV
+        meson compile -C build
+        meson install -C build

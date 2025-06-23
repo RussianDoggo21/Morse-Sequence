@@ -1,4 +1,3 @@
-#include <pybind11/embed.h>   //  ⇐ embeddable interpreter
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/pybind11.h>
@@ -305,7 +304,7 @@ namespace {
 
 
 
-PYBIND11_MODULE(morse_sequence, m) {
+PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
 
     py::class_<MorseSequence>(m, "MorseSequence")

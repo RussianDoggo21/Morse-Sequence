@@ -1,34 +1,44 @@
 project('morse_sequence', 'cpp',
-  version: '0.2',
-  default_options: ['cpp_std=c++17']
+  version : '0.2',
+  default_options : ['cpp_std=c++17']
 )
 
-# Find Python installation
-py = import('python').find_installation()
+py = import('python').find_installation()          # Python du venv
+pybind11_dep = dependency('pybind11', required : true)
 
-# Dependency for pybind11
-pybind11_dep = dependency('pybind11', required: true)
-
-# Include directories for simplextree
+# --------------------------------------------------------------------
+# chemins utiles
+py_site      = run_command(py, '-c', 'import site, sys; print(site.getsitepackages()[0])',
+                           check : true).stdout().strip()
+pkg_dir      = join_paths(py_site, 'morse_sequence')   # => …/site-packages/morse_sequence
 simplextree_inc = include_directories('simplextree-py/include')
 
-# Source files for simplextree
-simplextree_sources = files(
+# --------------------------------------------------------------------
+# sources C++
+core_sources = files(
+  'src/morse_sequence/_core/bindings.cpp',
+  'src/morse_sequence/_core/morse_sequence.cpp',
+  'src/morse_sequence/simplex_batch/batch.cpp',
   'simplextree-py/simplextree/_simplextree.cpp'
 )
 
-# Define the Python extension module
-py.extension_module('morse_sequence._core',
-  sources: [
-    'src/morse_sequence/_core/bindings.cpp',
-    'src/morse_sequence/_core/morse_sequence.cpp',
-    'src/morse_sequence/simplex_batch/batch.cpp',
-    simplextree_sources
-  ],
+# --------------------------------------------------------------------
+# module natif pybind11 : morse_sequence._core
+py.extension_module(
+  '_core',        # nom logique du module
+  sources            : core_sources,
   include_directories: [
-    include_directories('src/morse_sequence/_core'),
-    simplextree_inc
+      include_directories('src/morse_sequence/_core'),
+      simplextree_inc
   ],
-  dependencies: [pybind11_dep],
-  install: true,
+  dependencies : [pybind11_dep],
+  install      : true,
+  install_dir  : pkg_dir          # <- on place le .so dans le package
+)
+
+# --------------------------------------------------------------------
+# installe également __init__.py pour constituer un vrai package
+install_data(
+  'src/morse_sequence/__init__.py',
+  install_dir : pkg_dir
 )
