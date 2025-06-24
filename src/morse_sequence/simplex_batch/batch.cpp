@@ -99,24 +99,57 @@ SimplexBatch SimplexBatch::from_python(const py::object& obj, SimplexTree& st){
     batch.simplices.reserve(seq.size());
     batch.nodes.reserve(seq.size());
 
-    for (py::handle h : seq)
-    {
-        /* list of simplexes  -> (simplex)            */
+    
+
+    for (py::handle h : seq) {
+
         if (!py::isinstance<py::tuple>(h) || py::len(h) != 2) {
-            simplex_t sig = h.cast<simplex_t>();
-            batch.simplices.push_back(sig);
-            batch.nodes.push_back(st.find(sig));
+            // Ici, h est soit une séquence de sommets, soit un entier simple.
+            if (py::isinstance<py::int_>(h)) {
+                // 0-simplex : un seul entier
+                idx_t v = h.cast<idx_t>();
+                simplex_t sig{v};
+                batch.simplices.push_back(sig);
+                batch.nodes.push_back(st.find(sig));
+            } else {
+                // h est une séquence de sommets
+                py::sequence seq_simplex = py::cast<py::sequence>(h);
+                //std::cerr << "seq_simplex size = " << seq_simplex.size() << std::endl;
+                simplex_t sig;
+                sig.reserve(seq_simplex.size());
+                for (auto v : seq_simplex) {
+                    idx_t x = v.cast<idx_t>();
+                    //std::cerr << "  valeur v = " << x << std::endl;
+                    sig.push_back(x);
+                }
+                batch.simplices.push_back(sig);
+                batch.nodes.push_back(st.find(sig));
+            }
             continue;
         }
 
-        /* list of pairs (simplex, weight) ----------- */
+        // cas (simplex, poids)
         py::tuple tup = py::cast<py::tuple>(h);
-        simplex_t sig = tup[0].cast<simplex_t>();
-        int       w   = tup[1].cast<int>();
+        py::handle simplex_obj = tup[0];
+
+        simplex_t sig;
+        if (py::isinstance<py::int_>(simplex_obj)) {
+            // 0-simplex seul en premier élément
+            idx_t v = simplex_obj.cast<idx_t>();
+            sig = simplex_t{v};
+        } else {
+            py::sequence seq_simplex = py::cast<py::sequence>(simplex_obj);
+            sig.reserve(seq_simplex.size());
+            for (auto v : seq_simplex) {
+                sig.push_back(v.cast<idx_t>());
+            }
+        }
+        int w = tup[1].cast<int>();
 
         batch.simplices.push_back(sig);
         batch.nodes.push_back(st.find(sig));
         batch.weights.push_back(w);
     }
+
     return batch;
 }

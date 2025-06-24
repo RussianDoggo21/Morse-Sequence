@@ -301,6 +301,51 @@
     "description": "Maximum number of linker processes to run or 0 for no limit"
   },
   {
+    "name": "b_pgo",
+    "value": "off",
+    "section": "base",
+    "machine": "any",
+    "choices": [
+      "off",
+      "generate",
+      "use"
+    ],
+    "type": "combo",
+    "description": "Use profile guided optimization"
+  },
+  {
+    "name": "b_pie",
+    "value": false,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Build executables as position independent"
+  },
+  {
+    "name": "b_pch",
+    "value": true,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Use precompiled headers"
+  },
+  {
+    "name": "b_coverage",
+    "value": false,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Enable coverage tracking."
+  },
+  {
+    "name": "b_asneeded",
+    "value": true,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Use -Wl,--as-needed when linking"
+  },
+  {
     "name": "b_colorout",
     "value": "always",
     "section": "base",
@@ -314,12 +359,20 @@
     "description": "Use colored output"
   },
   {
-    "name": "b_pie",
-    "value": false,
+    "name": "b_lto_threads",
+    "value": 0,
     "section": "base",
     "machine": "any",
-    "type": "boolean",
-    "description": "Build executables as position independent"
+    "type": "integer",
+    "description": "Use multiple threads for Link Time Optimization"
+  },
+  {
+    "name": "b_sanitize",
+    "value": [],
+    "section": "base",
+    "machine": "any",
+    "type": "array",
+    "description": "Code sanitizer to use"
   },
   {
     "name": "b_staticpic",
@@ -343,54 +396,6 @@
     "description": "Disable asserts"
   },
   {
-    "name": "b_lto",
-    "value": false,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use link time optimization"
-  },
-  {
-    "name": "b_coverage",
-    "value": false,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Enable coverage tracking."
-  },
-  {
-    "name": "b_asneeded",
-    "value": true,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use -Wl,--as-needed when linking"
-  },
-  {
-    "name": "b_sanitize",
-    "value": [],
-    "section": "base",
-    "machine": "any",
-    "type": "array",
-    "description": "Code sanitizer to use"
-  },
-  {
-    "name": "b_pch",
-    "value": true,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use precompiled headers"
-  },
-  {
-    "name": "b_lto_threads",
-    "value": 0,
-    "section": "base",
-    "machine": "any",
-    "type": "integer",
-    "description": "Use multiple threads for Link Time Optimization"
-  },
-  {
     "name": "b_lundef",
     "value": true,
     "section": "base",
@@ -399,17 +404,12 @@
     "description": "Use -Wl,--no-undefined when linking"
   },
   {
-    "name": "b_pgo",
-    "value": "off",
+    "name": "b_lto",
+    "value": false,
     "section": "base",
     "machine": "any",
-    "choices": [
-      "off",
-      "generate",
-      "use"
-    ],
-    "type": "combo",
-    "description": "Use profile guided optimization"
+    "type": "boolean",
+    "description": "Use link time optimization"
   },
   {
     "name": "cpp_args",

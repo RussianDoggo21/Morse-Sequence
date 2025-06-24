@@ -155,6 +155,14 @@ py::list m_sequence_to_py_list(m_sequence W, const SimplexTree& st){
     return py_W;
 }
 
+// Extraction of a list of python-version simplices (list of tuples) from a SimplexBatch
+static py::list batch_to_py_simplices(const SimplexBatch& batch, const SimplexTree&  st){
+    py::list out;
+    for (node_ptr p : batch.nodes)
+        out.append(st.full_simplex(p));   // tuple Python (1,2,3)
+    return out;
+}
+
 
 
 /*
@@ -342,6 +350,10 @@ PYBIND11_MODULE(_core, m) {
         .def_readonly("nodes",     &SimplexBatch::nodes)
         .def_readonly("weights",   &SimplexBatch::weights)
         ;
+    
+    m.def("batch_to_py_simplices", &batch_to_py_simplices,
+        py::arg("batch"), py::arg("tree"),
+        "Retourne la liste Python de tuples représentant les simplexes d’un SimplexBatch.");
 
 }
 

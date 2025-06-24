@@ -1,6 +1,10 @@
 from simplextree import SimplexTree
+from morse_sequence import MorseSequence
+from morse_sequence._core import SimplexBatch
+
 from ..increasing import morse_seq_increasing
 import numpy as np
+
 
 def MakeFacesVectorized1(Nr,Nc):
 
@@ -19,6 +23,8 @@ def MakeFacesVectorized1(Nr,Nc):
     return out
 
 
+
+"""
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [2, 7, 9], [2, 3, 9],    # Top middle
                  [3, 5, 9], [1, 3, 5],    # Top right
@@ -29,11 +35,29 @@ st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [2, 3, 6], [3, 6, 8],    # Bottom middle
                  [1, 3, 8], [1, 4, 8]])   # Bottom right
 
-#st = SimplexTree([[1,2,3]])
+"""
+
+"""
 seq, n_crit = morse_seq_increasing(st)
 
 print(f"n_crit = {n_crit}")
 print(f"seq : {seq}\n")
+"""
+st = SimplexTree([[1,2,3]])
+ms = MorseSequence(st)    
+
+simplices = st.simplices()
+
+# batch S (cosimplicial complex)
+batch_S = SimplexBatch.from_python(simplices, st) # no weights
+
+# batch F (dictionnary simplex : weight)
+simp_with_weights = [(list(s), 0) for s in simplices]     # [(simplexe, weight), ...]
+batch_F = SimplexBatch.from_python(simp_with_weights, st) # weights.size() == nodes.size()
+
+max, n_crit_max = ms.Max(batch_S, batch_F)
+
+
 
 
 # To run the file from the root : python3 -m src.python.python_tests.test_increasing
