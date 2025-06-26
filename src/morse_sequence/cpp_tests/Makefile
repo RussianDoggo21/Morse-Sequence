@@ -12,7 +12,7 @@ OBJ_LIB  := $(SRC_LIB:.cpp=.o)   # → morse_sequence.o
 # -------------------------------------------------
 #  Default target: build every executable
 .PHONY: all
-all: test_m_seq timer_m_seq test_m_frm
+all: test_m_seq timer_m_seq test_m_frm test_bind
 
 # -------------------------------------------------
 #  Generic rule: compile any .cpp file to a .o file
@@ -28,6 +28,9 @@ timer_m_seq: timer_m_sequence.o $(OBJ_LIB)
 	$(CXX) $^ $(LIBS) -o $@
 
 test_m_frm: test_m_frame.o $(OBJ_LIB)
+	$(CXX) $^ $(LIBS) -o $@
+
+test_bind: test_bindings.o $(OBJ_LIB)
 	$(CXX) $^ $(LIBS) -o $@
 
 # -------------------------------------------------

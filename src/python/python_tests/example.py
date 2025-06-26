@@ -2,6 +2,8 @@ from morse_sequence import MorseSequence
 from simplextree import SimplexTree
 
 st = SimplexTree([[1,2,3]]) # Creation of simplicial complex via the library SimplexTree
+print(type([[1,2,3]]))
+print(type([1,2,3]))
 ms = MorseSequence(st) # MorseSequence created
 
 morse_seq_dec, n_crit_dec = ms.decreasing(st) # Computation of a decreasing Morse Sequence on st and its critical simplices

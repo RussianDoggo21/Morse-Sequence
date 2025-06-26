@@ -122,13 +122,6 @@ make
 */
 
 /*
-Pour lancer perf :
-sudo sysctl kernel.perf_event_paranoid=1
-perf record --call-graph=dwarf -F 100 ./timer 100 2000
-*/
-
-
-/*
 Github token : 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
 Used SSH key instead 
 */

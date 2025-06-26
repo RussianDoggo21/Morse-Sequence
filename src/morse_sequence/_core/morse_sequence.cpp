@@ -1,11 +1,17 @@
 #include "morse_sequence.h"
+#include <list>
+
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
 using m_frame = std::unordered_map<node_ptr, node_list>;
 using node_map = std::unordered_map<node_ptr,node_ptr>;
 using SimplexList = std::vector<simplex_t>;  // Vector of simplices
-
+using simplex_t = SimplexTree::simplex_t;
+/*
+typedef std::size_t idx_t;
+using simplex_t = vector< idx_t >; 
+*/
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 // Constructor of the MorseSequence class
@@ -174,6 +180,19 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,con
     
     return v;
 }
+
+node_list MorseSequence::get_node_list(const std::list<simplex_t>& py_list) const {
+    node_list S;
+    for (const simplex_t& sigma : py_list) {
+        node_ptr cn = simplex_tree.find(sigma);
+        if (cn == nullptr) {
+            throw std::runtime_error("Simplex not found in SimplexTree");
+        }
+        S.push_back(cn);
+    }
+    return S;
+}
+
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 

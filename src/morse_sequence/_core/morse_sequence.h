@@ -4,12 +4,17 @@
 #include "../../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
+#include <list>
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
 using m_frame = std::unordered_map<node_ptr, node_list>;
 using node_map = std::unordered_map<node_ptr,node_ptr>;
-
+using simplex_t = SimplexTree::simplex_t;
+/*
+typedef std::size_t idx_t;
+using simplex_t = vector< idx_t >; 
+*/
 
 class MorseSequence {
 public:
@@ -24,6 +29,7 @@ public:
     int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
     int nbcoboundary(node_ptr cn);
     node_list simplices(std::optional<int> p) const;
+    node_list get_node_list(const std::list<simplex_t>& py_list) const;
     std::pair<m_sequence, int> increasing(const SimplexTree& st);
     std::pair<m_sequence, int> decreasing(const SimplexTree& st);
     std::pair<m_sequence, int> Max(const node_list& S, const unordered_map<node_ptr, int>& F);

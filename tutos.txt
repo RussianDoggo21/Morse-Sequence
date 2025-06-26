@@ -37,7 +37,7 @@ pip install morse-sequence==0.1.1
 ==========================================================================================================================================================================
 HOW TO BUILD AND INSTALL MORSE-SEQUENCE LOCALLY
 ==========================================================================================================================================================================
-Step 1 : Go to the racine of the projet ~/Téléchargements/Morse-Sequence
+Step 1 : Go to the racine of the project ~/Téléchargements/Morse-Sequence
 
 Step 2 : Update your files if necessary
         - bindings.cpp for exposing C++ code to python
@@ -47,3 +47,42 @@ Step 3: rm -rf build
         meson setup build --prefix=$VIRTUAL_ENV
         meson compile -C build
         meson install -C build
+
+==========================================================================================================================================================================
+HOW TO PROFILE A BINARY
+==========================================================================================================================================================================
+
+Step 1 : cd ~/Téléchargements/Morse-Sequence/src/morse_sequence/cpp_tests
+
+Step 2 : Update your Makefile if necessary
+
+Step 3 : Create your binary (make or make test_XXX)
+
+
+Step 4 : sudo sysctl kernel.perf_event_paranoid=1 
+         perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000
+         perf record --call-graph=dwarf -F 100 -g -- python3 -m src.python.python_tests.XXX
+
+
+Step 5 : Use the command perf report
+
+==========================================================================================================================================================================
+PROBLEME A RESOUDRE ACTUELLEMENT
+==========================================================================================================================================================================
+
+Dans l'appel aux fonctions Max et Min (C++ pur), il faut les paramètres suivants : 
+        - S : node_list = std::vector<node_ptr>;
+        - F : std::unordered_map<node_ptr,int>;
+Or en python, on appelle les fonctions Min et Max avec les paramètres suivants :
+        - S : une liste de listes d'entier - un simplexe - (équivalente à un std::list< simplex_t > en C++ ?)
+        - F : un dictionnaire, clé : liste d'entier - un simplexe -, valeur : un entier (équivalent à une std::unordered_map<simplex_t, int> en C++ ?)
+        - simplex_t = vector< idx_t > = vector< std::size_t >
+Problème : Les conversions python vers C++ prennent trop de temps, les solutions utilisées pour l'instant ne sont pas suffisantes
+Solution à essayer d'implémenter : Se baser sur le code de simplextree-py pour voir comment il gère cela.
+        - Il n'effectue pas de conversions simplexes python vers node_ptr mais...
+        - Il effectue des conversions simplexes python vers simplex_t =  = vector< idx_t > = vector< std::size_t >
+        - A partir de là, utiliser la fonction st.find(simplex_t sigma) pour récupérer le node_ptr
+        - Renvoyer le résultat pour que les fonctions _Max et _Min de bindings.cpp puissent l'utiliser en appelant Max et Min
+        - Exemple d'insert dans SimplexTree.py (voir fonctions _insert et _insert_list de _simplextree.cpp et insert de st.hpp)
+        - Mais ducoup, nécessité de créer un fichier morse_sequence.py pour les conversions ? 
+        - Ou bien faire cela dans bindings.cpp puisqu'à priori une liste de simplexes en python est équivalent à une std::list< simplex_t > 

@@ -13,6 +13,7 @@ using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_p
 using node_list = std::vector<node_ptr>;
 using m_frame = std::unordered_map<node_ptr, node_list>;
 using SimplexList = std::vector<simplex_t>;  // Vector of simplices
+using simplex_t = SimplexTree::simplex_t;
 
 namespace py = pybind11;
 
@@ -75,7 +76,91 @@ py_dict_to_cpp_dict(const py::object& obj, SimplexTree& st)
     }
     return F;
 }
+
+// Extraction of a list of python-version simplices (list of tuples) from a SimplexBatch
+static py::list batch_to_py_simplices(const SimplexBatch& batch, const SimplexTree&  st){
+    py::list out;
+    for (node_ptr p : batch.nodes)
+        out.append(st.full_simplex(p));   // tuple Python (1,2,3)
+    return out;
+}
 */
+
+
+/*
+py::tuple _Min(MorseSequence& ms, py::object py_S, py::object py_F)
+{
+    // Access to the SimplexTree
+    SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
+
+    // Conversion py::list -> node_list
+    node_list S = py_list_to_node_list(py_S, st);
+
+    // Conversion py::dict -> std::unordered_map<node_ptr, int>
+    std::unordered_map<node_ptr,int> F = py_dict_to_cpp_dict(py_F, st);
+
+    // Call of the C++ function
+    auto [out, ncrit] = ms.Min(S, F);
+
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
+}
+
+py::tuple _Min(MorseSequence& ms, const SimplexBatch& batch_S, const SimplexBatch& batch_F){
+
+    // Retrieving of the parameters needed for the C++ function
+    std::unordered_map<node_ptr,int> F = batch_to_weight_map(batch_F);
+    node_list S = batch_S.nodes;
+
+    // Call of the C++ function
+    auto [out, ncrit] = ms.Min(S, F);
+
+    // Conversion of the result into python object
+    const SimplexTree& st = ms.get_simplex_tree();
+    py::list out_list = m_sequence_to_py_list(out, st);
+
+    return py::make_tuple(out_list, ncrit);
+}
+*/
+
+/*
+py::tuple _Max(MorseSequence& ms, py::object py_S, py::object py_F)
+{
+    // Access to the SimplexTree
+    SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
+
+    // Conversion py::list -> node_list
+    node_list S = py_list_to_node_list(py_S, st);
+
+    // Conversion py::dict -> std::unordered_map<node_ptr, int>
+    std::unordered_map<node_ptr,int> F = py_dict_to_cpp_map(py_F, st);
+
+    // Call of the C++ function
+    auto [out, ncrit] = ms.Max(S, F);
+
+    // Conversion  m_sequence -> py::list
+    py::list out_list = m_sequence_to_py_list(out, st);
+
+    return py::make_tuple(out_list, ncrit);
+}
+
+
+py::tuple _Max(MorseSequence& ms, const SimplexBatch& batch_S, const SimplexBatch& batch_F){
+
+    // Retrieving of the parameters needed for the C++ function
+    std::unordered_map<node_ptr,int> F = batch_to_weight_map(batch_F);
+    node_list S = batch_S.nodes;
+
+    // Call of the C++ function
+    auto [out, ncrit] = ms.Max(S, F);
+
+    // Conversion of the result into python object
+    const SimplexTree& st = ms.get_simplex_tree();
+    py::list out_list = m_sequence_to_py_list(out, st);
+
+    return py::make_tuple(out_list, ncrit);
+}
+*/
+
 // Conversion py::list -> m_sequence
 // Used in _ref_map and _coref_map
 m_sequence py_list_to_m_sequence(py::list py_W, const SimplexTree& st){
@@ -155,89 +240,245 @@ py::list m_sequence_to_py_list(m_sequence W, const SimplexTree& st){
     return py_W;
 }
 
-// Extraction of a list of python-version simplices (list of tuples) from a SimplexBatch
-static py::list batch_to_py_simplices(const SimplexBatch& batch, const SimplexTree&  st){
-    py::list out;
-    for (node_ptr p : batch.nodes)
-        out.append(st.full_simplex(p));   // tuple Python (1,2,3)
-    return out;
+// Used in _Max and _Min
+node_list py_S_to_cpp_S(const SimplexTree& st, const py::list& py_S){
+    node_list cpp_S;
+    for (auto item : py_S) {
+        simplex_t sigma = py::cast<simplex_t>(item);
+        node_ptr sigma_ptr = st.find(sigma);
+        cpp_S.push_back(sigma_ptr);
+    }
+    return cpp_S;
+}
+
+// Used in _Max and _Min
+std::unordered_map<node_ptr, int> py_F_to_cpp_F(const SimplexTree& st, const py::list& py_F){
+    std::unordered_map<node_ptr, int> cpp_F;
+    for (auto item : py_F) {
+        auto pair = py::cast<std::pair<simplex_t, int>>(item);
+        node_ptr ptr = st.find(pair.first); // Cases not found : find return a nullptr
+        cpp_F[ptr] = pair.second;
+    }
+    return cpp_F;
+}
+
+// Generic function to handle various vector types
+template < typename Lambda >
+void vector_handler(SimplexTree& st, const py::array_t< idx_t >& simplices, Lambda&& f){
+    py::buffer_info s_buffer = simplices.request();
+
+    /*
+    assert(s_buffer.ndim == 1 || s_buffer.ndim == 2);
+    assert(s_buffer.ptr != nullptr);
+    if (s_buffer.ndim == 2) {
+        assert(s_buffer.shape[1] >= 1); // car on accède à e-1
+    }
+    std::cout << "\n[vector_handler] ndim = " << s_buffer.ndim << std::endl;
+    std::cout << "[vector_handler] shape = (";
+    for (size_t i = 0; i < s_buffer.ndim; ++i)
+        std::cout << s_buffer.shape[i] << (i + 1 < s_buffer.ndim ? ", " : "");
+    std::cout << ")" << std::endl;
+    std::cout << "[vector_handler] strides = (";
+    for (size_t i = 0; i < s_buffer.ndim; ++i)
+        std::cout << s_buffer.strides[i] << (i + 1 < s_buffer.ndim ? ", " : "");
+    std::cout << ")" << std::endl;
+    */
+
+
+    if (s_buffer.ndim == 1){
+        // py::print(s_buffer.shape[0]);
+        const size_t n = s_buffer.shape[0];
+        idx_t* s = static_cast< idx_t* >(s_buffer.ptr);
+
+        //std::cout << "[vector_handler] processing 1D array of size " << n << std::endl;
+
+        for (size_t i = 0; i < n; ++i){
+            f(s+i, s+i+1);
+        }
+        // st.insert_it< true >(s, s+s_buffer.shape[0], st.root.get(), 0);
+    } else if (s_buffer.ndim == 2) {
+        // const size_t d = static_cast< size_t >(s_buffer.shape[1]);
+        if (s_buffer.strides[0] <= 0){ return; }
+        const size_t d = static_cast< size_t >(s_buffer.shape[1]);
+        const size_t n =  static_cast< size_t >(s_buffer.shape[0]);
+        idx_t* s = static_cast< idx_t* >(s_buffer.ptr);
+
+        //std::cout << "[vector_handler] processing 2D array: " << n << " rows, " << d << " cols" << std::endl;
+
+        // py::print("Strides: ", s_buffer.strides[0], s_buffer.strides[1], ", ", "size: ", s_buffer.size, ", shape: (", s_buffer.shape[0], s_buffer.shape[1], ")");
+        for (size_t i = 0; i < n; ++i){
+
+            /*
+            std::cout << "  → row " << i << ": [";
+            for (size_t j = 0; j < d; ++j) {
+                std::cout << s[i*d + j] << (j + 1 < d ? ", " : "");
+            }
+            std::cout << "]" << std::endl;
+            */
+
+            f(s+(d*i), s+d*(i+1));
+        // st.insert_it< true >(s+(d*i), s+(d*i)+1, st.root.get(), 0);
+        }
+    } else {
+        std::cerr << "[vector_handler] ERROR: Unexpected ndim = " << s_buffer.ndim << std::endl;
+    }
+}
+
+/*
+py::tuple _Max(MorseSequence& ms, const std::unordered_map<int, py::array_t<idx_t>>& S_arrays, const std::unordered_map<int, py::array_t<idx_t>>& F_arrays) {
+ 
+    SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
+
+    node_list cpp_S_full;
+    std::unordered_map<node_ptr, int> cpp_F_full;
+
+    for (const auto& [dim, S_array] : S_arrays) {
+        auto it = F_arrays.find(dim);
+        if (it == F_arrays.end()) {
+            throw std::runtime_error("F_arrays missing dimension " + std::to_string(dim));
+        }
+        const auto& F_array = it->second;
+
+        //const auto& F_array = F_arrays.at(dim);
+
+        // Convert S[dim] to list of node_ptrs
+        vector_handler(st, S_array, [&](idx_t* b, idx_t* e) {
+            simplex_t sigma(b, e);
+
+            node_ptr ptr = st.find(sigma);
+
+            cpp_S_full.push_back(ptr);
+        });
+
+        // Convert F[dim] to map<node_ptr, int>
+        vector_handler(st, F_array, [&](idx_t* b, idx_t* e) {
+            simplex_t sigma(b, e - 1);
+
+            //std::cout << "  → F simplex: ";
+
+            int value = *(e - 1);
+            
+            node_ptr ptr = st.find(sigma);
+            cpp_F_full[ptr] = value;
+        });
+    }
+
+    auto [out, ncrit] = ms.Max(cpp_S_full, cpp_F_full);
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
 
 
+py::tuple _Min(MorseSequence& ms, const std::unordered_map<int, py::array_t<idx_t>>& S_arrays, const std::unordered_map<int, py::array_t<idx_t>>& F_arrays) {
 
-/*
-py::tuple _Min(MorseSequence& ms, py::object py_S, py::object py_F)
-{
-    // Access to the SimplexTree
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
-    // Conversion py::list -> node_list
-    node_list S = py_list_to_node_list(py_S, st);
+    node_list cpp_S_full;
+    std::unordered_map<node_ptr, int> cpp_F_full;
 
-    // Conversion py::dict -> std::unordered_map<node_ptr, int>
-    std::unordered_map<node_ptr,int> F = py_dict_to_cpp_dict(py_F, st);
+    for (const auto& [dim, S_array] : S_arrays) {
+        const auto& F_array = F_arrays.at(dim);
 
-    // Call of the C++ function
-    auto [out, ncrit] = ms.Min(S, F);
+        vector_handler(st, S_array, [&](idx_t* b, idx_t* e) {
+            simplex_t sigma(b, e);
+            node_ptr ptr = st.find(sigma);
+            cpp_S_full.push_back(ptr);
+        });
 
+        vector_handler(st, F_array, [&](idx_t* b, idx_t* e) {
+            simplex_t sigma(b, e - 1);
+            int value = *(e - 1);
+            node_ptr ptr = st.find(sigma);
+            cpp_F_full[ptr] = value;
+        });
+    }
+
+    auto [out, ncrit] = ms.Min(cpp_S_full, cpp_F_full);
     return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
 */
 
-py::tuple _Min(MorseSequence& ms, const SimplexBatch& batch_S, const SimplexBatch& batch_F){
 
-    // Retrieving of the parameters needed for the C++ function
-    std::unordered_map<node_ptr,int> F = batch_to_weight_map(batch_F);
-    node_list S = batch_S.nodes;
-
-    // Call of the C++ function
-    auto [out, ncrit] = ms.Min(S, F);
-
-    // Conversion of the result into python object
-    const SimplexTree& st = ms.get_simplex_tree();
-    py::list out_list = m_sequence_to_py_list(out, st);
-
-    return py::make_tuple(out_list, ncrit);
-}
-
-/*
-py::tuple _Max(MorseSequence& ms, py::object py_S, py::object py_F)
-{
-    // Access to the SimplexTree
+py::tuple _Min_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::array_t<idx_t> F_buffer) {
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
-    // Conversion py::list -> node_list
-    node_list S = py_list_to_node_list(py_S, st);
+    node_list cpp_S_full;
+    std::unordered_map<node_ptr, int> cpp_F_full;
 
-    // Conversion py::dict -> std::unordered_map<node_ptr, int>
-    std::unordered_map<node_ptr,int> F = py_dict_to_cpp_map(py_F, st);
+    // Remplir cpp_S_full avec vector_handler
+    vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
+        simplex_t sigma(b, e);
+        node_ptr ptr = st.find(sigma);
+        cpp_S_full.push_back(ptr);
+    });
 
-    // Call of the C++ function
-    auto [out, ncrit] = ms.Max(S, F);
+    // Remplir cpp_F_full avec vector_handler (dernier élément = poids)
+    vector_handler(st, F_buffer, [&](idx_t* b, idx_t* e) {
+        simplex_t sigma(b, e - 1); // tout sauf la dernière colonne
+        int value = *(e - 1);      // dernier élément
+        node_ptr ptr = st.find(sigma);
+        cpp_F_full[ptr] = value;
+    });
 
-    // Conversion  m_sequence -> py::list
-    py::list out_list = m_sequence_to_py_list(out, st);
-
-    return py::make_tuple(out_list, ncrit);
+    auto [out, ncrit] = ms.Min(cpp_S_full, cpp_F_full);
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
-*/
+
+py::tuple _Max_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::array_t<idx_t> F_buffer) {
+    SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
+
+    node_list cpp_S_full;
+    std::unordered_map<node_ptr, int> cpp_F_full;
+
+    // Remplir cpp_S_full avec vector_handler
+    vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
+        simplex_t sigma(b, e);
+        node_ptr ptr = st.find(sigma);
+        cpp_S_full.push_back(ptr);
+    });
+
+    // Remplir cpp_F_full avec vector_handler (dernier élément = poids)
+    vector_handler(st, F_buffer, [&](idx_t* b, idx_t* e) {
+        simplex_t sigma(b, e - 1); // tout sauf la dernière colonne
+        int value = *(e - 1);      // dernier élément
+        node_ptr ptr = st.find(sigma);
+        cpp_F_full[ptr] = value;
+    });
+
+    auto [out, ncrit] = ms.Max(cpp_S_full, cpp_F_full);
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
+}
 
 
-py::tuple _Max(MorseSequence& ms, const SimplexBatch& batch_S, const SimplexBatch& batch_F){
 
-    // Retrieving of the parameters needed for the C++ function
-    std::unordered_map<node_ptr,int> F = batch_to_weight_map(batch_F);
-    node_list S = batch_S.nodes;
-
-    // Call of the C++ function
-    auto [out, ncrit] = ms.Max(S, F);
-
-    // Conversion of the result into python object
+/*
+py::tuple _Max(MorseSequence& ms, py::list py_S, py::list py_F) {
     const SimplexTree& st = ms.get_simplex_tree();
-    py::list out_list = m_sequence_to_py_list(out, st);
 
-    return py::make_tuple(out_list, ncrit);
+    // Conversion of S
+    node_list cpp_S = py_S_to_cpp_S(st, py_S);
+
+    // Conversion of F
+    std::unordered_map<node_ptr, int> cpp_F = py_F_to_cpp_F(st, py_F);
+
+    auto [out, ncrit] = ms.Max(cpp_S, cpp_F);
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
+
+
+py::tuple _Min(MorseSequence& ms, py::list py_S, py::list py_F) {
+    const SimplexTree& st = ms.get_simplex_tree();
+
+    // Conversion of S
+    node_list cpp_S = py_S_to_cpp_S(st, py_S);
+
+    // Conversion of F
+    std::unordered_map<node_ptr, int> cpp_F = py_F_to_cpp_F(st, py_F);
+
+    auto [out, ncrit] = ms.Min(cpp_S, cpp_F);
+    return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
+}
+
+*/
 
 
 py::tuple _increasing(MorseSequence &ms, SimplexTree& st){
@@ -335,14 +576,16 @@ PYBIND11_MODULE(_core, m) {
         .def("nbcoboundary2", static_cast<nbcoboundary_fn_2>(&MorseSequence::nbcoboundary))
 
         .def("simplices", &MorseSequence::simplices)
-        .def("Max", _Max)
-        .def("Min", _Min)
+        .def("Max", _Max_buffered)
+        .def("Min", _Min_buffered)
         .def("decreasing", _decreasing)
         .def("increasing", _increasing)
         .def("reference_map", _ref_map)
         .def("coreference_map", _coref_map)
+        //.def("get_node_list", &MorseSequence::get_node_list, py::arg("simplex_list"))
         ;
 
+    /*    
     py::class_<SimplexBatch>(m, "SimplexBatch")
         .def_static("from_python", &SimplexBatch::from_python,
                     py::arg("obj"), py::arg("tree"))
@@ -353,9 +596,19 @@ PYBIND11_MODULE(_core, m) {
     
     m.def("batch_to_py_simplices", &batch_to_py_simplices,
         py::arg("batch"), py::arg("tree"),
-        "Retourne la liste Python de tuples représentant les simplexes d’un SimplexBatch.");
+        "Retourne la liste Python de tuples représentant les simplexes d’un SimplexBatch.");*/
 
 }
+
+
+
+
+
+
+
+
+
+
 
 /*
 int main() {

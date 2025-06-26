@@ -24,7 +24,7 @@ def MakeFacesVectorized1(Nr,Nc):
 
 
 
-"""
+
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [2, 7, 9], [2, 3, 9],    # Top middle
                  [3, 5, 9], [1, 3, 5],    # Top right
@@ -35,9 +35,9 @@ st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left
                  [2, 3, 6], [3, 6, 8],    # Bottom middle
                  [1, 3, 8], [1, 4, 8]])   # Bottom right
 
-"""
 
-"""
+
+
 seq, n_crit = morse_seq_increasing(st)
 
 print(f"n_crit = {n_crit}")
@@ -59,5 +59,5 @@ max, n_crit_max = ms.Max(batch_S, batch_F)
 
 
 
-
+"""
 # To run the file from the root : python3 -m src.python.python_tests.test_increasing
