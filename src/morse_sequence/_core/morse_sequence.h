@@ -36,18 +36,18 @@ public:
     std::pair<m_sequence, int> decreasing(const SimplexTree& st);
     std::pair<m_sequence, int> Max(const node_list& S, const unordered_map<node_ptr, int>& F);
     std::pair<m_sequence, int> Min(const node_list& S, const std::unordered_map<node_ptr, int>& F);
-    void print_morse_sequence(std::pair<m_sequence, int> result, bool n_crit = false);
+    void print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit = false);
     m_frame reference_map(const m_sequence& W);
     m_frame coreference_map(const m_sequence& W);
     void print_m_frame(m_frame& map, const m_sequence& W);
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
-    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr);
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
     node_list sym_diff(const node_list& A, const node_list& B);
     enum class GammaMode { Reference, Coreference };
-    node_list Gamma(node_ptr sigma_ptr, const node_map& sigma2tau, const node_map& tau2sigma, m_frame& cache, GammaMode mode);
+    node_list Gamma(const node_ptr& sigma_ptr, const node_map& sigma2tau, const node_map& tau2sigma, m_frame& cache, GammaMode mode);
 };
 
 #endif 

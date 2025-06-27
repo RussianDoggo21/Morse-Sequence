@@ -204,7 +204,7 @@ node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
 // Private function
-node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr){
+node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr){
     node_ptr v = nullptr;
     if (order == "decreasing"){
         for (node_ptr v0 : simplex_list){
@@ -623,7 +623,7 @@ std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const std::uno
 
 
 // Print the morse_reference and the number of critical simplices
-void MorseSequence::print_morse_sequence(std::pair<m_sequence, int> result, bool n_crit){
+void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit){
     
     // 1. Extract results from the function
 	auto& morse_sequence = result.first;  // Morse Sequence
@@ -700,7 +700,7 @@ node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
 // Computes the reference/coreference of a single simplex 
 // (in particular lower simplices in reference map and upper simplices in coreference map)
 // Private function
-node_list MorseSequence::Gamma(node_ptr cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame& cache, GammaMode mode) {
+node_list MorseSequence::Gamma(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame& cache, GammaMode mode) {
 
     // cn : simplex on which we need to compute the reference
     // sigma2tau : map containings all free pairs (sigma, tau)

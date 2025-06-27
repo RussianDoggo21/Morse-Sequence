@@ -51,7 +51,7 @@ def timer_comparison():
         ms = MorseSequence(st)    
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
-        """
+        
         start_dec2 = time.time()
         ms_dec2, n_crit_dec2 = morse_seq_decreasing(st)
         end_dec2 = time.time()
@@ -83,7 +83,7 @@ def timer_comparison():
         print(f"croissante C++/python : {time_crois:.6f} secondes")
 
         print(f"Différence : {time_crois2 - time_crois:.6f} secondes | Ratio (python pur / C++): {time_crois2 / time_crois:.2f}\n")
-        """
+        
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------ #
         S_max1 = sorted(st.simplices(), key=lambda x: (len(x), x))
         F_max1 = {s: 0 for s in S_max1}

@@ -19,7 +19,7 @@ namespace py = pybind11;
 
 // Conversion py::list -> m_sequence
 // Used in _ref_map and _coref_map
-m_sequence py_list_to_m_sequence(py::list py_W, const SimplexTree& st){
+m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
     m_sequence W;      
 
     for (py::handle item : py_W) {
@@ -51,7 +51,7 @@ m_sequence py_list_to_m_sequence(py::list py_W, const SimplexTree& st){
 
 // Conversion m_frame -> py::dict
 // Used in _ref_map and _coref_map
-py::dict m_frame_to_py_dict(m_frame map, const SimplexTree& st){
+py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st){
     py::dict py_map;
 
     for (const auto &[key_ptr, lst] : map) {
@@ -80,21 +80,25 @@ py::dict m_frame_to_py_dict(m_frame map, const SimplexTree& st){
 
 // Conversion m_sequence -> py::list
 // Used in _Min, _Max, _increasing and _decreasing
-py::list m_sequence_to_py_list(m_sequence W, const SimplexTree& st){
-    py::list py_W;
+py::list m_sequence_to_py_list(const m_sequence& W, const SimplexTree& st) {
+    std::vector<py::object> result;
+    result.reserve(W.size()); // pré-allocation
+
     for (const auto& v : W) {
         if (std::holds_alternative<node_ptr>(v)) {
-            auto simplex = st.full_simplex(std::get<node_ptr>(v));
-            py_W.append(simplex);
+            auto sigma = st.full_simplex(std::get<node_ptr>(v));
+            result.push_back(py::cast(sigma)); // simplex -> list[int]
         } else {
             auto [a, b] = std::get<std::pair<node_ptr, node_ptr>>(v);
-            auto sigma = st.full_simplex(a);
-            auto tau = st.full_simplex(b);
-            py_W.append(py::make_tuple(sigma, tau));
+            auto sigma = py::cast(st.full_simplex(a));
+            auto tau = py::cast(st.full_simplex(b));
+            result.push_back(py::make_tuple(sigma, tau)); // tuple of list[int]
         }
     }
-    return py_W;
+
+    return py::cast(result); // vector<py::object> → list
 }
+
 
 
 // Generic function to handle various vector types
@@ -126,7 +130,7 @@ void vector_handler(SimplexTree& st, const py::array_t< idx_t >& simplices, Lamb
 }
 
 
-py::tuple _Min_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::array_t<idx_t> F_buffer) {
+py::tuple _Min_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, const py::array_t<idx_t>& F_buffer) {
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
@@ -151,7 +155,7 @@ py::tuple _Min_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::arra
     return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
 
-py::tuple _Max_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::array_t<idx_t> F_buffer) {
+py::tuple _Max_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, const py::array_t<idx_t>& F_buffer) {
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
@@ -177,7 +181,7 @@ py::tuple _Max_buffered(MorseSequence& ms, py::array_t<idx_t> S_buffer, py::arra
 }
 
 
-py::tuple _increasing(MorseSequence &ms, SimplexTree& st){
+py::tuple _increasing(MorseSequence& ms, const SimplexTree& st){
     
     // Call of the C++ function
     auto [output, n] = ms.increasing(st);
@@ -188,7 +192,7 @@ py::tuple _increasing(MorseSequence &ms, SimplexTree& st){
     return py::make_tuple(out_list, n);
 }
 
-py::tuple _decreasing(MorseSequence &ms, SimplexTree& st){
+py::tuple _decreasing(MorseSequence& ms, const SimplexTree& st){
     
     // Call of the C++ function
     auto [output, n] = ms.decreasing(st);
@@ -199,7 +203,7 @@ py::tuple _decreasing(MorseSequence &ms, SimplexTree& st){
     return py::make_tuple(out_list, n);
 }
 
-py::dict _ref_map(MorseSequence &ms, py::list py_W){
+py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
     
     // Access to the SimplexTree
     const SimplexTree &st = ms.get_simplex_tree();
@@ -216,7 +220,7 @@ py::dict _ref_map(MorseSequence &ms, py::list py_W){
     return py_ref_map;
 }
 
-py::dict _coref_map(MorseSequence &ms, py::list py_W){
+py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
     
     // Access to the SimplexTree
     const SimplexTree &st = ms.get_simplex_tree();

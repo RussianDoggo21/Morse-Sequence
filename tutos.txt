@@ -37,32 +37,38 @@ pip install morse-sequence==0.1.1
 ==========================================================================================================================================================================
 HOW TO BUILD AND INSTALL MORSE-SEQUENCE LOCALLY
 ==========================================================================================================================================================================
-Step 1 : Go to the racine of the project ~/Téléchargements/Morse-Sequence
+Step 1 : 
+Go to the racine of the project ~/Téléchargements/Morse-Sequence
 
-Step 2 : Update your files if necessary
-        - bindings.cpp for exposing C++ code to python
-        - pyproject.toml to modify the number of the version
+Step 2 : 
+Update your files if necessary
+- bindings.cpp for exposing C++ code to python
+- pyproject.toml to modify the number of the version
 
-Step 3: rm -rf build
-        meson setup build --prefix=$VIRTUAL_ENV
-        meson compile -C build
-        meson install -C build
+Step 3: 
+./build_install.sh
+
 
 ==========================================================================================================================================================================
 HOW TO PROFILE A BINARY
 ==========================================================================================================================================================================
 
-Step 1 : cd ~/Téléchargements/Morse-Sequence/src/morse_sequence/cpp_tests
+Step 1 : 
+cd ~/Téléchargements/Morse-Sequence/src/morse_sequence/cpp_tests
 
-Step 2 : Update your Makefile if necessary
+Step 2 : 
+Update your Makefile if necessary
 
-Step 3 : Create your binary (make or make test_XXX)
+Step 3 : 
+Create your binary (make or make test_XXX)
 
-Step 4 : sudo sysctl kernel.perf_event_paranoid=1 
-         perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000
-         perf record -F 100 -g --call-graph=dwarf -- python3 -m src.python.python_tests.XXX 100 200
+Step 4 : 
+sudo sysctl kernel.perf_event_paranoid=1 
+perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000
+perf record -F 100 -g --call-graph=dwarf -- python3 -m src.python.python_tests.XXX 100 200
 
-Step 5 : perf report
+Step 5 : 
+perf report
 
 ==========================================================================================================================================================================
 PROBLEME A RESOUDRE ACTUELLEMENT
