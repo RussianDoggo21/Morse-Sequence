@@ -48,7 +48,7 @@ void test_m_sequence(){
     std::chrono::duration<double> duration_dec = end_dec - start_dec;
     std::cout << "Execution time: " << duration_dec.count() << " ms" << std::endl;
 
-    ms.print_morse_sequence(result_dec);
+    ms.print_morse_sequence(result_dec, true);
     
     printf("\n\n\n");
 
@@ -61,7 +61,7 @@ void test_m_sequence(){
     std::chrono::duration<double> duration_crois = end_crois - start_crois;
     std::cout << "Execution time: " << duration_crois.count() << " ms" << std::endl;
   
-    ms.print_morse_sequence(result_increasing);
+    ms.print_morse_sequence(result_increasing, true);
     
     printf("\n\n\n");
 
@@ -97,7 +97,7 @@ void test_m_sequence(){
     std::chrono::duration<double> duration_max = end_max - start_max;
     std::cout << "Execution time: " << duration_max.count() << " ms" << std::endl;
    
-    ms.print_morse_sequence(result_max);
+    ms.print_morse_sequence(result_max, true);
     
     printf("\n\n\n");
 
@@ -133,18 +133,55 @@ void test_m_sequence(){
     std::chrono::duration<double> duration_min = end_min - start_min;
     std::cout << "Execution time: " << duration_min.count() << " ms" << std::endl;
 
-	ms.print_morse_sequence(result_min);
+	ms.print_morse_sequence(result_min, true);
 
 	printf("\n\n\n");
 }
 
+void test_coboundary(){
+
+	SimplexTree st;  // Creation of a simplicial complex
+    
+    SimplexList L = {
+                        {1, 5, 7}, {1, 2, 7},  // Top left
+                        {2, 7, 9}, {2, 3, 9},  // Top middle
+                        {3, 5, 9}, {1, 3, 5},  // Top right
+                        {5, 4, 6}, {5, 6, 7},  // Middle left
+                        {7, 6, 8}, {7, 8, 9},  // Middle center
+                        {9, 8, 4}, {9, 4, 5},  // Middle right
+                        {1, 2, 4}, {2, 4, 6},  // Bottom left
+                        {2, 3, 6}, {3, 6, 8},  // Bottom middle
+                        {1, 3, 8}, {1, 4, 8}   // Bottom right
+                    };
+	for (simplex_t s : L){
+		st.insert(s);
+	}
+
+	MorseSequence ms(st); 
+
+    simplex_t sigma = {1};
+    node_ptr sigma_ptr = st.find(sigma);
+    node_list coboundary = ms.coboundary(sigma_ptr);
+
+    std::cout << "Coboundary of" ;
+    st.print_simplex(std::cout, sigma_ptr, true);
+    printf("\n");
+    for (node_ptr cn : coboundary ) {
+        st.print_simplex(std::cout, cn, true);
+    }
+	
+	printf("\n\n\n");
+
+}
+
 int main() {
     test_m_sequence();
+    //test_coboundary();
     return 0;
 }
-/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence)
+/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence/cpp_tests)
 make test_m_seq
 
-To generate all the test files in one go (terminal in MOrse-Sequence/src/morse_sequence) : 
+To generate all the test files in one go (terminal in Morse-Sequence/src/morse_sequence/cpp_tests) : 
 make
 */

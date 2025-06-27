@@ -5,6 +5,8 @@
 #include <optional>
 #include <variant>
 #include <list>
+#include <tsl/robin_map.h>
+
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
@@ -20,16 +22,16 @@ class MorseSequence {
 public:
     explicit MorseSequence(const SimplexTree& st);  
     const SimplexTree& get_simplex_tree();
-    node_list boundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    node_list boundary(node_ptr cn); 
-    node_list coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    node_list coboundary(node_ptr cn);
-    int nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    int nbboundary(node_ptr cn);
-    int nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S);
-    int nbcoboundary(node_ptr cn);
+    node_list boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+    node_list boundary(const node_ptr& cn); 
+    node_list coboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+    node_list coboundary(const node_ptr& cn);
+    int nbboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+    int nbboundary(const node_ptr& cn);
+    int nbcoboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+    int nbcoboundary(const node_ptr& cn);
     node_list simplices(std::optional<int> p) const;
-    node_list get_node_list(const std::list<simplex_t>& py_list) const;
+    //node_list get_node_list(const std::list<simplex_t>& py_list) const;
     std::pair<m_sequence, int> increasing(const SimplexTree& st);
     std::pair<m_sequence, int> decreasing(const SimplexTree& st);
     std::pair<m_sequence, int> Max(const node_list& S, const unordered_map<node_ptr, int>& F);
@@ -41,8 +43,8 @@ public:
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
-    node_ptr find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
+    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr);
+    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F);
     node_list sym_diff(const node_list& A, const node_list& B);
     enum class GammaMode { Reference, Coreference };
     node_list Gamma(node_ptr sigma_ptr, const node_map& sigma2tau, const node_map& tau2sigma, m_frame& cache, GammaMode mode);

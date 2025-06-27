@@ -54,6 +54,52 @@ SimplexList MakeFacesVectorized1(int Nr, int Nc) {
 }
 
 
+// Auxiliary function equivalent to pad_and_pack_S_general in Python 
+py::array_t<idx_t> pad_and_pack_S_general(const std::vector<simplex_t>& S_list) {
+    size_t max_dim = 0;
+    for (const auto& s : S_list)
+        if (s.size() > max_dim) max_dim = s.size();
+
+    size_t n = S_list.size();
+    size_t cols = max_dim;
+
+    py::array_t<idx_t> arr({n, cols});
+    auto buf = arr.mutable_unchecked<2>();
+
+    for (size_t i = 0; i < n; ++i) {
+        const simplex_t& s = S_list[i];
+        for (size_t j = 0; j < cols; ++j) {
+            if (j < s.size()) buf(i, j) = s[j];
+            else buf(i, j) = -1;  // padding
+        }
+    }
+    return arr;
+}
+
+// Auxiliary function equivalent to pad_and_pack_F_general in Python 
+py::array_t<idx_t> pad_and_pack_F_general(const std::unordered_map<simplex_t, int, VectorHash>& F_dict) {
+    size_t max_dim = 0;
+    for (const auto& [s, val] : F_dict)
+        if (s.size() > max_dim) max_dim = s.size();
+
+    size_t n = F_dict.size();
+    size_t cols = max_dim + 1;  // last column for the weight
+
+    py::array_t<idx_t> arr({n, cols});
+    auto buf = arr.mutable_unchecked<2>();
+
+    size_t i = 0;
+    for (const auto& [s, val] : F_dict) {
+        for (size_t j = 0; j < max_dim; ++j) {
+            if (j < s.size()) buf(i, j) = s[j];
+            else buf(i, j) = -1;
+        }
+        buf(i, cols - 1) = val;
+        ++i;
+    }
+    return arr;
+}
+
 int main() {
 
     py::scoped_interpreter guard{};
@@ -64,88 +110,85 @@ int main() {
         std::cout << "\n======================= Grid case " << k << " x " << k << " =======================\n\n";
 
         SimplexList L = MakeFacesVectorized1(k, k);
-    
 
         SimplexTree st;
-        /*
-        // Remplir le SimplexTree
-        std::vector<simplex_t> L = {
-            {1, 5, 7}, {1, 2, 7}, {2, 7, 9}, {2, 3, 9}, {3, 5, 9}, {1, 3, 5},
-            {5, 4, 6}, {5, 6, 7}, {7, 6, 8}, {7, 8, 9}, {9, 8, 4}, {9, 4, 5},
-            {1, 2, 4}, {2, 4, 6}, {2, 3, 6}, {3, 6, 8}, {1, 3, 8}, {1, 4, 8}
-        };
-        */
         for (const auto& s : L) st.insert(s);
 
         MorseSequence ms(st);
 
-        // ----------- Partie inspirée du code Python -----------
+        // --- Préparer S et F pour Max ---
+
+        // Liste simplexes triée par (longueur, lexicographique)
+        std::vector<simplex_t> S_max1;
+        for (const node_ptr& cn : ms.simplices(std::nullopt)){
+            S_max1.push_back(st.full_simplex(cn));
+        }
+        std::sort(S_max1.begin(), S_max1.end(), [](const simplex_t& a, const simplex_t& b) {
+            if (a.size() != b.size()) return a.size() < b.size();
+            return a < b;
+        });
+
+        // Initialiser poids = 0 pour tous
+        std::unordered_map<simplex_t, int, VectorHash> F_max1;
+        for (const auto& s : S_max1) F_max1[s] = 0;
+
+        // Trier S_max1 par (F_max1[s], taille)
+        std::sort(S_max1.begin(), S_max1.end(), [&](const simplex_t& a, const simplex_t& b) {
+            if (F_max1[a] != F_max1[b]) return F_max1[a] < F_max1[b];
+            if (a.size() != b.size()) return a.size() < b.size();
+            return a < b;
+        });
+
+        // Construire buffers numpy padés
+        py::array_t<idx_t> S_buffer_max = pad_and_pack_S_general(S_max1);
+        py::array_t<idx_t> F_buffer_max = pad_and_pack_F_general(F_max1);
+
+        // Benchmark _Max_buffered
+        auto t0_max = high_resolution_clock::now();
+        py::tuple result_max = _Max_buffered(ms, S_buffer_max, F_buffer_max);
+        auto t1_max = high_resolution_clock::now();
+        std::cout << "_Max_buffered time: " << duration<double>(t1_max - t0_max).count() << " s\n";
+
+
+        // --- Préparer S et F pour Min ---
+
         std::vector<simplex_t> S_min1;
-        for (const node_ptr& sigma : ms.simplices(std::nullopt)) S_min1.push_back(st.full_simplex(sigma));
+        for (const node_ptr& cn : ms.simplices(std::nullopt)){
+            S_min1.push_back(st.full_simplex(cn));
+        }
+        // Tri initial (len, lex) inversé
+        std::sort(S_min1.begin(), S_min1.end(), [](const simplex_t& a, const simplex_t& b) {
+            if (a.size() != b.size()) return a.size() < b.size();
+            return a < b;
+        });
+        std::reverse(S_min1.begin(), S_min1.end());
 
-        // Initialiser F_min1 à zéro
         std::unordered_map<simplex_t, int, VectorHash> F_min1;
-        for (const auto& sigma : S_min1) F_min1[sigma] = 0;
+        for (const auto& s : S_min1) F_min1[s] = 0;
 
-        // Trier comme en Python : par valeur (ici toujours 0), puis par -dim, puis lexicographiquement
+        // Trier S_min1 par (-F_min1[s], -len)
         std::sort(S_min1.begin(), S_min1.end(), [&](const simplex_t& a, const simplex_t& b) {
             if (F_min1[a] != F_min1[b]) return F_min1[a] > F_min1[b];
             if (a.size() != b.size()) return a.size() > b.size();
-            return a > b; // lexicographic
+            return a > b;
         });
 
-        // Regrouper S et F par dimension
-        std::map<int, std::vector<simplex_t>> S_by_dim_min;
-        std::map<int, std::vector<std::pair<simplex_t, int>>> F_by_dim_min;
+        py::array_t<idx_t> S_buffer_min = pad_and_pack_S_general(S_min1);
+        py::array_t<idx_t> F_buffer_min = pad_and_pack_F_general(F_min1);
 
-        for (const auto& s : S_min1)
-            S_by_dim_min[(int)s.size() - 1].push_back(s);
-        for (const auto& [sigma, val] : F_min1)
-            F_by_dim_min[(int)sigma.size() - 1].emplace_back(sigma, val);
-
-        // Créer les py::array_t<idx_t>
-        std::unordered_map<int, py::array_t<idx_t>> S_arrays_min, F_arrays_min;
-
-        for (const auto& [dim, simplices] : S_by_dim_min) {
-            size_t n = simplices.size();
-            size_t cols = dim + 1;
-            py::array_t<idx_t> arr({n, cols});
-            auto buf = arr.mutable_unchecked<2>();
-            for (size_t i = 0; i < n; ++i)
-                for (int j = 0; j <= dim; ++j)
-                    buf(i, j) = simplices[i][j];
-            S_arrays_min[dim] = std::move(arr);
-        }
-
-        for (const auto& [dim, pairs] : F_by_dim_min) {
-            size_t n = pairs.size();
-            size_t cols = dim + 2;  // +1 colonne pour le poids
-            py::array_t<idx_t> arr({n, cols});
-            auto buf = arr.mutable_unchecked<2>();
-            for (size_t i = 0; i < n; ++i) {
-                const auto& simplex = pairs[i].first;
-                int val = pairs[i].second;
-                for (int j = 0; j <= dim; ++j)
-                    buf(i, j) = simplex[j];
-                buf(i, cols - 1) = val;
-            }
-            F_arrays_min[dim] = std::move(arr);
-        }
-
-        // ----------- Benchmark de _Min et _Max (version bindings.cpp) -----------
-
-        auto n0 = high_resolution_clock::now();
-        py::tuple result_max = _Max(ms, S_arrays_min, F_arrays_min);
-        auto n1 = high_resolution_clock::now();
-        std::cout << "_Max time: " << duration<double>(n1 - n0).count() << " s\n";
-        
-        auto t0 = high_resolution_clock::now();
-        py::tuple result_min = _Min(ms, S_arrays_min, F_arrays_min);
-        auto t1 = high_resolution_clock::now();
-        std::cout << "_Min time: " << duration<double>(t1 - t0).count() << " s\n";
-
-
+        // Benchmark _Min_buffered
+        auto t0_min = high_resolution_clock::now();
+        py::tuple result_min = _Min_buffered(ms, S_buffer_min, F_buffer_min);
+        auto t1_min = high_resolution_clock::now();
+        std::cout << "_Min_buffered time: " << duration<double>(t1_min - t0_min).count() << " s\n";
     }
 
     return 0;
 }
+
+/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence/cpp_tests)
+make test_bind
+
+To generate all the test files in one go (terminal in Morse-Sequence/src/morse_sequence/cpp_tests) : 
+make 
+*/

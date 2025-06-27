@@ -44,7 +44,7 @@ void timer_m_sequence() {
 
     printf("timer_m_sequence : start \n\n");
 
-    std::vector<int> list_faces = {10, 20, 50, 60, 75};
+    std::vector<int> list_faces = {10, 20, 50, 60, 75, 100, 200};
 
     for (int k : list_faces) {
         std::cout << "\n======================= Grid case " << k << " x " << k << " =======================\n\n";
@@ -56,6 +56,7 @@ void timer_m_sequence() {
         }
         MorseSequence ms(st);
 
+        /*
         // Decreasing
         auto start_dec = std::chrono::high_resolution_clock::now();
         auto [ms_dec, n_crit_dec] = ms.decreasing(st);
@@ -69,6 +70,7 @@ void timer_m_sequence() {
         auto end_crois = std::chrono::high_resolution_clock::now();
         double time_crois = std::chrono::duration<double>(end_crois - start_crois).count();
         std::cout << "increasing C++ : " << time_crois << " seconds\n";
+        */
 
         // Max
         auto S_max = ms.simplices(std::nullopt);
@@ -114,10 +116,10 @@ int main() {
     return 0;
 }
 
-/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence)
+/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence/cpp_tests)
 make timer_m_seq
 
-To generate all the test files in one go (terminal in MOrse-Sequence/src/morse_sequence) : 
+To generate all the test files in one go (terminal in Morse-Sequence/src/morse_sequence/cpp_tests) : 
 make 
 */
 

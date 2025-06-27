@@ -38,7 +38,6 @@
         "sources": [
           "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/_core/bindings.cpp",
           "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/_core/morse_sequence.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/src/morse_sequence/simplex_batch/batch.cpp",
           "/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/simplextree-py/simplextree/_simplextree.cpp"
         ],
         "generated_sources": [],

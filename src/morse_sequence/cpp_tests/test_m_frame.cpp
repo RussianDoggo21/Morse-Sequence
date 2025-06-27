@@ -59,9 +59,9 @@ int main() {
     return 0;
 }
 
-/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence)
+/* Compilation commands (terminal in Morse-Sequence/src/morse_sequence/cpp_tests)
 make timer_m_seq test_m_seq test_m_frm
 
-To generate all the test files in one go (terminal in MOrse-Sequence/src/morse_sequence) : 
+To generate all the test files in one go (terminal in Morse-Sequence/src/morse_sequence/cpp_tests) : 
 make 
 */

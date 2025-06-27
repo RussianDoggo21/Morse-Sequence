@@ -1,5 +1,7 @@
 #include "morse_sequence.h"
 #include <list>
+#include <tsl/robin_map.h>
+
 
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
@@ -27,8 +29,8 @@ const SimplexTree& MorseSequence::get_simplex_tree() {
     return simplex_tree;
 }
 
-
-node_list MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr, bool>& S) {
+// Computes the coboundary of cn with a filtration on S 
+node_list MorseSequence::boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S) {
     node_list boundary;
     simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
 
@@ -44,9 +46,10 @@ node_list MorseSequence::boundary(node_ptr cn, const std::unordered_map<node_ptr
     return boundary;
 }
 
-node_list MorseSequence::boundary(node_ptr cn) {
+// Computes the coboundary of cn 
+node_list MorseSequence::boundary(const node_ptr& cn) {
     node_list boundary;
-    simplex_t sigma = simplex_tree.full_simplex(cn); 
+    simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
     
     if (sigma.size() == 1){
         return {};
@@ -64,9 +67,64 @@ node_list MorseSequence::boundary(node_ptr cn) {
     return boundary;
 }
 
+/*
+// Computes the coboundary of sigma_ptr without filtration
+node_list MorseSequence::coboundary(const node_ptr& sigma_ptr) {
+    node_list coboundary;
+
+    std::vector<idx_t> sigma = simplex_tree.full_simplex(sigma_ptr);
+
+    // For each vertex in the complex
+    for (idx_t v : simplex_tree.get_vertices()) {
+        // Skip if v already in sigma
+        if (std::binary_search(sigma.begin(), sigma.end(), v)) continue;
+
+        // Construct tau = sigma ∪ {v}, keep sorted
+        std::vector<idx_t> tau(sigma);
+        tau.push_back(v);
+        std::sort(tau.begin(), tau.end());
+
+        // Check if tau exists in simplex_tree
+        node_ptr tau_ptr = simplex_tree.find(tau);
+        if (tau_ptr) {
+            coboundary.push_back(tau_ptr);
+        }
+    }
+
+    return coboundary;
+}
+
+
+// Computes the coboundary of sigma_ptr with filtration on S
+node_list MorseSequence::coboundary(const node_ptr& sigma_ptr, const std::tsl::robin_map<node_ptr, bool>& S) {
+    node_list coboundary;
+
+    std::vector<idx_t> sigma = simplex_tree.full_simplex(sigma_ptr);
+
+    // For each vertex in the complex
+    for (idx_t v : simplex_tree.get_vertices()) {
+        if (std::binary_search(sigma.begin(), sigma.end(), v)) continue;
+
+        std::vector<idx_t> tau(sigma);
+        tau.push_back(v);
+        std::sort(tau.begin(), tau.end());
+
+        node_ptr tau_ptr = simplex_tree.find(tau);
+        if (tau_ptr) {
+            auto it = S.find(tau_ptr);
+            if (it != S.end() && it->second) {
+                coboundary.push_back(tau_ptr);
+            }
+        }
+    }
+
+    return coboundary;
+}
+*/
+
 
 // Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
-node_list MorseSequence::coboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S) {
+node_list MorseSequence::coboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S) {
     node_list coboundary;
     cofaces<> cobord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
 
@@ -81,7 +139,7 @@ node_list MorseSequence::coboundary(node_ptr cn, const unordered_map<node_ptr, b
     return coboundary;
 }
 
-node_list MorseSequence::coboundary(node_ptr cn) {
+node_list MorseSequence::coboundary(const node_ptr& cn) {
     node_list coboundary;
     cofaces<> cobord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
 
@@ -96,21 +154,21 @@ node_list MorseSequence::coboundary(node_ptr cn) {
 
 
 // Returns the number of faces of the simplex linked to pointer cn with a filtration on S
-int MorseSequence::nbboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
+int MorseSequence::nbboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S){
     return (this->boundary(cn,S)).size();
 }
 
-int MorseSequence::nbboundary(node_ptr cn){
+int MorseSequence::nbboundary(const node_ptr& cn){
     return (this->boundary(cn)).size();
 }
 
 
 // Returns the number of cofaces of the simplex linked to pointer cn with a filtration on S
-int MorseSequence::nbcoboundary(node_ptr cn, const unordered_map<node_ptr, bool>& S){
+int MorseSequence::nbcoboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S){
     return (this->coboundary(cn, S)).size();
 }
 
-int MorseSequence::nbcoboundary(node_ptr cn){
+int MorseSequence::nbcoboundary(const node_ptr& cn){
     return (this->coboundary(cn)).size();
 }
 
@@ -146,7 +204,7 @@ node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
 // Private function
-node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr){
+node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, node_ptr s_ptr){
     node_ptr v = nullptr;
     if (order == "decreasing"){
         for (node_ptr v0 : simplex_list){
@@ -169,7 +227,7 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T, co
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T, s_ptr, and F
 // Private function
-node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
+node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
         auto it = T.find(v0);
@@ -181,6 +239,7 @@ node_ptr MorseSequence::find_out(const std::unordered_map<node_ptr, bool>& T,con
     return v;
 }
 
+/*
 node_list MorseSequence::get_node_list(const std::list<simplex_t>& py_list) const {
     node_list S;
     for (const simplex_t& sigma : py_list) {
@@ -192,6 +251,7 @@ node_list MorseSequence::get_node_list(const std::list<simplex_t>& py_list) cons
     }
     return S;
 }
+*/
 
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -207,8 +267,8 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
 
     // Declaration of variables
     m_sequence MorseSequence; // Morse sequence to be returned
-    std::unordered_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    //std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
+    tsl::robin_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
+    //std::tsl::robin_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free tau candidates of dimension p that can form a free pair (p-1, p)
     std::unordered_map<node_ptr, int> rho; // rho[tau] == n means that tau has n faces
     int N = K.size(); // Number of simplices in st
@@ -309,8 +369,8 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 
     // Declaration of variables
     m_sequence MorseSequence; // Morse sequence to be returned
-    std::unordered_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    //std::unordered_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
+    tsl::robin_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
+    //std::tsl::robin_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free sigma candidates of dimension p that can form a free pair (p, p+1)
     std::unordered_map<node_ptr, int> rho; // rho[sigma] == n means that sigma has n cofaces
     int N = K.size(); // Number of simplices in st
@@ -402,8 +462,8 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 
 // Build a maximal F-sequence
 std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::unordered_map<node_ptr, int>& F) {
-    std::unordered_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
-    std::unordered_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
+    tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
+    tsl::robin_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one face: (sigma, tau) is a free pair
     std::unordered_map<node_ptr, int> rho; // Number of faces of a simplex
     m_sequence MorseSequence; // Result to return
@@ -482,8 +542,8 @@ std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::uno
 
 // Build a minimal F-sequence
 std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const std::unordered_map<node_ptr, int>& F) {
-    std::unordered_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
-    std::unordered_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
+    tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
+    tsl::robin_map<node_ptr, bool> Sdict;; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one coface: (sigma, tau) is a free pair
     std::unordered_map<node_ptr, int> rho; // Number of cofaces of a simplex
     m_sequence MorseSequence; // Result to return

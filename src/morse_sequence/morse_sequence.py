@@ -1,3 +1,5 @@
+# This code is not used yet (delete ?)
+
 from simplextree import SimplexTree as SimplexTreeCpp
 from morse_sequence._core import MorseSequence as MScpp
 

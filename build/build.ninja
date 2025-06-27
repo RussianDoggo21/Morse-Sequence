@@ -53,11 +53,6 @@ build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_seq
  DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o.d
  ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence/_core -I../simplextree-py/include -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++17 -O0 -g -fPIC
 
-build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_simplex_batch_batch.cpp.o: cpp_COMPILER ../src/morse_sequence/simplex_batch/batch.cpp
- DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_simplex_batch_batch.cpp.o.d
- DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_simplex_batch_batch.cpp.o.d
- ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence/_core -I../simplextree-py/include -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++17 -O0 -g -fPIC
-
 build _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o: cpp_COMPILER ../simplextree-py/simplextree/_simplextree.cpp
  DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o.d
  DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o.d
@@ -66,7 +61,7 @@ build _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simple
 build _core.cpython-313-x86_64-linux-gnu.so.p/_core.cpython-313-x86_64-linux-gnu.so.symbols: SHSYM _core.cpython-313-x86_64-linux-gnu.so
  IMPLIB = _core.cpython-313-x86_64-linux-gnu.so
 
-build _core.cpython-313-x86_64-linux-gnu.so: cpp_LINKER _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence_simplex_batch_batch.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o
+build _core.cpython-313-x86_64-linux-gnu.so: cpp_LINKER _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o
  LINK_ARGS = -Wl,--as-needed -Wl,--allow-shlib-undefined -shared -fPIC
 
 # Test rules

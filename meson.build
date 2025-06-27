@@ -18,7 +18,6 @@ simplextree_inc = include_directories('simplextree-py/include')
 core_sources = files(
   'src/morse_sequence/_core/bindings.cpp',
   'src/morse_sequence/_core/morse_sequence.cpp',
-  'src/morse_sequence/simplex_batch/batch.cpp',
   'simplextree-py/simplextree/_simplextree.cpp'
 )
 
