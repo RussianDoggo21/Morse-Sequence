@@ -64,8 +64,8 @@ Create your binary (make or make test_XXX)
 
 Step 4 : 
 sudo sysctl kernel.perf_event_paranoid=1 
-perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000
-perf record -F 100 -g --call-graph=dwarf -- python3 -m src.python.python_tests.XXX 100 200
+perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000 (pour les fichiers .cpp)
+perf record -F 100 -g --call-graph=dwarf -- python3 -m src.python.python_tests.XXX 100 200 (pour les fichiers .py)
 
 Step 5 : 
 perf report
@@ -74,3 +74,6 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
+1) Créer un dossier tests dans lesquels seront compris les dossiers cpp_tests, python_tests et graphs
+2) Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
+3) Vérifier les unités affichées dans les plots
