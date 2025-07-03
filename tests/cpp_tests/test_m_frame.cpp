@@ -1,18 +1,5 @@
 #include "../../src/morse_sequence/_core/morse_sequence.h"
 
-#include <vector>
-#include <unordered_map>
-#include <algorithm> 
-#include <tuple>
-#include <cstddef>
-#include <functional>
-#include <chrono>
-#include <iomanip>
-using SimplexList = std::vector<simplex_t>;  // Vector of simplices
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
-
 void test_m_frame(){
 
     printf("test_m_frame : start \n\n");
@@ -44,14 +31,16 @@ void test_m_frame(){
 
     ms.print_morse_sequence(result, true);
 
-    m_frame reference_map = ms.reference_map(W);
-    m_frame coreference_map = ms.coreference_map(W);
+
+    node_index_map crit_index = ms.generate_critical_index_map(W);
+    m_frame reference_map = ms.reference_map(W, crit_index);
+    m_frame coreference_map = ms.coreference_map(W, crit_index);
 
     std::cout << "Reference Map:\n";
-    ms.print_m_frame(reference_map, W);
+    ms.print_m_frame(reference_map, W, crit_index);
 
     std::cout << "Coreference Map:\n";
-    ms.print_m_frame(coreference_map, W);
+    ms.print_m_frame(coreference_map, W, crit_index);
    
 }
 

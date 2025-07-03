@@ -3,21 +3,6 @@
 */
 #include "../../src/morse_sequence/_core/morse_sequence.h"
 
-#include <vector>
-#include <unordered_map>
-#include <algorithm> 
-#include <tuple>
-#include <cstddef>
-#include <functional>
-#include <chrono>
-#include <iomanip>
-#include <fstream>
-using SimplexList = std::vector<simplex_t>;  // Vector of simplices
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
-
-
 SimplexList MakeFacesVectorized1(int Nr, int Nc) {
     SimplexList out;
     out.reserve(2 * (Nr - 1) * (Nc - 1));  // We know in advance the number of triangles
@@ -100,7 +85,7 @@ void timer_m_sequence() {
         std::sort(S_max.begin(), S_max.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) < st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) < st.full_simplex(b) );
         });
-        std::unordered_map<node_ptr, int> F_max;
+        tsl::robin_map<node_ptr, int> F_max;
         for (const auto& s : S_max){
             F_max[s] = 0;
         }
@@ -127,7 +112,7 @@ void timer_m_sequence() {
         std::sort(S_min.begin(), S_min.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) > st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) > st.full_simplex(b));
         });
-        std::unordered_map<node_ptr, int> F_min;
+        tsl::robin_map<node_ptr, int> F_min;
         for (const auto& s : S_min) F_min[s] = 0;
         std::sort(S_min.begin(), S_min.end(), [&st, &F_min](const node_ptr& a, const node_ptr& b) {
             return (F_min[a] > F_min[b]) || (F_min[a] == F_min[b] && st.full_simplex(a) > st.full_simplex(b));

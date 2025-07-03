@@ -44,6 +44,7 @@ Step 2 :
 Update your files if necessary
 - bindings.cpp for exposing C++ code to python
 - pyproject.toml to modify the number of the version
+- meson.build to modify the number of the version
 
 Step 3: 
 ./build_install.sh
@@ -54,18 +55,20 @@ HOW TO PROFILE A BINARY
 ==========================================================================================================================================================================
 
 Step 1 : 
-cd ~/Téléchargements/Morse-Sequence/src/morse_sequence/cpp_tests
+cd ~/Téléchargements/Morse-Sequence/tests/cpp_tests
+cd ~/Téléchargements/Morse-Sequence/tests/python_tests
 
 Step 2 : 
-Update your Makefile if necessary
+Update your Makefile if necessary (pour les fichiers .cpp)
 
 Step 3 : 
-Create your binary (make or make test_XXX)
+Create your binary (make or make test_XXX) (pour les fichiers .cpp)
 
 Step 4 : 
 sudo sysctl kernel.perf_event_paranoid=1 
+
 perf record --call-graph=dwarf -F 100 ./test_XXX 100 2000 (pour les fichiers .cpp)
-perf record -F 100 -g --call-graph=dwarf -- python3 -m src.python.python_tests.XXX 100 200 (pour les fichiers .py)
+perf record -F 100 -g --call-graph=dwarf -- python3 -m tests.python_tests.XXX 100 200 (pour les fichiers .py)
 
 Step 5 : 
 perf report
@@ -74,6 +77,11 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-1) Créer un dossier tests dans lesquels seront compris les dossiers cpp_tests, python_tests et graphs
-2) Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
-3) Vérifier les unités affichées dans les plots
+
+
+==========================================================================================================================================================================
+PROBLEMES SECONDAIRES
+==========================================================================================================================================================================
+
+- Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
+- Vérifier les unités (secondes, millisecondes ?) affichées dans les plots

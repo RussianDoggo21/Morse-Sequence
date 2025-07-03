@@ -1,18 +1,5 @@
 #include "../../src/morse_sequence/_core/morse_sequence.h"
 
-#include <vector>
-#include <unordered_map>
-#include <algorithm> 
-#include <tuple>
-#include <cstddef>
-#include <functional>
-#include <chrono>
-#include <iomanip>
-using SimplexList = std::vector<simplex_t>;  // Vector of simplices
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
-
 void test_m_sequence(){
 
     printf("test_m_sequence : start \n\n");
@@ -77,7 +64,7 @@ void test_m_sequence(){
     });
 
     // F = dict()
-    std::unordered_map<node_ptr, int> F;
+    tsl::robin_map<node_ptr, int> F;
     for (node_ptr cn : S) {
        F[cn] = 0;
     }
@@ -113,7 +100,7 @@ void test_m_sequence(){
     });
 
     // 2. Initialize F
-    std::unordered_map<node_ptr, int> F2;
+    tsl::robin_map<node_ptr, int> F2;
     for (node_ptr cn : S2) {
         F2[cn] = 0;
     }

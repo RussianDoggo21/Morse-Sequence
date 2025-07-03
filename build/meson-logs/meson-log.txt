@@ -1,4 +1,4 @@
-Build started at 2025-06-27T15:49:30.982636
+Build started at 2025-07-03T15:29:09.395183
 Main binary: /home/kali/Téléchargements/Morse-Sequence/venv/bin/python
 Build Options: '-Dprefix=/home/kali/Téléchargements/Morse-Sequence/venv'
 Python system: Linux
@@ -8,41 +8,8 @@ Source dir: /home/kali/Téléchargements/Morse-Sequence
 Build dir: /home/kali/Téléchargements/Morse-Sequence/build
 Build type: native build
 Project name: morse_sequence
-Project version: 0.3
------------
-Detecting compiler via: `c++ --version` -> 0
-stdout:
-c++ (Debian 14.2.0-16) 14.2.0
-Copyright (C) 2024 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
------------
-Running command: -cpp -x c++ -E -dM -
------
------------
-Detecting linker via: `c++ -Wl,--version` -> 0
-stdout:
-GNU ld (GNU Binutils for Debian) 2.44
-Copyright (C) 2025 Free Software Foundation, Inc.
-Ce logiciel est libre; si vous le redistribuez, vous devez le faire selon les termes
-de la licence GNU General Public License version 3 ou postérieure selon votre besoin.
-Ce logiciel n'est couvert par aucune GARANTIE.
------------
-stderr:
-collect2 version 14.2.0
-/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-linux-gnu/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-linux-gnu/14/lto-wrapper -plugin-opt=-fresolution=/tmp/cc2A9vD7.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/14 -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/14/../../.. --version -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crtn.o
------------
-Sanity testing C++ compiler: c++
-Is cross compiler: False.
-Sanity check compiler command line: c++ sanitycheckcpp.cc -o sanitycheckcpp.exe -D_FILE_OFFSET_BITS=64
-Sanity check compile stdout:
-
------
-Sanity check compile stderr:
-
------
-Running test binary command:  '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/sanitycheckcpp.exe'
-C++ compiler for the host machine: c++ (gcc 14.2.0 "c++ (Debian 14.2.0-16) 14.2.0")
+Project version: 0.4
+C++ compiler for the host machine: c++ (gcc 14.2.0 "c++ (Debian 14.2.0-19) 14.2.0")
 C++ linker for the host machine: c++ ld.bfd 2.44
 -----------
 Detecting archiver via: `gcc-ar --version` -> 0
@@ -53,40 +20,7 @@ Ce logiciel est libre; vous pouvez le redistribuer selon les termes de la
 version 3 de la licence GNU General Public License ou (à votre discrétion)
 de toute version ultérieure. Aucune garantie n'est donnée sur ce programme.
 -----------
------------
-Detecting compiler via: `c++ --version` -> 0
-stdout:
-c++ (Debian 14.2.0-16) 14.2.0
-Copyright (C) 2024 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
------------
-Running command: -cpp -x c++ -E -dM -
------
------------
-Detecting linker via: `c++ -Wl,--version` -> 0
-stdout:
-GNU ld (GNU Binutils for Debian) 2.44
-Copyright (C) 2025 Free Software Foundation, Inc.
-Ce logiciel est libre; si vous le redistribuez, vous devez le faire selon les termes
-de la licence GNU General Public License version 3 ou postérieure selon votre besoin.
-Ce logiciel n'est couvert par aucune GARANTIE.
------------
-stderr:
-collect2 version 14.2.0
-/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-linux-gnu/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-linux-gnu/14/lto-wrapper -plugin-opt=-fresolution=/tmp/cc7fP7Hj.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/14 -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/14/../../.. --version -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crtn.o
------------
-Sanity testing C++ compiler: c++
-Is cross compiler: False.
-Sanity check compiler command line: c++ sanitycheckcpp.cc -o sanitycheckcpp.exe -D_FILE_OFFSET_BITS=64
-Sanity check compile stdout:
-
------
-Sanity check compile stderr:
-
------
-Running test binary command:  '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/sanitycheckcpp.exe'
-C++ compiler for the build machine: c++ (gcc 14.2.0 "c++ (Debian 14.2.0-16) 14.2.0")
+C++ compiler for the build machine: c++ (gcc 14.2.0 "c++ (Debian 14.2.0-19) 14.2.0")
 C++ linker for the build machine: c++ ld.bfd 2.44
 -----------
 Detecting archiver via: `gcc-ar --version` -> 0
@@ -104,20 +38,7 @@ Host machine cpu: x86_64
 Target machine cpu family: x86_64
 Target machine cpu: x86_64
 Program python3 found: YES (/home/kali/Téléchargements/Morse-Sequence/venv/bin/python)
-Pkg-config binary missing from cross or native file, or env var undefined.
-Trying a default Pkg-config fallback at pkg-config
-Did not find pkg-config by name 'pkg-config'
-Found pkg-config: NO
-Dependency lookup for pybind11 with method 'pkgconfig' failed: Pkg-config for machine host machine not found. Giving up.
-pybind11-config binary missing from cross or native file, or env var undefined.
-Trying a default pybind11-config fallback at pybind11-config
-pybind11-config found: YES (/home/kali/Téléchargements/Morse-Sequence/venv/bin/pybind11-config) 2.13.6
------------
-Called: `'/home/kali/Téléchargements/Morse-Sequence/venv/bin/pybind11-config' --includes` -> 0
-stdout:
--I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include'
------------
-Run-time dependency pybind11 found: YES 2.13.6
+Dependency pybind11 found: YES 2.13.6 (cached)
 Running command: '/home/kali/Téléchargements/Morse-Sequence/venv/bin/python' -c 'import site, sys; print(site.getsitepackages()[0])'
 --- stdout ---
 /home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages
@@ -125,35 +46,16 @@ Running command: '/home/kali/Téléchargements/Morse-Sequence/venv/bin/python' -
 --- stderr ---
 
 
-Searching for 'python-3.13' via pkgconfig lookup in LIBPC
-Pkg-config for machine host machine not found. Giving up.
-"python-3.13" could not be found in LIBPC, this is likely due to a relocated python installation
-Searching for 'python-3.13' via fallback pkgconfig lookup in default paths
-Pkg-config for machine host machine not found. Giving up.
-Running compile:
-Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpsgtzs_cg
-Code:
-
-        #ifdef __has_include
-         #if !__has_include("Python.h")
-          #error "Header 'Python.h' could not be found"
-         #endif
-        #else
-         #include <Python.h>
-        #endif
------------
-Command line: `c++ -I/usr/include/python3.13 '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpsgtzs_cg/testfile.cpp' -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive` -> 0
-Run-time dependency python found: YES 3.13
 Build targets in project: 1
 
-morse_sequence 0.3
+morse_sequence 0.4
 
   User defined options
     prefix: /home/kali/Téléchargements/Morse-Sequence/venv
 
 Found ninja-1.11.1.git.kitware.jobserver-1 at '/home/kali/Téléchargements/Morse-Sequence/venv/bin/ninja'
 Running compile:
-Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmp2q57uqs7
+Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpzfgnvgcm
 Code:
 
         #ifdef __has_include
@@ -164,9 +66,9 @@ Code:
          #include <version>
         #endif
 -----------
-Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmp2q57uqs7/testfile.cpp' -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive` -> 0
+Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpzfgnvgcm/testfile.cpp' -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive` -> 0
 Running compile:
-Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d
+Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx
 Code:
 
         #include <version>
@@ -178,36 +80,36 @@ Code:
             return 0;
         }
 -----------
-Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive` -> 1
+Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive` -> 1
 stderr:
-/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp: In function 'int main()':
-/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
+/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp: In function 'int main()':
+/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
     6 |                 _LIBCPP_VERSION;
       |                 ^~~~~~~~~~~~~~~
 -----------
 Running compile:
-Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu
+Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2
 Code:
 
         #include <version>
         using _LIBCPP_VERSION;
         int main(void) { return 0; }
 -----------
-Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive` -> 1
+Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive` -> 1
 stderr:
-/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
+/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
     3 |         using _LIBCPP_VERSION;
       |               ^~~~~~~~~~~~~~~
 -----------
 Running compile:
-Working directory:  /tmp/tmpyup8_w_b
+Working directory:  /tmp/tmpfnig10kx
 Code:
 int i = static_cast<int>(0);
 -----------
-Command line: `c++ /tmp/tmpyup8_w_b/testfile.cpp -o /tmp/tmpyup8_w_b/output.obj -D_FILE_OFFSET_BITS=64 -c -std=c++20` -> 0
+Command line: `c++ /tmp/tmpfnig10kx/testfile.cpp -o /tmp/tmpfnig10kx/output.obj -D_FILE_OFFSET_BITS=64 -c -std=c++20` -> 0
 Compiler accepts -std=c++20: YES
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmp2q57uqs7/testfile.cpp -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpzfgnvgcm/testfile.cpp -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive 
 
 Code:
  
@@ -223,7 +125,7 @@ Cached compiler stdout:
 Cached compiler stderr:
  
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
 
 Code:
  
@@ -238,13 +140,13 @@ Code:
 Cached compiler stdout:
  
 Cached compiler stderr:
- /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp: In function 'int main()':
-/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
+ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp: In function 'int main()':
+/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
     6 |                 _LIBCPP_VERSION;
       |                 ^~~~~~~~~~~~~~~
 
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
 
 Code:
  
@@ -254,12 +156,12 @@ Code:
 Cached compiler stdout:
  
 Cached compiler stderr:
- /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
+ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
     3 |         using _LIBCPP_VERSION;
       |               ^~~~~~~~~~~~~~~
 
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmp2q57uqs7/testfile.cpp -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpzfgnvgcm/testfile.cpp -E -P -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive 
 
 Code:
  
@@ -275,7 +177,7 @@ Cached compiler stdout:
 Cached compiler stderr:
  
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
 
 Code:
  
@@ -290,13 +192,13 @@ Code:
 Cached compiler stdout:
  
 Cached compiler stderr:
- /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp: In function 'int main()':
-/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpy9ihkd9d/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
+ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp: In function 'int main()':
+/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpqfvbrfcx/testfile.cpp:6:17: error: '_LIBCPP_VERSION' was not declared in this scope
     6 |                 _LIBCPP_VERSION;
       |                 ^~~~~~~~~~~~~~~
 
 Using cached compile:
-Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
+Cached command line:  c++ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp -o /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/output.obj -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive 
 
 Code:
  
@@ -306,16 +208,16 @@ Code:
 Cached compiler stdout:
  
 Cached compiler stderr:
- /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmptlm79ktu/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
+ /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpkvkobeg2/testfile.cpp:3:15: error: expected nested-name-specifier before '_LIBCPP_VERSION'
     3 |         using _LIBCPP_VERSION;
       |               ^~~~~~~~~~~~~~~
 
 Running compile:
-Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpoyuw6a7a
+Working directory:  /home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpjilrk7g6
 Code:
 
 -----------
-Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpoyuw6a7a/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpoyuw6a7a/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive --print-search-dirs` -> 0
+Command line: `c++ '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpjilrk7g6/testfile.cpp' -o '/home/kali/Téléchargements/Morse-Sequence/build/meson-private/tmpjilrk7g6/output.obj' -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive --print-search-dirs` -> 0
 stdout:
 install: /usr/lib/gcc/x86_64-linux-gnu/14/
 programs: =/usr/libexec/gcc/x86_64-linux-gnu/14/:/usr/libexec/gcc/x86_64-linux-gnu/14/:/usr/libexec/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/14/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/bin/x86_64-linux-gnu/14/:/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/bin/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/bin/

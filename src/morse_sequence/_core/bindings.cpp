@@ -3,17 +3,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/iostream.h>
 #include <pybind11/numpy.h>
-#include <tsl/robin_map.h>
 
 #include "morse_sequence.h"
-
-using simplex_t = SimplexTree::simplex_t;
-using node_ptr = SimplexTree::node*;
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
-using SimplexList = std::vector<simplex_t>;  
-using simplex_t = SimplexTree::simplex_t;
 
 namespace py = pybind11;
 
@@ -51,31 +42,29 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
 
 // Conversion m_frame -> py::dict
 // Used in _ref_map and _coref_map
-py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st){
+py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
     py::dict py_map;
 
-    for (const auto &[key_ptr, lst] : map) {
-
-        // Python key : the full simplex linked to the node_ptr key_ptr
+    for (const auto& [key_ptr, bits] : map) {
+        // Python key : the full simplex corresponding to key_ptr
         auto vec = st.full_simplex(key_ptr);
         py::tuple py_key(vec.size());
         for (std::size_t i = 0; i < vec.size(); ++i)
             py_key[i] = vec[i];
-        //py::list py_key = py::cast(py::tuple(py::cast(vec)));
 
-        // Python value : list of critical simplices (or None)
+        // Python value : list of indices where bits are set to 1
         py::list py_val;
-        for (node_ptr v : lst) {
-            if (v == nullptr)
-                py_val.append(py::none());
-            else
-                py_val.append(st.full_simplex(v));
+        for (std::size_t i = 0; i < bits.size(); ++i) {
+            if (bits.test(i))
+                py_val.append(py::int_(i));
         }
 
         py_map[py_key] = py_val;
     }
+
     return py_map;
 }
+
 
 
 // Conversion m_sequence -> py::list
@@ -134,7 +123,7 @@ py::tuple _Min_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
-    std::unordered_map<node_ptr, int> cpp_F_full;
+    tsl::robin_map<node_ptr, int> cpp_F_full;
 
     // Fill cpp_S_full with vector_handler
     vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
@@ -159,7 +148,7 @@ py::tuple _Max_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
-    std::unordered_map<node_ptr, int> cpp_F_full;
+    tsl::robin_map<node_ptr, int> cpp_F_full;
 
     // Fill cpp_S_full with vector_handler
     vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
@@ -211,8 +200,11 @@ py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
     // Conversion py::list -> m_sequence
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
+    // Indexation of the critical simplices of W
+    node_index_map critical_index_map = ms.generate_critical_index_map(W);
+
     // Call of C++ function
-    m_frame reference_map = ms.reference_map(W);
+    m_frame reference_map = ms.reference_map(W, critical_index_map);
 
     // Conversion m_frame -> py::list
     py::dict py_ref_map = m_frame_to_py_dict(reference_map, st);
@@ -228,8 +220,11 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
     // Conversion py::list -> m_sequence
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
+    // Indexation of the critical simplices of W
+    node_index_map critical_index_map = ms.generate_critical_index_map(W);
+
     // Call of C++ function
-    m_frame coreference_map = ms.coreference_map(W);
+    m_frame coreference_map = ms.coreference_map(W, critical_index_map);
 
     // Conversion m_frame -> py::list
     py::dict py_coref_map = m_frame_to_py_dict(coreference_map, st);

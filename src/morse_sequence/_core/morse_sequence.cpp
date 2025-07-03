@@ -1,19 +1,5 @@
 #include "morse_sequence.h"
-#include <list>
-#include <tsl/robin_map.h>
 
-
-using node_pair = std::pair<node_ptr, node_ptr>;
-using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
-using node_map = std::unordered_map<node_ptr,node_ptr>;
-using SimplexList = std::vector<simplex_t>;  // Vector of simplices
-using simplex_t = SimplexTree::simplex_t;
-/*
-typedef std::size_t idx_t;
-using simplex_t = vector< idx_t >; 
-*/
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 // Constructor of the MorseSequence class
@@ -66,61 +52,6 @@ node_list MorseSequence::boundary(const node_ptr& cn) {
     }
     return boundary;
 }
-
-/*
-// Computes the coboundary of sigma_ptr without filtration
-node_list MorseSequence::coboundary(const node_ptr& sigma_ptr) {
-    node_list coboundary;
-
-    std::vector<idx_t> sigma = simplex_tree.full_simplex(sigma_ptr);
-
-    // For each vertex in the complex
-    for (idx_t v : simplex_tree.get_vertices()) {
-        // Skip if v already in sigma
-        if (std::binary_search(sigma.begin(), sigma.end(), v)) continue;
-
-        // Construct tau = sigma ∪ {v}, keep sorted
-        std::vector<idx_t> tau(sigma);
-        tau.push_back(v);
-        std::sort(tau.begin(), tau.end());
-
-        // Check if tau exists in simplex_tree
-        node_ptr tau_ptr = simplex_tree.find(tau);
-        if (tau_ptr) {
-            coboundary.push_back(tau_ptr);
-        }
-    }
-
-    return coboundary;
-}
-
-
-// Computes the coboundary of sigma_ptr with filtration on S
-node_list MorseSequence::coboundary(const node_ptr& sigma_ptr, const std::tsl::robin_map<node_ptr, bool>& S) {
-    node_list coboundary;
-
-    std::vector<idx_t> sigma = simplex_tree.full_simplex(sigma_ptr);
-
-    // For each vertex in the complex
-    for (idx_t v : simplex_tree.get_vertices()) {
-        if (std::binary_search(sigma.begin(), sigma.end(), v)) continue;
-
-        std::vector<idx_t> tau(sigma);
-        tau.push_back(v);
-        std::sort(tau.begin(), tau.end());
-
-        node_ptr tau_ptr = simplex_tree.find(tau);
-        if (tau_ptr) {
-            auto it = S.find(tau_ptr);
-            if (it != S.end() && it->second) {
-                coboundary.push_back(tau_ptr);
-            }
-        }
-    }
-
-    return coboundary;
-}
-*/
 
 
 // Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
@@ -227,7 +158,7 @@ node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const 
 
 // Returns the pointer of a simplex in simplex_list that satisfies a condition on T, s_ptr, and F
 // Private function
-node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const std::unordered_map<node_ptr, int>& F){
+node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
         auto it = T.find(v0);
@@ -268,7 +199,6 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
     // Declaration of variables
     m_sequence MorseSequence; // Morse sequence to be returned
     tsl::robin_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    //std::tsl::robin_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free tau candidates of dimension p that can form a free pair (p-1, p)
     std::unordered_map<node_ptr, int> rho; // rho[tau] == n means that tau has n faces
     int N = K.size(); // Number of simplices in st
@@ -277,18 +207,14 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
 
     T.reserve(N);
     rho.reserve(N);
-    //Sdict.reserve(N);
 
     // Initialization of T and Sdict
-    for (node_ptr cn : this->simplices()) {
+    for (node_ptr cn : this->simplices(std::nullopt)) {
         T[cn] = false;
-        //Sdict[cn] = false;
     }
 
     // Initialization of Sdict, rho, and L
     for (node_ptr cn : K) {
-        //Sdict[cn] = true;
-        //int nb = this->nbboundary(cn, Sdict); // number of faces of cn
         int nb = this->nbboundary(cn); // number of faces of cn
         rho[cn] = nb;
         if (nb == 1) {
@@ -299,6 +225,7 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
     while (i < N) { // while we still haven't used all the simplices of st
 
         while (!L.empty()) { // while we can still add free pairs
+            
             // tau_ptr: upper element of the free pair
             node_ptr tau_ptr = L.back(); 
             L.pop_back();
@@ -306,8 +233,6 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
             if (rho[tau_ptr] == 1) { // if tau_ptr only has one face
 
                 // sigma_ptr: lower element of the free pair
-                
-                //node_list bd = this->boundary(tau_ptr, Sdict);
                 node_list bd = this->boundary(tau_ptr);                
                 node_ptr sigma_ptr = this->find_out(T, bd, "increasing", tau_ptr);
 
@@ -317,8 +242,6 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
                 T[sigma_ptr] = true;
 
                 // Update rho and L
-                //std::node_list cob1 = this->coboundary(sigma_ptr, Sdict);
-                //std::node_list cob2 = this->coboundary(tau_ptr, Sdict);
                 node_list cob1 = this->coboundary(sigma_ptr);
                 node_list cob2 = this->coboundary(tau_ptr);
                 cob1.insert(cob1.end(), cob2.begin(), cob2.end());
@@ -370,7 +293,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
     // Declaration of variables
     m_sequence MorseSequence; // Morse sequence to be returned
     tsl::robin_map<node_ptr, bool> T; // Marks simplices used to create MorseSequence
-    //std::tsl::robin_map<node_ptr, bool> Sdict; // Sdict[sigma] == True means that sigma is in S
     std::deque<node_ptr> L; // List of free sigma candidates of dimension p that can form a free pair (p, p+1)
     std::unordered_map<node_ptr, int> rho; // rho[sigma] == n means that sigma has n cofaces
     int N = K.size(); // Number of simplices in st
@@ -379,18 +301,14 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
  
     T.reserve(N);
     rho.reserve(N);
-    //Sdict.reserve(N);
 
     // Initialization of T and Sdict 
     for (node_ptr cn : this->simplices()) {
         T[cn] = false;
-        //Sdict[cn] = false;
     }
 
     // Initialization of Sdict, rho and L
     for (node_ptr cn : K) {
-        //Sdict[cn] = true;
-        //int nb = this->nbcoboundary(cn, Sdict); // number of cofaces of cn
         int nb = this->nbcoboundary(cn); // number of cofaces of cn
         rho[cn] = nb;
         if (nb == 1) {
@@ -409,7 +327,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
             if (rho[sigma_ptr] == 1) { // if sigma_ptr has only one coface
 
                 // tau_ptr: upper element of the free pair
-                //std::node_list cofaces = this->coboundary(sigma_ptr, Sdict);
                 node_list cofaces = this->coboundary(sigma_ptr);
                 node_ptr tau_ptr = this->find_out(T, cofaces, "decreasing", sigma_ptr);
 
@@ -419,8 +336,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
                 T[tau_ptr] = true;
 
                 // Update rho and L
-                //node_list bd1 = this->boundary(sigma_ptr, Sdict);
-                //node_list bd2 = this->boundary(tau_ptr, Sdict);
                 node_list bd1 = this->boundary(sigma_ptr);
                 node_list bd2 = this->boundary(tau_ptr);
                 bd1.insert(bd1.end(), bd2.begin(), bd2.end());
@@ -446,7 +361,6 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
             T[sigma_ptr] = true;
 
             // Update rho and L
-            //for (node_ptr mu : this->boundary(sigma_ptr, Sdict)) {
             for (node_ptr mu : this->boundary(sigma_ptr)) {
                 rho[mu] -= 1;
                 if (rho[mu] == 1) {
@@ -461,7 +375,7 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 
 
 // Build a maximal F-sequence
-std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::unordered_map<node_ptr, int>& F) {
+std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one face: (sigma, tau) is a free pair
@@ -541,7 +455,7 @@ std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const std::uno
 
 
 // Build a minimal F-sequence
-std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const std::unordered_map<node_ptr, int>& F) {
+std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict;; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one coface: (sigma, tau) is a free pair
@@ -663,7 +577,7 @@ void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& resul
     printf("\n"); 
 }
 
-
+/*
 // Define the symetric diffrence : A△B = AUB \ AnB 
 // Private function
 node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
@@ -696,7 +610,109 @@ node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
         return result; // A△B
     }
 }
+*/
 
+
+// Computes the reference/coreference of a single simplex 
+// (in particular lower simplices in reference map and upper simplices in coreference map)
+// Private function
+bitmap MorseSequence::Gamma(
+    const node_ptr& cn, 
+    const node_map& sigma2tau, 
+    const node_map& tau2sigma, 
+    m_frame& cache, 
+    GammaMode mode, 
+    const tsl::robin_map<node_ptr, std::size_t>& critical_index_map) {
+    
+    // Specific case : if Gamma(cn) is already cached
+    auto hit = cache.find(cn);
+    if (hit != cache.end()) return hit->second;
+
+    // General case
+    node_ptr sigma_ptr, tau_ptr;
+    std::function<node_list(node_ptr)> traversal;
+    node_ptr erase_ptr;
+    node_ptr root;
+
+    // Either we compute the reference of cn 
+    if (mode == GammaMode::Reference) {
+
+        auto it = sigma2tau.find(cn);
+        auto it2 = tau2sigma.find(cn);
+
+        // Case of critical simplex: Υ′(c) = c
+        if (it == sigma2tau.end() && it2 == tau2sigma.end()) {
+            bitmap bm(critical_index_map.size(), false); // We initialize bm with all bits equal to 0
+            bm[critical_index_map.at(cn)] = true; // We put the bit representing cn at 1, since it's a critical simplex
+            cache[cn] = bm; // We cache the result
+            return bm; // We return the result
+        }
+
+        // Case of upper regular node: Υ′(τ) = 0
+        // Nothing to do here
+        else if (it2 != tau2sigma.end()) {
+            bitmap bm(critical_index_map.size(), false); 
+            cache[cn] = bm; 
+            return bm;
+        }
+        // Case of lower regular node: Υ′(σ) = Γ(∂τ \ σ)
+        else {
+            sigma_ptr = cn; // The simplex on which we want to compute the reference
+            tau_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
+            traversal = [&](node_ptr n) { return this->boundary(n); }; // The function needed to compute the reference
+            erase_ptr = sigma_ptr; // Variable generated to update cache outside of this if/else statement
+            root = tau_ptr; // Variable to call traversal correctly outside of this if/else statement
+        }
+    } 
+
+    // Else we compute the coreference
+    else {
+        auto it = tau2sigma.find(cn);
+        auto it2 = sigma2tau.find(cn);
+
+        // Case of critical simplex: Υ′′(c) = c
+        if (it == tau2sigma.end() && it2 == sigma2tau.end()) {
+            bitmap bm(critical_index_map.size(), false);
+            bm[critical_index_map.at(cn)] = true;
+            cache[cn] = bm;
+            return bm;
+        }
+        // Case of lower regular node: Υ′′(σ) = 0
+        else if (it2 != sigma2tau.end()) {
+            bitmap bm(critical_index_map.size(), false);
+            cache[cn] = bm;
+            return bm;
+        }
+        // Case of upper regular node: Υ′′(τ) = Γ(∂σ \ τ)
+        else {
+            tau_ptr = cn; // The simplex on which we want to compute the coreference
+            sigma_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
+            traversal = [&](node_ptr n) { return this->coboundary(n); }; // The function needed to compute the coreference
+            erase_ptr = tau_ptr; // Variable generated to update cache outside of this if/else statement
+            root = sigma_ptr; // Variable to call traversal correctly outside of this if/else statement
+        }
+    }
+
+    // Compute the boundary or coboundary of the root
+    node_list bd = traversal(root);
+    bd.erase(std::remove(bd.begin(), bd.end(), erase_ptr), bd.end());
+
+    // Initialize result bitmap (all bits at 0)
+    bitmap result(critical_index_map.size(), false);
+
+    // Combine recursive calls with XOR
+    for (node_ptr v : bd) {
+        bitmap gamma_v = Gamma(v, sigma2tau, tau2sigma, cache, mode, critical_index_map);
+        for (size_t i = 0; i < result.size(); ++i) {
+            result[i] ^= gamma_v[i]; // Symmetrical difference
+        }
+    }
+
+    cache[erase_ptr] = result;
+    return result;
+}
+
+/*
 // Computes the reference/coreference of a single simplex 
 // (in particular lower simplices in reference map and upper simplices in coreference map)
 // Private function
@@ -826,137 +842,179 @@ node_list MorseSequence::Gamma(const node_ptr& cn, const node_map& sigma2tau, co
     cache[erase_ptr] = result;
     return result;
 }
+*/
 
+// Generates a map critical_simplex -> index from a Morse sequence W
+node_index_map MorseSequence::generate_critical_index_map(const m_sequence& W) {
+    node_index_map critical_index_map;
+    size_t index = 0;
+    for (const auto& item : W) {
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr c = std::get<node_ptr>(item);
+            if (critical_index_map.find(c) == critical_index_map.end()) {
+                critical_index_map[c] = index++;
+            }
+        }
+    }
+    return critical_index_map;
+}
 
-// Computes the reference map from a morse sequence W
-m_frame MorseSequence::reference_map(const m_sequence& W){
-    
+// Computes a reference map from a Morse sequence W given critical_index_map
+m_frame MorseSequence::reference_map(const m_sequence& W, const node_index_map& critical_index_map) {
+
+    node_map sigma2tau, tau2sigma;
     m_frame ref_map;
     ref_map.reserve(W.size());
 
-    // Generation of the tables of the free pairs that will be used by the function Gamma
-    node_map sigma2tau;
-    node_map tau2sigma;
-    for (const auto& item : W)
+    // 1) Build sigma2tau and tau2sigma maps for free pairs
+    for (const auto& item : W) {
         if (std::holds_alternative<node_pair>(item)) {
             auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
             sigma2tau[sigma_ptr] = tau_ptr;
             tau2sigma[tau_ptr] = sigma_ptr;
         }
-
-    // Generation of the cache that will be used by the function Gamma
-    m_frame cache;
-
-    // Case of critical simplices
-    for (const auto& item : W){
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr c = std::get<node_ptr>(item);
-
-            //Update of both the cache and ref_map
-            cache[c] = {c};                 
-            ref_map[c] = {c};                 
-        }
     }
 
-    // Case of regular pairs
-    // Use of Gamma()
+    // Number of critical simplices
+    size_t index = critical_index_map.size();
+
+    // 2) Initialize cache and ref_map with bitmaps for critical simplices
+    m_frame cache;
+    for (const auto& [c, idx] : critical_index_map) {
+        bitmap b(index, false);
+        b.set(idx);
+        cache[c] = b;
+        ref_map[c] = b;
+    }
+
+    // 3) Compute reference values for free simplices using Gamma
     for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
-        ref_map[tau_ptr] = {nullptr}; // Υ′(τ) = 0
-        //printf("Appel de Gamma sur ");
-        //simplex_tree.print_simplex(std::cout, sigma_ptr, true);
-        ref_map[sigma_ptr] = Gamma(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Reference);
+        ref_map[tau_ptr] = bitmap(index, false);  // all bits set to 0
+        ref_map[sigma_ptr] = Gamma(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Reference, critical_index_map);
     }
 
     return ref_map;
 }
 
+// Computes a coreference map from a Morse sequence W given critical_index_map
+m_frame MorseSequence::coreference_map(const m_sequence& W, const node_index_map& critical_index_map) {
 
-// Computes the coreference map from a morse sequence W
-m_frame MorseSequence::coreference_map(const m_sequence& W){
-    
+    node_map sigma2tau, tau2sigma;
     m_frame coref_map;
     coref_map.reserve(W.size());
 
-    // Generation of the tables of the free pairs that will be used by the function Gamma
-    node_map sigma2tau;
-    node_map tau2sigma;
-    for (const auto& item : W)
+    // 1) Build sigma2tau and tau2sigma maps for free pairs
+    for (const auto& item : W) {
         if (std::holds_alternative<node_pair>(item)) {
             auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
             sigma2tau[sigma_ptr] = tau_ptr;
             tau2sigma[tau_ptr] = sigma_ptr;
         }
-
-    // Generation of the cache that will be used by the function Gamma
-    m_frame cache;
-
-    // Case of critical simplices
-    for (const auto& item : W){
-        if (std::holds_alternative<node_ptr>(item)) {
-            node_ptr c = std::get<node_ptr>(item);
-
-            //Update of both the cache and ref_map
-            cache[c] = {c};                 
-            coref_map[c] = {c};                 
-        }
     }
 
-    // Case of regular pairs
-    // Use of Gamma()
-    for (const auto& [tau_ptr, sigma_ptr] : tau2sigma) {
-        coref_map[sigma_ptr] = {nullptr}; // Υ′′(sigma) = 0
-        coref_map[tau_ptr] = Gamma(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference);
+    // Number of critical simplices
+    size_t index = critical_index_map.size();
+
+    // 2) Initialize cache and coref_map with bitmaps for critical simplices
+    m_frame cache;
+    for (const auto& [c, idx] : critical_index_map) {
+        bitmap b(index, false);
+        b.set(idx);
+        cache[c] = b;
+        coref_map[c] = b;
+    }
+
+    // 3) Compute coreference values for free simplices using Gamma
+    for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
+        coref_map[sigma_ptr] = bitmap(index, false);  // all bits set to 0
+        coref_map[tau_ptr] = Gamma(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference, critical_index_map);
     }
 
     return coref_map;
 }
 
-
-// Print a Morse Frame (in particular a reference map or a coreference map)
-void MorseSequence::print_m_frame(m_frame& map, const m_sequence& W){
-    for (const auto& item : W){
-
+// Print a Morse Frame (reference or coreference map)
+void MorseSequence::print_m_frame(const m_frame& map, const m_sequence& W, const node_index_map& critical_index_map) {
+    for (const auto& item : W) {
         if (std::holds_alternative<node_ptr>(item)) { // Critical simplex
             node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
             if (face_ptr) {
                 std::cout << "Key (Critical simplex): ";
                 simplex_tree.print_simplex(std::cout, face_ptr, false);
                 std::cout << " -> Value: ";
-                for (node_ptr cn : map[face_ptr]){
-                    simplex_tree.print_simplex(std::cout, cn, false);
-                }  
+                // The bitmap represents which critical simplices are in the image
+                const bitmap& bm = map.at(face_ptr);
+                for (size_t i = 0; i < bm.size(); ++i) {
+                    if (bm[i]) {
+                        // Find critical simplex with index i
+                        for (const auto& other_item : W) {
+                            if (std::holds_alternative<node_ptr>(other_item)) {
+                                node_ptr c = std::get<node_ptr>(other_item);
+                                if (critical_index_map.at(c) == i) {
+                                    simplex_tree.print_simplex(std::cout, c, false);
+                                    std::cout << " ";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                std::cout << "\n";
             } else {
                 std::cout << "Null pointer encountered!" << std::endl;
             }
-            printf("\n");
         }
         else if (std::holds_alternative<node_pair>(item)) { // Free pair
             node_pair pair = std::get<node_pair>(item);
-            
+
             if (pair.first && pair.second) {
-                std::cout << "Pair of simplices: \n";
-                std::cout << "Key (Lower pair)";
+                std::cout << "Pair of simplices:\n";
+
+                // For the lower pair
+                std::cout << "Key (Lower pair): ";
                 simplex_tree.print_simplex(std::cout, pair.first, false);
                 std::cout << " -> Value: ";
-                for (node_ptr cn : map[pair.first]){
-                    simplex_tree.print_simplex(std::cout, cn, false);
-                }  
-                printf("\n");
-                std::cout << "Key (Upper pair) ";
+                const bitmap& bm_first = map.at(pair.first);
+                for (size_t i = 0; i < bm_first.size(); ++i) {
+                    if (bm_first[i]) {
+                        for (const auto& other_item : W) {
+                            if (std::holds_alternative<node_ptr>(other_item)) {
+                                node_ptr c = std::get<node_ptr>(other_item);
+                                if (critical_index_map.at(c) == i) {
+                                    simplex_tree.print_simplex(std::cout, c, false);
+                                    std::cout << " ";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                std::cout << "\n";
+
+                // For the upper pair
+                std::cout << "Key (Upper pair): ";
                 simplex_tree.print_simplex(std::cout, pair.second, false);
                 std::cout << " -> Value: ";
-                for (node_ptr cn : map[pair.second]){
-                    simplex_tree.print_simplex(std::cout, cn, false);
-                }  
+                const bitmap& bm_second = map.at(pair.second);
+                for (size_t i = 0; i < bm_second.size(); ++i) {
+                    if (bm_second[i]) {
+                        for (const auto& other_item : W) {
+                            if (std::holds_alternative<node_ptr>(other_item)) {
+                                node_ptr c = std::get<node_ptr>(other_item);
+                                if (critical_index_map.at(c) == i) {
+                                    simplex_tree.print_simplex(std::cout, c, false);
+                                    std::cout << " ";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                std::cout << "\n";
             } else {
                 std::cout << "Null pointer in pair!" << std::endl;
             }
-            printf("\n");
         }
-        printf("\n");
+        std::cout << "\n";
     }
-    printf("\n");
 }
-
-

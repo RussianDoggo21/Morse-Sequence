@@ -3,20 +3,9 @@
 #include <pybind11/numpy.h>
 #include <pybind11/iostream.h>
 #include <pybind11/embed.h> 
-#include <chrono>
-#include <iostream>
-#include <map>
-#include <unordered_map>
-#include <algorithm>
 
 #include "../../src/morse_sequence/_core/morse_sequence.h"
 #include "../../src/morse_sequence/_core/bindings.cpp"
-
-using simplex_t = SimplexTree::simplex_t;
-using node_ptr = SimplexTree::node*;
-using m_sequence = std::vector<std::variant<node_ptr, std::pair<node_ptr, node_ptr>>>;
-using node_list = std::vector<node_ptr>;
-using m_frame = std::unordered_map<node_ptr, node_list>;
 
 namespace py = pybind11;
 using namespace std::chrono;
