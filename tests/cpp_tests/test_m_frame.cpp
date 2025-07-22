@@ -33,7 +33,6 @@ void test_m_frame() {
 
     //ms.print_morse_sequence(result, true);
 
-    /*
     std::cout << "\n== Bitmap implementation ==\n";
     auto t_bitmap_total_start = clock::now();
 
@@ -62,9 +61,8 @@ void test_m_frame() {
     auto t_bitmap_total_end = clock::now();
     auto duration_bitmap = t_bitmap_total_end - t_bitmap_total_start;
     std::cout << "Total Bitmap section: " << duration(duration_bitmap).count() << " ms\n";
-    */
 
-    /*
+
     std::cout << "\n== Simplex implementation ==\n";
     auto t_simplex_total_start = clock::now();
 
@@ -83,14 +81,18 @@ void test_m_frame() {
 
     std::cout << "Total Simplex section: " << duration(duration_simplex).count() << " ms\n";
     
-    std::cout << "Difference : " << duration(duration_simplex - duration_bitmap).count() << " ms\n";
-    */
+    std::cout << "Difference (simplex - bitmap): " << duration(duration_simplex - duration_bitmap).count() << " ms\n";
 
+
+    /*
     m_frame0 ref2 = ms.reference_map0(W);
     std::cout << "\nReference Map (simplex):\n";
     ms.print_m_frame0(ref2, W);
 
-    /*
+    m_frame0 coref2 = ms.coreference_map0(W);
+    std::cout << "\nCoreference Map (simplex):\n";
+    ms.print_m_frame0(coref2, W);
+
     node_index_map crit_index = ms.generate_critical_index_map(W);
     m_frame reference_map = ms.reference_map(W, crit_index);
     std::cout << "\nReference Map (bitmap):\n";

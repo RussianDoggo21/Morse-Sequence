@@ -27,7 +27,6 @@ using bitmap = boost::dynamic_bitset<>;
 using m_frame = tsl::robin_map<node_ptr, bitmap>;
 using m_frame0 = tsl::robin_map<node_ptr, node_list>;
 using node_index_map = tsl::robin_map<node_ptr, std::size_t>;
-using node_map = tsl::robin_map<node_ptr,node_ptr>;
 using SimplexList = std::vector<simplex_t>;  
 using simplex_t = SimplexTree::simplex_t;
 
@@ -72,18 +71,7 @@ private:
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr);
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F);
     node_list sym_diff(const node_list& A, const node_list& B);
-    enum class GammaMode { Reference, Coreference };
-    bitmap Gamma(
-        const node_ptr& cn, 
-        const node_map& sigma2tau, 
-        const node_map& tau2sigma, 
-        m_frame& cache, 
-        GammaMode mode, 
-        const tsl::robin_map<node_ptr, std::size_t>& critical_index_map,
-        size_t depth);
-
-    //node_list Gamma0(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame0& cache, GammaMode mode, size_t depth);
-    node_list Gamma0(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame0& cache, GammaMode mode);
+    void print_bitmap(const bitmap& bm, const m_sequence& W, const node_index_map& critical_index_map) const;
 };
 
 #endif 

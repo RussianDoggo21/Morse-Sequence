@@ -64,8 +64,9 @@ void timer_m_frame() {
         std::cout << "coreference_map0: " << duration(m1 - m0).count() << " ms\n";
 
         auto t_simplex_total_end = clock::now();
-        std::cout << "Total Simplex section: "
-                  << duration(t_simplex_total_end - t_simplex_total_start).count() << " ms\n";
+
+        auto t_simplex = t_simplex_total_end - t_simplex_total_start;
+        std::cout << "Total Simplex section: " << duration(t_simplex).count() << " ms\n";
 
         std::cout << "\n== Bitmap implementation ==\n";
         auto t_bitmap_total_start = clock::now();
@@ -86,15 +87,13 @@ void timer_m_frame() {
         std::cout << "coreference_map: " << duration(t1 - t0).count() << " ms\n";
 
         auto t_bitmap_total_end = clock::now();
-        std::cout << "Total Bitmap section: "
-                  << duration(t_bitmap_total_end - t_bitmap_total_start).count() << " ms\n";
 
-
+        auto t_bitmap = t_bitmap_total_end - t_bitmap_total_start;
+        std::cout << "Total Bitmap section: " << duration(t_bitmap).count() << " ms\n";
         
-        std::cout << "Difference: "
-                  << duration((t_simplex_total_end - t_simplex_total_start) -
-                              (t_bitmap_total_end - t_bitmap_total_start)).count()
-                  << " ms\n";
+        std::cout << "Difference: (simplex - bitmap) :" << duration(t_simplex - t_bitmap).count() << " ms\n";
+        std::cout << "Ratio (simplex/bitmap): " << static_cast<double>(t_simplex.count()) / t_bitmap.count() << "\n";
+
                   
     }
 }
