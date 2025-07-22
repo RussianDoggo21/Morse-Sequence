@@ -3,6 +3,10 @@
 INCLUDES := -I ../../external/
 CXX      := g++
 CXXFLAGS := -std=c++20 -O3 -march=native -flto -funroll-loops -Wall $(INCLUDES)
+#CXXFLAGS := -std=c++20 -O0 -g -Wall $(INCLUDES)
+
+
+
 LIBS     := -lpython3.13
 PYBIND11_FLAGS := $(shell python3 -m pybind11 --includes)
 

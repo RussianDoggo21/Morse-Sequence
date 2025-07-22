@@ -79,8 +79,10 @@ private:
         const node_map& tau2sigma, 
         m_frame& cache, 
         GammaMode mode, 
-        const tsl::robin_map<node_ptr, std::size_t>& critical_index_map);
+        const tsl::robin_map<node_ptr, std::size_t>& critical_index_map,
+        size_t depth);
 
+    //node_list Gamma0(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame0& cache, GammaMode mode, size_t depth);
     node_list Gamma0(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame0& cache, GammaMode mode);
 };
 

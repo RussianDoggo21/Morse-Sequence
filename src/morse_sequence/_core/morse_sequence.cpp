@@ -15,7 +15,7 @@ const SimplexTree& MorseSequence::get_simplex_tree() {
     return simplex_tree;
 }
 
-// Computes the coboundary of cn with a filtration on S 
+// Computes the boundary of cn with a filtration on S 
 node_list MorseSequence::boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S) {
     node_list boundary;
     simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
@@ -32,26 +32,58 @@ node_list MorseSequence::boundary(const node_ptr& cn, const tsl::robin_map<node_
     return boundary;
 }
 
-// Computes the coboundary of cn 
+/*
+
+// WAY TOO SLOW !!
+node_list MorseSequence::boundary(const node_ptr& cn) {
+    
+    node_list boundary;
+    
+    faces<> bord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
+
+    for (auto& face : bord) { // Iterating on each face of cn
+        node_ptr face_ptr = std::get<0>(face); // Retrieving the face
+
+        if (simplex_tree.depth(face_ptr) == simplex_tree.depth(cn) + 1) { // First verification    
+        boundary.push_back(face_ptr); // Adding the coface to the coboundary
+        }
+    }
+    return boundary;
+}
+*/
+
+
+// Computes the boundary of cn 
 node_list MorseSequence::boundary(const node_ptr& cn) {
     node_list boundary;
+
+    // if (!cn) {
+    //     std::cerr << "boundary: cn is nullptr!" << std::endl;
+    //     return boundary;
+    // }
+
     simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
-    
-    if (sigma.size() == 1){
+
+    // std::cerr << "Computing boundary of simplex: ";
+    // for (auto v : sigma) std::cerr << v << " ";
+    // std::cerr << std::endl;
+
+    if (sigma.size() == 1) {
         return {};
     }
 
     for (size_t i = 0; i < sigma.size(); ++i) {
         simplex_t face = sigma;
-        face.erase(face.begin() + i); 
+        face.erase(face.begin() + i); // Remove the i-th vertex
 
-        node_ptr f = simplex_tree.find(face); 
-        if (f && f != nullptr) {
-            boundary.push_back(f);
-        }
+        node_ptr f = simplex_tree.find(face);
+        if (f) boundary.push_back(f);
     }
+
     return boundary;
 }
+
+
 
 
 // Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
@@ -71,17 +103,35 @@ node_list MorseSequence::coboundary(const node_ptr& cn, const tsl::robin_map<nod
 }
 
 node_list MorseSequence::coboundary(const node_ptr& cn) {
+    
     node_list coboundary;
+
+    /*
+    if (!cn) {
+        std::cerr << "coboundary: cn is nullptr!" << std::endl;
+        return coboundary;
+    }
+    */
+    
     cofaces<> cobord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
 
     for (auto& coface : cobord) { // Iterating on each coface of cn
         node_ptr coface_ptr = std::get<0>(coface); // Retrieving the coface
+        
+        /*if (!coface_ptr){
+            std::cerr << "coboundary : coface_ptr is nullptr!" << std::endl;
+            continue;
+        }
+        */
+
         if (simplex_tree.depth(coface_ptr) == simplex_tree.depth(cn) + 1) { // First verification    
             coboundary.push_back(coface_ptr); // Adding the coface to the coboundary
         }
     }
     return coboundary;
 }
+
+
 
 
 // Returns the number of faces of the simplex linked to pointer cn with a filtration on S
@@ -582,7 +632,6 @@ void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& resul
     Computation and display of morse frames with the bitmap implementation 
 */
 
-
 // Computes the reference/coreference of a single simplex 
 // (in particular lower simplices in reference map and upper simplices in coreference map)
 // Private function
@@ -592,8 +641,15 @@ bitmap MorseSequence::Gamma(
     const node_map& tau2sigma, 
     m_frame& cache, 
     GammaMode mode, 
-    const tsl::robin_map<node_ptr, std::size_t>& critical_index_map) {
+    const tsl::robin_map<node_ptr, std::size_t>& critical_index_map,
+    size_t depth = 0) {
     
+
+    if (depth > 10000) {
+        std::cerr << "Gamma: depth overflow\n";
+        std::exit(1);
+    }
+
     // Specific case : if Gamma(cn) is already cached
     auto hit = cache.find(cn);
     if (hit != cache.end()) return hit->second;
@@ -613,7 +669,18 @@ bitmap MorseSequence::Gamma(
         // Case of critical simplex: Υ′(c) = c
         if (it == sigma2tau.end() && it2 == tau2sigma.end()) {
             bitmap bm(critical_index_map.size(), false); // We initialize bm with all bits equal to 0
-            bm[critical_index_map.at(cn)] = true; // We put the bit representing cn at 1, since it's a critical simplex
+            
+            // We put the bit representing cn at 1, since it's a critical simplex
+            auto it3 = critical_index_map.find(cn);
+            if (it3 == critical_index_map.end()) {
+                std::cerr << "Gamma: critical_index_map missing key!\n";
+                simplex_tree.print_simplex(std::cout, cn, true);
+                std::exit(1);
+            }
+            size_t idx = it3->second;
+            bm[idx] = true;
+            //bm[critical_index_map.at(cn)] = true; 
+
             cache[cn] = bm; // We cache the result
             return bm; // We return the result
         }
@@ -629,7 +696,7 @@ bitmap MorseSequence::Gamma(
         else {
             sigma_ptr = cn; // The simplex on which we want to compute the reference
             tau_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
-            traversal = [&](node_ptr n) { return this->boundary(n); }; // The function needed to compute the reference
+            traversal = [&](node_ptr cn0) { return this->boundary(cn0); }; // The function needed to compute the reference
             erase_ptr = sigma_ptr; // Variable generated to update cache outside of this if/else statement
             root = tau_ptr; // Variable to call traversal correctly outside of this if/else statement
         }
@@ -643,7 +710,17 @@ bitmap MorseSequence::Gamma(
         // Case of critical simplex: Υ′′(c) = c
         if (it == tau2sigma.end() && it2 == sigma2tau.end()) {
             bitmap bm(critical_index_map.size(), false);
-            bm[critical_index_map.at(cn)] = true;
+
+            auto it3 = critical_index_map.find(cn);
+            if (it3 == critical_index_map.end()) {
+                std::cerr << "Gamma: critical_index_map missing key!\n";
+                simplex_tree.print_simplex(std::cout, cn, true);
+                std::exit(1);
+            }
+            size_t idx = it3->second;
+            bm[idx] = true;
+            //bm[critical_index_map.at(cn)] = true;
+            
             cache[cn] = bm;
             return bm;
         }
@@ -657,7 +734,7 @@ bitmap MorseSequence::Gamma(
         else {
             tau_ptr = cn; // The simplex on which we want to compute the coreference
             sigma_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
-            traversal = [&](node_ptr n) { return this->coboundary(n); }; // The function needed to compute the coreference
+            traversal = [&](node_ptr cn0) { return this->coboundary(cn0); }; // The function needed to compute the coreference
             erase_ptr = tau_ptr; // Variable generated to update cache outside of this if/else statement
             root = sigma_ptr; // Variable to call traversal correctly outside of this if/else statement
         }
@@ -665,6 +742,11 @@ bitmap MorseSequence::Gamma(
 
     // Compute the boundary or coboundary of the root
     node_list bd = traversal(root);
+    bool found = std::find(bd.begin(), bd.end(), erase_ptr) != bd.end();
+    if (!found) {
+        std::cerr << "Warning: erase_ptr not found in boundary/coboundary of root!\n";
+    }
+
     bd.erase(std::remove(bd.begin(), bd.end(), erase_ptr), bd.end());
 
     // Initialize result bitmap (all bits at 0)
@@ -672,13 +754,17 @@ bitmap MorseSequence::Gamma(
 
     // Combine recursive calls with XOR
     for (node_ptr v : bd) {
-        bitmap gamma_v = Gamma(v, sigma2tau, tau2sigma, cache, mode, critical_index_map);
+        if (!v) {
+            std::cerr << "Gamma: boundary/coboundary contains nullptr!\n";
+            continue;
+        }
+        bitmap gamma_v = Gamma(v, sigma2tau, tau2sigma, cache, mode, critical_index_map, depth+1);
         for (size_t i = 0; i < result.size(); ++i) {
             result[i] ^= gamma_v[i]; // Symmetrical difference
         }
     }
 
-    cache[erase_ptr] = result;
+    cache[erase_ptr] = result; // We cache the result
     return result;
 }
 
@@ -687,7 +773,7 @@ node_index_map MorseSequence::generate_critical_index_map(const m_sequence& W) {
     node_index_map critical_index_map;
     size_t index = 0;
     for (const auto& item : W) {
-        if (std::holds_alternative<node_ptr>(item)) {
+        if (std::holds_alternative<node_ptr>(item)) { // Filtration on critical simplices
             node_ptr c = std::get<node_ptr>(item);
             if (critical_index_map.find(c) == critical_index_map.end()) {
                 critical_index_map[c] = index++;
@@ -718,17 +804,21 @@ m_frame MorseSequence::reference_map(const m_sequence& W, const node_index_map& 
 
     // 2) Initialize cache and ref_map with bitmaps for critical simplices
     m_frame cache;
-    for (const auto& [c, idx] : critical_index_map) {
-        bitmap b(index, false);
-        b.set(idx);
-        cache[c] = b;
-        ref_map[c] = b;
+    for (const auto& [crit_ptr, idx] : critical_index_map) { 
+        bitmap b(index, false); // All bits set to 0
+        b.set(idx); // The bit representing crit_ptr is set to 1
+
+        // Update of cache and ref_map
+        cache[crit_ptr] = b;
+        ref_map[crit_ptr] = b;
     }
 
-    // 3) Compute reference values for free simplices using Gamma
+    // 3) Compute reference values for simplices of free pairs using Gamma
+    size_t depth = 0;
     for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
         ref_map[tau_ptr] = bitmap(index, false);  // all bits set to 0
-        ref_map[sigma_ptr] = Gamma(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Reference, critical_index_map);
+        cache[tau_ptr] = bitmap(index, false);   // Cache of the result
+        ref_map[sigma_ptr] = Gamma(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Reference, critical_index_map, depth); // Call to Gamma
     }
 
     return ref_map;
@@ -763,9 +853,11 @@ m_frame MorseSequence::coreference_map(const m_sequence& W, const node_index_map
     }
 
     // 3) Compute coreference values for free simplices using Gamma
+    size_t depth = 0;
     for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
         coref_map[sigma_ptr] = bitmap(index, false);  // all bits set to 0
-        coref_map[tau_ptr] = Gamma(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference, critical_index_map);
+        cache[sigma_ptr] = bitmap(index, false);
+        coref_map[tau_ptr] = Gamma(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference, critical_index_map, depth);
     }
 
     return coref_map;
@@ -857,6 +949,7 @@ void MorseSequence::print_m_frame(const m_frame& map, const m_sequence& W, const
     }
 }
 
+
 /* 
     Computation and display of morse frames with the simplex implementation 
 */
@@ -895,7 +988,7 @@ node_list MorseSequence::sym_diff(const node_list& A, const node_list& B){
     }
 }
 
-
+/*
 // Computes the reference/coreference of a single simplex 
 // (in particular lower simplices in reference map and upper simplices in coreference map)
 // Private function
@@ -906,6 +999,13 @@ node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, c
     // tau2sigma : map containings all inversed free pairs (tau, sigma)
     // cache : used in the process of memoization
     // mode : to know if we compute a reference or a coreference
+
+    
+    if (depth > 10000) {
+        std::cerr << "Gamma: depth overflow\n";
+        std::exit(1);
+    }
+    
 
     // Special case : gamma(cn) has already been computed before,
     // gamma(cn) is stored in cache -> We make use of memoization
@@ -931,27 +1031,21 @@ node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, c
 
         // if cn is critical
         if (it == sigma2tau.end() && it2 == tau2sigma.end()) {   
-            //printf("Simplexe critique trouvé : ");
-            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{cn}; // σ is critical -> Γ'(σ) = {σ}
             return node_list{cn}; // We are done
         }
 
         // if cn is an upper simplex 
         else if (it2 != tau2sigma.end()){ 
-            //printf("Simplexe supérieur trouvé : ");
-            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{nullptr}; // Γ'(cn) = "0"
             return node_list{nullptr}; // We are done
         }
 
         // if cn is a lower simplex
         else { 
-            //printf("Simplexe inférieur trouvé (cas général)");
-            //simplex_tree.print_simplex(std::cout, cn, true);
             sigma_ptr = cn; // The simplex on which we want to compute the reference
             tau_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
-            traversal = [&](node_ptr n) { return this->boundary(n); }; // The function needed to compute the reference
+            traversal = [&](node_ptr cn0) { return this->boundary(cn0); }; // The function needed to compute the reference
             erase_ptr = sigma_ptr; // Variable generated to update cache outside of this if/else statement
             root = tau_ptr; // Variable to call traversal correctly outside of this if/else statement
         }
@@ -974,19 +1068,15 @@ node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, c
 
         // if cn is a lower simplex
         else if (it2 != sigma2tau.end()){ 
-            //printf("Simplexe inférieur trouvé : ");
-            //simplex_tree.print_simplex(std::cout, cn, true);
             cache[cn] = node_list{nullptr}; // Γ''(cn) = "0"
             return node_list{nullptr}; // We are done
         }
 
         // if cn is a upper simplex
         else{
-            //printf("Simplexe supérieur trouvé (cas général)");
-            //simplex_tree.print_simplex(std::cout, cn, true);
             tau_ptr = cn; // The simplex on which we want to compute the coreference
             sigma_ptr = it->second; // The second element of the free pair (sigma_ptr, tau_ptr)
-            traversal = [&](node_ptr n) { return this->coboundary(n); }; // The function needed to compute the coreference
+            traversal = [&](node_ptr cn0) { return this->coboundary(cn0); }; // The function needed to compute the coreference
             erase_ptr = tau_ptr; // Variable generated to update cache outside of this if/else statement
             root = sigma_ptr; // Variable to call traversal correctly outside of this if/else statement
 
@@ -997,7 +1087,7 @@ node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, c
     node_list bd = traversal(root);
     bd.erase(std::remove(bd.begin(), bd.end(), erase_ptr), bd.end());
    
-    // Initialization of the final result at "0"
+    // Initialization of the final result at "0" (nullptr)
     node_list result{nullptr};
 
     // Computation of the final result
@@ -1017,11 +1107,130 @@ node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, c
         }
     }
 
-    //printf("\n\n");
-
     cache[erase_ptr] = result;
+
     return result;
 }
+
+
+/*
+node_list MorseSequence::Gamma0(const node_ptr& cn, const node_map& sigma2tau, const node_map& tau2sigma, m_frame0& cache, GammaMode mode) {
+
+    // Handle null input
+    if (!cn) return node_list{nullptr};
+
+    // Variables common to both modes
+    node_ptr sigma_ptr = nullptr, tau_ptr = nullptr, root = nullptr, erase_ptr = nullptr;
+    std::function<node_list(node_ptr)> traversal;
+
+    // ===== Case distinction =====
+    if (mode == GammaMode::Reference) {
+        auto it = sigma2tau.find(cn);
+        auto it2 = tau2sigma.find(cn);
+
+        if (it == sigma2tau.end() && it2 == tau2sigma.end()) {
+            //printf("\nCritical case");
+            cache[cn] = node_list{cn}; // σ is critical -> Γ'(σ) = {σ}
+            return node_list{cn};
+        } else if (it2 != tau2sigma.end()) {
+            //printf("\nUpper simplex");
+            cache[cn] = node_list{nullptr}; // upper simplex -> Γ'(τ) = "0"
+            return node_list{nullptr};
+        } else {
+            //printf("\nGeneral case : lower simplex");
+            sigma_ptr = cn;
+            tau_ptr = it->second;
+            traversal = [&](node_ptr cn0) { return this->boundary(cn0); };
+            erase_ptr = sigma_ptr;
+            root = tau_ptr;
+        }
+
+    } else { // GammaMode::Coreference
+        auto it = tau2sigma.find(cn);
+        auto it2 = sigma2tau.find(cn);
+
+        if (it == tau2sigma.end() && it2 == sigma2tau.end()) {
+            //printf("\nCritical case");
+            cache[cn] = node_list{cn}; // τ is critical -> Γ''(τ) = {τ}
+            return node_list{cn};
+        } else if (it2 != sigma2tau.end()) {
+            //printf("\nLower simplex");
+            cache[cn] = node_list{nullptr}; // lower simplex -> Γ''(σ) = "0"
+            return node_list{nullptr};
+        } else {
+            //printf("\nGeneral case : upper simplex");
+            tau_ptr = cn;
+            sigma_ptr = it->second;
+            traversal = [&](node_ptr cn0) { return this->coboundary(cn0); };
+            erase_ptr = tau_ptr;
+            root = sigma_ptr;
+        }
+    }
+
+
+    //printf(" Main loop :");
+    // Stack for iterative DFS
+    std::stack<node_ptr> to_visit;
+    std::unordered_set<node_ptr> visited;
+    to_visit.push(root);
+
+    // ===== Main loop =====
+    while (!to_visit.empty()) {
+        node_ptr current = to_visit.top();
+        to_visit.pop();
+        
+        //printf("Current = ");
+        //simplex_tree.print_simplex(std::cout, current, false);
+
+        if (!visited.insert(current).second) {
+            //printf("Current already in visited");
+            continue;
+        }
+
+        //printf("Current not in visited ");
+        // Initialise cache for current node
+        if (!cache.count(current)) {
+            cache[current] = {}; // Important: always initialize, even empty
+            //printf("Initialization of cache");
+
+            node_list children = traversal(current);
+
+            for (const node_ptr& child : children) {
+                if (!child) continue;
+
+                bool is_paired = false;
+                node_ptr next = nullptr;
+
+                //printf(" Initialization of is_paired and next");
+
+                if (mode == GammaMode::Reference) {
+                    auto it = sigma2tau.find(child);
+                    is_paired = (it != sigma2tau.end());
+                    if (is_paired) next = it->second;
+                } else {
+                    auto it = tau2sigma.find(child);
+                    is_paired = (it != tau2sigma.end());
+                    if (is_paired) next = it->second;
+                }
+
+                if (is_paired && next) {
+                    printf("Morse Pair\n");
+                    to_visit.push(next);
+                } else {
+                    printf("Criticial simplex\n");
+                    cache[child] = node_list{child}; // critical child
+                }
+            }
+        }
+
+        // Accumulate Gamma(current) into Gamma(erase_ptr)
+        const node_list& local = cache[current];
+        cache[erase_ptr].insert(cache[erase_ptr].end(), local.begin(), local.end());
+    }
+
+    return cache[erase_ptr];
+}
+
 
 // Computes the reference map from a morse sequence W
 m_frame0 MorseSequence::reference_map0(const m_sequence& W){
@@ -1039,27 +1248,40 @@ m_frame0 MorseSequence::reference_map0(const m_sequence& W){
             tau2sigma[tau_ptr] = sigma_ptr;
         }
 
-    // Generation of the cache that will be used by the function Gamma
-    m_frame0 cache;
+    // Generation of the cache that will be used by the function Gamma0
+    m_frame0 cache_ref;
 
     // Case of critical simplices
     for (const auto& item : W){
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr c = std::get<node_ptr>(item);
 
-            //Update of both the cache and ref_map
-            cache[c] = {c};                 
+            //Update of both the cache_ref and ref_map
+            cache_ref[c] = {c};                 
             ref_map[c] = {c};                 
         }
     }
 
     // Case of regular pairs
-    // Use of Gamma()
+    // Use of Gamma0()
+    //size_t depth = 0;
+    //printf("Ref map : Utilisation de Gamma0\n");
     for (const auto& [sigma_ptr, tau_ptr] : sigma2tau) {
         ref_map[tau_ptr] = {nullptr}; // Υ′(τ) = 0
-        //printf("Appel de Gamma sur ");
-        //simplex_tree.print_simplex(std::cout, sigma_ptr, true);
-        ref_map[sigma_ptr] = Gamma0(sigma_ptr, sigma2tau, tau2sigma, cache, GammaMode::Reference);
+        //cache_ref[tau_ptr] = {nullptr};
+        //ref_map[sigma_ptr] = Gamma0(sigma_ptr, sigma2tau, tau2sigma, cache_ref, GammaMode::Reference, depth);
+        node_list result = Gamma0(sigma_ptr, sigma2tau, tau2sigma, cache_ref, GammaMode::Reference);
+        ref_map[sigma_ptr] = result;
+        cache_ref[sigma_ptr] = result;
+        printf("Cache[");
+        simplex_tree.print_simplex(std::cout, sigma_ptr, false);
+        printf("] = ");
+        for (auto n : result) {
+            simplex_tree.print_simplex(std::cout, n, false);
+            printf(" ");
+        }
+        printf("\n");
+        
     }
 
     return ref_map;
@@ -1083,29 +1305,44 @@ m_frame0 MorseSequence::coreference_map0(const m_sequence& W){
         }
 
     // Generation of the cache that will be used by the function Gamma
-    m_frame0 cache;
+    m_frame0 cache_coref;
 
     // Case of critical simplices
     for (const auto& item : W){
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr c = std::get<node_ptr>(item);
 
-            //Update of both the cache and ref_map
-            cache[c] = {c};                 
+            //Update of both the cache and coref_map
+            cache_coref[c] = {c};                 
             coref_map[c] = {c};                 
         }
     }
 
     // Case of regular pairs
-    // Use of Gamma()
+    // Use of Gamma0()
+    //size_t depth = 0;
+    //printf("Coref map : Utilisation de Gamma0\n");
     for (const auto& [tau_ptr, sigma_ptr] : tau2sigma) {
         coref_map[sigma_ptr] = {nullptr}; // Υ′′(sigma) = 0
-        coref_map[tau_ptr] = Gamma0(tau_ptr, sigma2tau, tau2sigma, cache, GammaMode::Coreference);
+        //cache_coref[sigma_ptr] = {nullptr};
+        node_list result = Gamma0(tau_ptr, sigma2tau, tau2sigma, cache_coref, GammaMode::Coreference);
+        coref_map[tau_ptr] = result;
+        cache_coref[tau_ptr] = result;
+
+        printf("Cache[");
+        simplex_tree.print_simplex(std::cout, tau_ptr, false);
+        printf("] = ");
+        for (auto n : result) {
+            simplex_tree.print_simplex(std::cout, n, false);
+            printf(" ");
+        }
+        printf("\n");
+
     }
 
     return coref_map;
 }
-
+*/
 
 // Print a Morse Frame (in particular a reference map or a coreference map)
 void MorseSequence::print_m_frame0(m_frame0& map, const m_sequence& W){

@@ -40,6 +40,7 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
     return W;
 }
 
+/*
 // Conversion m_frame -> py::dict
 // Used in _ref_map and _coref_map
 py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
@@ -62,6 +63,35 @@ py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
         py_map[py_key] = py_val;
     }
 
+    return py_map;
+}
+*/
+
+// Conversion m_frame0 -> py::dict
+// Used in _ref_map and _coref_map
+py::dict m_frame0_to_py_dict(const m_frame0& map, const SimplexTree& st){
+    py::dict py_map;
+
+    for (const auto &[key_ptr, lst] : map) {
+
+        // Python key : the full simplex linked to the node_ptr key_ptr
+        auto vec = st.full_simplex(key_ptr);
+        py::tuple py_key(vec.size());
+        for (std::size_t i = 0; i < vec.size(); ++i)
+            py_key[i] = vec[i];
+        //py::list py_key = py::cast(py::tuple(py::cast(vec)));
+
+        // Python value : list of critical simplices (or None)
+        py::list py_val;
+        for (node_ptr v : lst) {
+            if (v == nullptr)
+                py_val.append(py::none());
+            else
+                py_val.append(st.full_simplex(v));
+        }
+
+        py_map[py_key] = py_val;
+    }
     return py_map;
 }
 
@@ -192,6 +222,41 @@ py::tuple _decreasing(MorseSequence& ms, const SimplexTree& st){
     return py::make_tuple(out_list, n);
 }
 
+py::dict _ref_map0(MorseSequence& ms, const py::list& py_W){
+
+    // Access to the SimplexTree
+    const SimplexTree &st = ms.get_simplex_tree();
+
+    // Conversion py::list -> m_sequence
+    m_sequence W = py_list_to_m_sequence(py_W, st);
+
+    // Call of C++ function
+    m_frame0 ref_map0 = ms.reference_map0(W);
+
+    // Conversion m_frame -> py::list
+    py::dict py_ref_map0 = m_frame0_to_py_dict(ref_map0, st); 
+
+    return py_ref_map0;
+}
+
+py::dict _coref_map0(MorseSequence& ms, const py::list& py_W){
+
+    // Access to the SimplexTree
+    const SimplexTree &st = ms.get_simplex_tree();
+
+    // Conversion py::list -> m_sequence
+    m_sequence W = py_list_to_m_sequence(py_W, st);
+
+    // Call of C++ function
+    m_frame0 coref_map0 = ms.coreference_map0(W);
+
+    // Conversion m_frame -> py::list
+    py::dict py_coref_map0 = m_frame0_to_py_dict(coref_map0, st); 
+
+    return py_coref_map0;
+}
+ 
+/*
 py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
     
     // Access to the SimplexTree
@@ -231,6 +296,7 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
 
     return py_coref_map;
 }
+*/
 
 namespace {
     using boundary_fn_1 = node_list (MorseSequence::*)(const node_ptr&) ;
@@ -275,8 +341,11 @@ PYBIND11_MODULE(_core, m) {
         .def("Min", _Min_buffered)
         .def("decreasing", _decreasing)
         .def("increasing", _increasing)
-        .def("reference_map", _ref_map)
-        .def("coreference_map", _coref_map)
-        //.def("get_node_list", &MorseSequence::get_node_list, py::arg("simplex_list"))
+        .def("reference_map", _ref_map0)
+        .def("coreference_map", _coref_map0)
+        // FONCTION PRINT A DEFINIR DIRECTEMENT EN PYTHON ?? 
+        // morse_sequence.py ?
+        //.def("print_m_sequence", ) 
+        //.def("print_m_frame",)
         ;
 }

@@ -180,7 +180,7 @@ def timer_comparison():
 
 timer_comparison()
 
-# To run the file from the root : python3 -m src.python.python_tests.timer
+# To run the file from the root : python3 -m tests.python_tests.timer
 
 """
 Pour lancer test.py : 

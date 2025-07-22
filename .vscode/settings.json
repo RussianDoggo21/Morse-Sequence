@@ -70,7 +70,8 @@
         "thread": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "source_location": "cpp"
     },
     "cmake.sourceDirectory": "/home/kali/Téléchargements/Morse-Sequence/simplextree-py/extern/pybind11"
 }

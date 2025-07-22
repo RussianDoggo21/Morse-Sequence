@@ -29,7 +29,7 @@ void timer_m_frame() {
 
     printf("test_m_frame : start \n\n");
 
-    std::vector<int> grid_sizes = {10, 20, 50, 60, 75, 100};
+    std::vector<int> grid_sizes = {100, 150, 200, 255};
 
     for (int k : grid_sizes) {
         std::cout << "\n========== Grid " << k << " x " << k << " ==========\n";
@@ -48,6 +48,24 @@ void timer_m_frame() {
         auto [W, n_crit] = ms.increasing(st);
         t_end = clock::now();
         std::cout << "increasing(): " << duration(t_end - t_start).count() << " ms\n";
+
+        
+        std::cout << "\n== Simplex implementation ==\n";
+        auto t_simplex_total_start = clock::now();
+
+        auto m0 = clock::now();
+        m_frame0 ref2 = ms.reference_map0(W);
+        auto m1 = clock::now();
+        std::cout << "reference_map0: " << duration(m1 - m0).count() << " ms\n";
+
+        m0 = clock::now();
+        m_frame0 coref2 = ms.coreference_map0(W);
+        m1 = clock::now();
+        std::cout << "coreference_map0: " << duration(m1 - m0).count() << " ms\n";
+
+        auto t_simplex_total_end = clock::now();
+        std::cout << "Total Simplex section: "
+                  << duration(t_simplex_total_end - t_simplex_total_start).count() << " ms\n";
 
         std::cout << "\n== Bitmap implementation ==\n";
         auto t_bitmap_total_start = clock::now();
@@ -71,27 +89,13 @@ void timer_m_frame() {
         std::cout << "Total Bitmap section: "
                   << duration(t_bitmap_total_end - t_bitmap_total_start).count() << " ms\n";
 
-        std::cout << "\n== Simplex implementation ==\n";
-        auto t_simplex_total_start = clock::now();
 
-        t0 = clock::now();
-        m_frame0 ref2 = ms.reference_map0(W);
-        t1 = clock::now();
-        std::cout << "reference_map0: " << duration(t1 - t0).count() << " ms\n";
-
-        t0 = clock::now();
-        m_frame0 coref2 = ms.coreference_map0(W);
-        t1 = clock::now();
-        std::cout << "coreference_map0: " << duration(t1 - t0).count() << " ms\n";
-
-        auto t_simplex_total_end = clock::now();
-        std::cout << "Total Simplex section: "
-                  << duration(t_simplex_total_end - t_simplex_total_start).count() << " ms\n";
-
+        
         std::cout << "Difference: "
                   << duration((t_simplex_total_end - t_simplex_total_start) -
                               (t_bitmap_total_end - t_bitmap_total_start)).count()
                   << " ms\n";
+                  
     }
 }
 

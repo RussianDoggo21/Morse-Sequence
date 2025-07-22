@@ -1,6 +1,5 @@
 # ninja log v5
-10823	17357	1751549348855508780	_core.cpython-313-x86_64-linux-gnu.so	8312478dc6bacb01
-1	5916	1751549337413790875	_core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o	57f749d8d42c22d9
-2	10823	1751549342324244840	_core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o	40451aa8c56de663
-1	9693	1751549341191678862	_core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o	443c7f0a9acc5aee
-1	513	1751549349643902772	build.ninja	1d2b28c38a4071dc
+1	4961	1751892937083479382	_core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o	57f749d8d42c22d9
+0	8188	1751892940895479347	_core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o	443c7f0a9acc5aee
+1	9052	1751892941755479339	_core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o	40451aa8c56de663
+9052	16480	1751892949184399145	_core.cpython-313-x86_64-linux-gnu.so	8312478dc6bacb01

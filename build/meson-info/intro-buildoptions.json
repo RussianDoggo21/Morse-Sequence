@@ -301,33 +301,12 @@
     "description": "Maximum number of linker processes to run or 0 for no limit"
   },
   {
-    "name": "b_ndebug",
-    "value": "false",
-    "section": "base",
-    "machine": "any",
-    "choices": [
-      "true",
-      "false",
-      "if-release"
-    ],
-    "type": "combo",
-    "description": "Disable asserts"
-  },
-  {
-    "name": "b_pie",
-    "value": false,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Build executables as position independent"
-  },
-  {
-    "name": "b_staticpic",
+    "name": "b_pch",
     "value": true,
     "section": "base",
     "machine": "any",
     "type": "boolean",
-    "description": "Build static libraries as position independent"
+    "description": "Use precompiled headers"
   },
   {
     "name": "b_pgo",
@@ -343,12 +322,12 @@
     "description": "Use profile guided optimization"
   },
   {
-    "name": "b_sanitize",
-    "value": [],
+    "name": "b_lundef",
+    "value": true,
     "section": "base",
     "machine": "any",
-    "type": "array",
-    "description": "Code sanitizer to use"
+    "type": "boolean",
+    "description": "Use -Wl,--no-undefined when linking"
   },
   {
     "name": "b_lto",
@@ -367,20 +346,33 @@
     "description": "Use -Wl,--as-needed when linking"
   },
   {
-    "name": "b_pch",
+    "name": "b_sanitize",
+    "value": [],
+    "section": "base",
+    "machine": "any",
+    "type": "array",
+    "description": "Code sanitizer to use"
+  },
+  {
+    "name": "b_staticpic",
     "value": true,
     "section": "base",
     "machine": "any",
     "type": "boolean",
-    "description": "Use precompiled headers"
+    "description": "Build static libraries as position independent"
   },
   {
-    "name": "b_coverage",
-    "value": false,
+    "name": "b_ndebug",
+    "value": "false",
     "section": "base",
     "machine": "any",
-    "type": "boolean",
-    "description": "Enable coverage tracking."
+    "choices": [
+      "true",
+      "false",
+      "if-release"
+    ],
+    "type": "combo",
+    "description": "Disable asserts"
   },
   {
     "name": "b_lto_threads",
@@ -404,12 +396,20 @@
     "description": "Use colored output"
   },
   {
-    "name": "b_lundef",
-    "value": true,
+    "name": "b_pie",
+    "value": false,
     "section": "base",
     "machine": "any",
     "type": "boolean",
-    "description": "Use -Wl,--no-undefined when linking"
+    "description": "Build executables as position independent"
+  },
+  {
+    "name": "b_coverage",
+    "value": false,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Enable coverage tracking."
   },
   {
     "name": "cpp_args",

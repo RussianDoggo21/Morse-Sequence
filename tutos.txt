@@ -77,7 +77,25 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
+0) ARRETER TOUT ! ON CALCULE LA REFERENCE MAP ETAPE PAR ETAPE EN PARCOURANT LA SEQUENCE DE MORSE
+SE BASER SUR LE CODE PYTHON GITLAB ESIEE.FR
+D'abord, on prend le premier point : point critique
+Ensuite on prend le deuxième "point" : paire libre, on calcule le bord et on connaît la valeur du point que l'on trouve c'est le point critique précédent !
 
+1) Problème à l'exécution pour des grilles de tailles 150*150 et plus
+    a) Supprimer le paramètre depth de Gamma une fois le debugging terminé 
+    SUPPRIMER GAMMA EN FAIT !!
+2) Pourquoi les bitmaps sont plus lentes que les listes de simplexes ?
+3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
+4) Lire papier Bertrand
+
+1) Utiliser Union Find pour la reference map
+5) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
+6) Rapport : Ecrire de telle sorte que M.Cousty puisse comprendre le papier 
+(partie intéressante : difficultés que j'ai rencontrées, travail que j'ai effectué)
+(je connaissais pas C++, j'ai utilisé Chat GPT : comment ?)
+(Quelles étaient les raisons de mes choix ?)
+RACONTER UNE HISTOIRE DANS LE RAPPORT !!
 
 ==========================================================================================================================================================================
 PROBLEMES SECONDAIRES
