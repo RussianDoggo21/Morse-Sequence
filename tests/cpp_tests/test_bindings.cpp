@@ -4,7 +4,7 @@
 #include <pybind11/iostream.h>
 #include <pybind11/embed.h> 
 
-#include "../../src/morse_sequence/_core/morse_sequence.h"
+#include "../../src/morse_sequence/_core/morse_frame.h"
 #include "../../src/morse_sequence/_core/bindings.cpp"
 
 namespace py = pybind11;

@@ -1,4 +1,4 @@
-#include "../../src/morse_sequence/_core/morse_sequence.h"
+#include "../../src/morse_sequence/_core/morse_frame.h"
 #include <chrono>
 
 void test_m_frame() {
@@ -33,30 +33,33 @@ void test_m_frame() {
 
     //ms.print_morse_sequence(result, true);
 
+    MorseFrame mf(ms);
+
     std::cout << "\n== Bitmap implementation ==\n";
     auto t_bitmap_total_start = clock::now();
 
     auto t0 = clock::now();
-    node_index_map crit_index = ms.generate_critical_index_map(W);
+    node_index_map crit_index = mf.generate_critical_index_map(W);
     auto t1 = clock::now();
     std::cout << "generate_critical_index_map: " << duration(t1 - t0).count() << " ms\n";
 
     t0 = clock::now();
-    m_frame reference_map = ms.reference_map(W, crit_index);
+    m_frame reference_map = mf.reference_map(W, crit_index);
     t1 = clock::now();
     std::cout << "reference_map: " << duration(t1 - t0).count() << " ms\n";
 
     t0 = clock::now();
-    m_frame coreference_map = ms.coreference_map(W, crit_index);
+    m_frame coreference_map = mf.coreference_map(W, crit_index);
     t1 = clock::now();
     std::cout << "coreference_map: " << duration(t1 - t0).count() << " ms\n";
 
+    /*
     std::cout << "\nReference Map (bitmap):\n";
-    ms.print_m_frame(reference_map, W, crit_index);
+    mf.print_m_frame(reference_map, W, crit_index);
 
     std::cout << "\nCoreference Map (bitmap):\n";
-    ms.print_m_frame(coreference_map, W, crit_index);
-
+    mf.print_m_frame(coreference_map, W, crit_index);
+    */
     
     auto t_bitmap_total_end = clock::now();
     auto duration_bitmap = t_bitmap_total_end - t_bitmap_total_start;
@@ -67,14 +70,22 @@ void test_m_frame() {
     auto t_simplex_total_start = clock::now();
 
     t0 = clock::now();
-    m_frame0 ref2 = ms.reference_map0(W);
+    m_frame0 ref2 = mf.reference_map0(W);
     t1 = clock::now();
     std::cout << "reference_map0: " << duration(t1 - t0).count() << " ms\n";
 
     t0 = clock::now();
-    m_frame0 coref2 = ms.coreference_map0(W);
+    m_frame0 coref2 = mf.coreference_map0(W);
     t1 = clock::now();
     std::cout << "coreference_map0: " << duration(t1 - t0).count() << " ms\n";
+
+    /*
+    std::cout << "\nReference Map (simplex):\n";
+    mf.print_m_frame0(ref2, W);
+
+    std::cout << "\nCoreference Map (simplex):\n";
+    mf.print_m_frame0(coref2, W);
+    */
     
     auto t_simplex_total_end = clock::now();
     auto duration_simplex = t_simplex_total_end - t_simplex_total_start;

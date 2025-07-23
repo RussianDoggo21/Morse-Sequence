@@ -53,25 +53,12 @@ public:
     std::pair<m_sequence, int> Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
     std::pair<m_sequence, int> Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
     void print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit = false);
-
-    // Morse Frames (bitmap implementation)
-    node_index_map generate_critical_index_map(const m_sequence& W);
-    m_frame reference_map(const m_sequence& W, const node_index_map& critical_index_map);
-    m_frame coreference_map(const m_sequence& W, const node_index_map& critical_index_map);
-    void print_m_frame(const m_frame& map, const m_sequence& W, const node_index_map& critical_index_map);
-
-    // Morse Frames (simplex implementation)
-    m_frame0 reference_map0(const m_sequence& W);
-    m_frame0 coreference_map0(const m_sequence& W);
-    void print_m_frame0(m_frame0& map, const m_sequence& W);
     
 
 private:
     const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr);
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F);
-    node_list sym_diff(const node_list& A, const node_list& B);
-    void print_bitmap(const bitmap& bm, const m_sequence& W, const node_index_map& critical_index_map) const;
 };
 
 #endif 

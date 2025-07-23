@@ -11,7 +11,7 @@ LIBS     := -lpython3.13
 PYBIND11_FLAGS := $(shell python3 -m pybind11 --includes)
 
 #  Source file that contains the shared implementation
-SRC_LIB  := ../../src/morse_sequence/_core/morse_sequence.cpp 
+SRC_LIB  := ../../src/morse_sequence/_core/morse_sequence.cpp ../../src/morse_sequence/_core/morse_frame.cpp 
 OBJ_LIB  := $(SRC_LIB:.cpp=.o)   # → morse_sequence.o
 
 # -------------------------------------------------

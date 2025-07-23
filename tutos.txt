@@ -77,8 +77,10 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
+0) Créer une classe pour morse_frame (ref_map & coref_map) et pour UnionFindBitarray ??
 1) Utiliser Union Find pour la reference map :
     OBJECTIF : Classes d'équivalence sur les bitarrays (ex : classe 0000, classe 0010...)
+    Classe UnionFind : Lie chaque node_ptr à une classe représentée par un bitarray
 3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
 4) Lire papier Bertrand
 5) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
