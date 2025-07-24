@@ -18,17 +18,12 @@
 #include <map>
 
 #include <tsl/robin_map.h>
-#include <boost/dynamic_bitset.hpp>
 
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
-using bitmap = boost::dynamic_bitset<>;
-using m_frame = tsl::robin_map<node_ptr, bitmap>;
-using m_frame0 = tsl::robin_map<node_ptr, node_list>;
-using node_index_map = tsl::robin_map<node_ptr, std::size_t>;
-using SimplexList = std::vector<simplex_t>;  
-using simplex_t = SimplexTree::simplex_t;
+//using SimplexList = std::vector<simplex_t>;  
+//using simplex_t = SimplexTree::simplex_t;
 
 
 class MorseSequence {

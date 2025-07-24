@@ -77,7 +77,11 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-0) Créer une classe pour morse_frame (ref_map & coref_map) et pour UnionFindBitarray ??
+0) Fonction add s'effectue sur la classe (Morse Frame actuellement)
+    - Créer deux classes séparées Ref_Map et coref_map qui héritent de UnionFind (option préférée pour l'instant)
+        - Garder les deux implémentations ? (simplex / bitmap ) bitmap plus rapide
+        - Fonctions gérant les bitmaps : à implémenter dans UnionFind plutôt ?
+   
 1) Utiliser Union Find pour la reference map :
     OBJECTIF : Classes d'équivalence sur les bitarrays (ex : classe 0000, classe 0010...)
     Classe UnionFind : Lie chaque node_ptr à une classe représentée par un bitarray

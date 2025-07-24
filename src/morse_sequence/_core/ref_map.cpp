@@ -1,7 +1,7 @@
 #include "morse_frame.h"
 
 // Constructor of the class
-MorseFrame::MorseFrame(MorseSequence& ms) : ms(ms), simplex_tree(ms.get_simplex_tree()) {}
+MorseFrame::MorseFrame(MorseSequence& ms) : UnionFind(), ms(ms), simplex_tree(ms.get_simplex_tree()) {}
 
 
 /* 
@@ -9,36 +9,68 @@ MorseFrame::MorseFrame(MorseSequence& ms) : ms(ms), simplex_tree(ms.get_simplex_
 */
 
 
-// Generates a map critical_simplex -> index from a Morse sequence W
-node_index_map MorseFrame::generate_critical_index_map(const m_sequence& W) {
-    node_index_map critical_index_map;
-    size_t index = 0;
+// Generates the attributes of the class MorseFrame
+void MorseFrame::generate_attributes(const m_sequence& W) {
+    
+    // Generation of critics
     for (const auto& item : W) {
-        if (std::holds_alternative<node_ptr>(item)) { // Filtration on critical simplices
-            node_ptr c = std::get<node_ptr>(item);
-            if (critical_index_map.find(c) == critical_index_map.end()) {
-                critical_index_map[c] = index++;
-            }
+        if (std::holds_alternative<node_ptr>(item)) { 
+            node_ptr crit = std::get<node_ptr>(item);   
+            critics.push_back(crit);
         }
+    }   
+
+    // Generation of critToIndex
+    size_t index = 0;
+    for (const node_ptr& crit : critics) {
+        critToIndex[crit] = index;
+        index++;
     }
-    return critical_index_map;
+
+    // Generation of indexToCrit
+    for (const auto& [crit, index] : critToIndex) {
+        indexToCrit[index] = crit;
+    }
+
+    // Generation of dim
+    dim_crit = critics.size(); 
 }
 
 // Computes a reference map from a Morse sequence W given critical_index_map
-m_frame MorseFrame::reference_map(const m_sequence& W, const node_index_map& critical_index_map) {
+m_frame MorseFrame::reference_map(const m_sequence& W) {
 
     m_frame ref_map;
     ref_map.reserve(W.size());
-
-    std::size_t crit_size = critical_index_map.size();
 
     for (const auto& item : W) {
 
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr crit_ptr = std::get<node_ptr>(item);
 
-            bitmap b(crit_size);  // all zeros
-            b.set(critical_index_map.at(crit_ptr));  // set the corresponding bit
+            /*
+            for i in ms:
+                if len(i) == 1:
+                    bvec = zeros(self.dim)
+                    for i in [self.critToIndex[i[0]]]:
+                        bvec[i] = 1
+                    self.add(i[0], bvec)
+                else:
+                    sigma, tau = i
+                    self.add(tau, zeros(self.dim))
+                    bvec = zeros(self.dim)
+                    for mu in st.boundary(tau):
+                        if mu != sigma:
+                            bvec ^= self[mu]
+                    self.add(sigma, bvec)
+
+                
+
+            */
+
+            bitmap b(dim_crit);  // all zeros
+            b.set(critToIndex.at(crit_ptr));  // set the corresponding bit
+            
+            // Modification ici, utiliser this->add si création de classe ReferenceMap et CoreferenceMap
             ref_map[crit_ptr] = std::move(b);
         }
 
@@ -46,14 +78,14 @@ m_frame MorseFrame::reference_map(const m_sequence& W, const node_index_map& cri
             auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
 
             // ⋏(τ) = 0
-            ref_map[tau_ptr] = bitmap(crit_size);
+            ref_map[tau_ptr] = bitmap(dim_crit);
 
             // ∂(τ)\{σ}
             node_list bd = ms.boundary(tau_ptr);
             bd.erase(std::remove(bd.begin(), bd.end(), sigma_ptr), bd.end());
 
             // ⋏(σ) = ⋏(∂(τ) \ {σ}) = XOR of ⋏(cn)
-            bitmap acc(crit_size);  // all zeros
+            bitmap acc(dim_crit);  // all zeros
             for (node_ptr cn : bd) {
                 acc ^= ref_map[cn];
             }
@@ -70,12 +102,10 @@ m_frame MorseFrame::reference_map(const m_sequence& W, const node_index_map& cri
 
 
 // Computes a coreference map from a Morse sequence W given critical_index_map
-m_frame MorseFrame::coreference_map(const m_sequence& W, const node_index_map& critical_index_map) {
+m_frame MorseFrame::coreference_map(const m_sequence& W) {
 
     m_frame coref_map;
     coref_map.reserve(W.size());
-
-    std::size_t crit_size = critical_index_map.size();
 
     for (auto it = W.rbegin(); it != W.rend(); ++it) {
         const auto& item = *it;
@@ -83,8 +113,8 @@ m_frame MorseFrame::coreference_map(const m_sequence& W, const node_index_map& c
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr crit_ptr = std::get<node_ptr>(item);
 
-            bitmap b(crit_size);
-            b.set(critical_index_map.at(crit_ptr));
+            bitmap b(dim_crit);
+            b.set(critToIndex.at(crit_ptr));
             coref_map[crit_ptr] = std::move(b);
         }
 
@@ -92,14 +122,14 @@ m_frame MorseFrame::coreference_map(const m_sequence& W, const node_index_map& c
             auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
 
             // ⋎(σ) = 0
-            coref_map[sigma_ptr] = bitmap(crit_size);
+            coref_map[sigma_ptr] = bitmap(dim_crit);
 
             // δ(σ) \ {τ}
             node_list bd = ms.coboundary(sigma_ptr);
             bd.erase(std::remove(bd.begin(), bd.end(), tau_ptr), bd.end());
 
             // ⋎(τ) = ⋎(δ(σ) \ {τ}) = XOR of ⋎(cn)
-            bitmap acc(crit_size);
+            bitmap acc(dim_crit);
             for (node_ptr cn : bd) {
                 acc ^= coref_map[cn];
             }
@@ -116,7 +146,7 @@ m_frame MorseFrame::coreference_map(const m_sequence& W, const node_index_map& c
 
 
 // Private function used in print_m_frame
-void MorseFrame::print_bitmap(const bitmap& bm, const m_sequence& W, const node_index_map& critical_index_map) const {
+void MorseFrame::print_bitmap(const bitmap& bm, const m_sequence& W) const {
     bool empty = true;
 
     for (size_t i = 0; i < bm.size(); ++i) {
@@ -125,7 +155,7 @@ void MorseFrame::print_bitmap(const bitmap& bm, const m_sequence& W, const node_
             for (const auto& other_item : W) {
                 if (std::holds_alternative<node_ptr>(other_item)) {
                     node_ptr c = std::get<node_ptr>(other_item);
-                    if (critical_index_map.at(c) == i) {
+                    if (critToIndex.at(c) == i) {
                         simplex_tree.print_simplex(std::cout, c, false);
                         std::cout << " ";
                         break;
@@ -143,7 +173,7 @@ void MorseFrame::print_bitmap(const bitmap& bm, const m_sequence& W, const node_
 
 
 // Print a Morse Frame (reference or coreference map)
-void MorseFrame::print_m_frame(const m_frame& map, const m_sequence& W, const node_index_map& critical_index_map) {
+void MorseFrame::print_m_frame(const m_frame& map, const m_sequence& W) {
     for (const auto& item : W) {
 
         if (std::holds_alternative<node_ptr>(item)) { // Critical simplex
@@ -152,7 +182,7 @@ void MorseFrame::print_m_frame(const m_frame& map, const m_sequence& W, const no
                 std::cout << "Key (Critical simplex): ";
                 simplex_tree.print_simplex(std::cout, face_ptr, false);
                 std::cout << " -> Value: ";
-                print_bitmap(map.at(face_ptr), W, critical_index_map);
+                print_bitmap(map.at(face_ptr), W);
                 std::cout << "\n";
             } else {
                 std::cout << "Null pointer encountered!" << std::endl;
@@ -168,13 +198,13 @@ void MorseFrame::print_m_frame(const m_frame& map, const m_sequence& W, const no
                 std::cout << "Key (Lower pair): ";
                 simplex_tree.print_simplex(std::cout, pair.first, false);
                 std::cout << " -> Value: ";
-                print_bitmap(map.at(pair.first), W, critical_index_map);
+                print_bitmap(map.at(pair.first), W);
                 std::cout << "\n";
 
                 std::cout << "Key (Upper pair): ";
                 simplex_tree.print_simplex(std::cout, pair.second, false);
                 std::cout << " -> Value: ";
-                print_bitmap(map.at(pair.second), W, critical_index_map);
+                print_bitmap(map.at(pair.second), W);
                 std::cout << "\n";
 
             } else {
