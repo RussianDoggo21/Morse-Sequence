@@ -1,8 +1,14 @@
 #include "morse_frame_base.h"
 
-MorseFrameBase::MorseFrameBase(MorseSequence& ms, const m_sequence& W): UnionFindMF(), ms(ms), simplex_tree(ms.get_simplex_tree()) {
+/**
+ * @brief Constructor initializes critical simplex mapping and bitmap size.
+ * @param ms Reference to the MorseSequence.
+ * @param W Sequence of critical simplices and pairs.
+ */
+MorseFrameBase::MorseFrameBase(MorseSequence& ms, const m_sequence& W)
+    : UnionFindMF(), ms(ms), simplex_tree(ms.get_simplex_tree()) {
 
-    // Extract critical simplices from W
+    // Extract critical simplices
     for (const auto& item : W) {
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr crit = std::get<node_ptr>(item);
@@ -10,22 +16,26 @@ MorseFrameBase::MorseFrameBase(MorseSequence& ms, const m_sequence& W): UnionFin
         }
     }
 
-    // Build critToIndex
+    // Assign each critical simplex a unique index
     size_t index = 0;
     for (const node_ptr& crit : critics) {
         critToIndex[crit] = index++;
     }
 
-    // Build indexToCrit
+    // Reverse mapping: index to critical simplex
     for (const auto& [crit, idx] : critToIndex) {
         indexToCrit[idx] = crit;
     }
 
-    // Set dimension
+    // Total number of critical simplices
     dim_crit = critics.size();
 }
 
-
+/**
+ * @brief Print the bit vector as a list of critical simplices.
+ * @param bm Bitmap to print.
+ * @param W Sequence of critical simplices and pairs.
+ */
 void MorseFrameBase::print_bitmap(const bitmap& bm, const m_sequence& W) const {
     bool empty = true;
 
@@ -50,6 +60,10 @@ void MorseFrameBase::print_bitmap(const bitmap& bm, const m_sequence& W) const {
     }
 }
 
+/**
+ * @brief Print all entries in the Morse frame with their associated bitmaps.
+ * @param W Sequence of critical simplices and pairs.
+ */
 void MorseFrameBase::print_m_frame(const m_sequence& W) {
     tsl::robin_map<node_ptr, bitmap> bitarray = get_bitarray();
 
@@ -73,7 +87,7 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) {
             if (pair.first && pair.second) {
                 std::cout << "Pair of simplices:\n";
 
-                // Lower pair
+                // Lower simplex
                 node_ptr root1 = _find(pair.first);
                 std::cout << "Key (Lower pair): ";
                 simplex_tree.print_simplex(std::cout, pair.first, false);
@@ -81,7 +95,7 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) {
                 print_bitmap(bitarray.at(root1), W);
                 std::cout << "\n";
 
-                // Upper pair
+                // Upper simplex
                 node_ptr root2 = _find(pair.second);
                 std::cout << "Key (Upper pair): ";
                 simplex_tree.print_simplex(std::cout, pair.second, false);

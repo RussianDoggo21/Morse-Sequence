@@ -26,35 +26,166 @@ using node_list = std::vector<node_ptr>;
 using SimplexList = std::vector<simplex_t>;  
 using simplex_t = SimplexTree::simplex_t;
 
-
+/**
+ * @class MorseSequence
+ * @brief Class for generating and manipulating Morse sequences on a simplicial complex.
+ */
 class MorseSequence {
 public:
-    explicit MorseSequence(const SimplexTree& st);  // Constructor
+    /**
+     * @brief Constructor.
+     * @param st Reference to a SimplexTree object representing the simplicial complex.
+     */
+    explicit MorseSequence(const SimplexTree& st);
 
-    // Auxiliary functions
+
+    /**
+     * @brief Get the underlying simplex tree.
+     * @return Reference to the SimplexTree.
+     */
     const SimplexTree& get_simplex_tree();
-    node_list boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
-    node_list boundary(const node_ptr& cn); 
-    node_list coboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
-    node_list coboundary(const node_ptr& cn);
-    int nbboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
-    int nbboundary(const node_ptr& cn);
-    int nbcoboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
-    int nbcoboundary(const node_ptr& cn);
-    node_list simplices(std::optional<int> p) const;
 
-    // Morse Sequences - F-Sequences
-    std::pair<m_sequence, int> increasing(const SimplexTree& st);
-    std::pair<m_sequence, int> decreasing(const SimplexTree& st);
-    std::pair<m_sequence, int> Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
-    std::pair<m_sequence, int> Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
-    void print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit = false);
+
+    /**
+     * @brief Compute the boundary of a simplex using a filtration.
+     * @param cn Pointer to the simplex.
+     * @param S A map indicating whether each simplex is included in the filtration.
+     * @return List of boundary simplexes.
+     */
+    node_list boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+
+
+    /**
+     * @brief Compute the boundary of a simplex.
+     * @param cn Pointer to the simplex.
+     * @return List of boundary simplexes.
+     */
+    node_list boundary(const node_ptr& cn);
+
+
+    /**
+     * @brief Compute the coboundary of a simplex using a filtration.
+     * @param cn Pointer to the simplex.
+     * @param S A map indicating whether each simplex is included in the filtration.
+     * @return List of coboundary simplexes.
+     */
+    node_list coboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+
+
+    /**
+     * @brief Compute the coboundary of a simplex.
+     * @param cn Pointer to the simplex.
+     * @return List of coboundary simplexes.
+     */
+    node_list coboundary(const node_ptr& cn);
     
 
+    /**
+     * @brief Count the number of boundary faces using a filtration.
+     * @param cn Pointer to the simplex.
+     * @param S A map indicating whether each simplex is included in the filtration.
+     * @return Number of boundary faces.
+     */
+    int nbboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+
+
+    /**
+     * @brief Count the number of boundary faces.
+     * @param cn Pointer to the simplex.
+     * @return Number of boundary faces.
+     */
+    int nbboundary(const node_ptr& cn);
+
+
+    /**
+     * @brief Count the number of coboundary cofaces using a filtration.
+     * @param cn Pointer to the simplex.
+     * @param S A map indicating whether each simplex is included in the filtration.
+     * @return Number of coboundary cofaces.
+     */
+    int nbcoboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S);
+
+
+    /**
+     * @brief Count the number of coboundary cofaces.
+     * @param cn Pointer to the simplex.
+     * @return Number of coboundary cofaces.
+     */
+    int nbcoboundary(const node_ptr& cn);
+
+
+    /**
+     * @brief Get the simplices of the simplicial complex.
+     * @param p Optional dimension to filter simplices.
+     * @return List of simplices.
+     */
+    node_list simplices(std::optional<int> p) const;
+
+
+    /**
+     * @brief Build an increasing Morse sequence.
+     * @param st The input simplicial complex.
+     * @return Pair of Morse sequence and number of critical simplices.
+     */
+    std::pair<m_sequence, int> increasing(const SimplexTree& st);
+
+
+    /**
+     * @brief Build a decreasing Morse sequence.
+     * @param st The input simplicial complex.
+     * @return Pair of Morse sequence and number of critical simplices.
+     */
+    std::pair<m_sequence, int> decreasing(const SimplexTree& st);
+
+
+    /**
+     * @brief Compute a maximal F-sequence based on a function F.
+     * @param S List of simplices.
+     * @param F Filtration values.
+     * @return Pair of Morse sequence and number of critical simplices.
+     */
+    std::pair<m_sequence, int> Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
+
+
+    /**
+     * @brief Compute a minimal F-sequence based on a function F.
+     * @param S List of simplices.
+     * @param F Filtration values.
+     * @return Pair of Morse sequence and number of critical simplices.
+     */
+    std::pair<m_sequence, int> Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
+
+
+    /**
+     * @brief Print the Morse sequence and optionally the number of critical simplices.
+     * @param result Pair of Morse sequence and number of critical simplices.
+     * @param n_crit Whether to print the number of critical simplices.
+     */
+    void print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit = false);
+
 private:
-    const SimplexTree& simplex_tree;  // Reference to the simplicial complex given in input
+    const SimplexTree& simplex_tree;  ///< Reference to the simplicial complex given in input
+
+    /**
+     * @brief Internal function to find an eligible simplex in a list, based on a condition.
+     * @param T Boolean map marking simplices.
+     * @param simplex_list List of simplices.
+     * @param order "increasing" or "decreasing" order condition.
+     * @param s_ptr Reference simplex.
+     * @return Pointer to the selected simplex or nullptr.
+     */
     node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr);
-    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F);
+
+    
+    /**
+     * @brief Internal function to find an eligible simplex based on filtration values.
+     * @param T Boolean map marking simplices.
+     * @param simplex_list List of simplices.
+     * @param s_ptr Reference simplex.
+     * @param F Filtration values.
+     * @return Pointer to the selected simplex or nullptr.
+     */
+    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F);
 };
 
-#endif 
+#endif

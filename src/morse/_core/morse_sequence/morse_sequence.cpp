@@ -1,21 +1,28 @@
 #include "morse_sequence.h"
 
-/* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
-
-// Constructor of the MorseSequence class
-// Takes a SimplexTree as input
-// O(1)
+/**
+ * @brief Construct a MorseSequence from a SimplexTree.
+ * @param st The simplex tree to use.
+ */
 MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) {
 	std::cout << "MorseSequence created\n" << std::endl;
 }
 
 
-// Getter for the SimplexTree associated with the MorseSequence object
+/**
+ * @brief Get the underlying simplex tree.
+ * @return A const reference to the simplex tree.
+ */
 const SimplexTree& MorseSequence::get_simplex_tree() {
     return simplex_tree;
 }
 
-// Computes the boundary of cn with a filtration on S 
+/**
+ * @brief Compute the boundary of a node within a subset.
+ * @param cn The node to compute the boundary for.
+ * @param S A map indicating which nodes are in the subset.
+ * @return A list of boundary nodes in the subset.
+ */
 node_list MorseSequence::boundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S) {
     node_list boundary;
     simplex_t sigma = simplex_tree.full_simplex(cn); // retrieve [v₀, ..., vₚ]
@@ -33,7 +40,11 @@ node_list MorseSequence::boundary(const node_ptr& cn, const tsl::robin_map<node_
 }
 
 
-// Computes the boundary of cn 
+/**
+ * @brief Compute the full boundary of a node.
+ * @param cn The node to compute the boundary for.
+ * @return A list of boundary nodes.
+ */
 node_list MorseSequence::boundary(const node_ptr& cn) {
     node_list boundary;
 
@@ -54,10 +65,12 @@ node_list MorseSequence::boundary(const node_ptr& cn) {
     return boundary;
 }
 
-
-
-
-// Returns the pointers of the simplices forming the coboundary of a simplex sigma with a filtration on S
+/**
+ * @brief Compute the coboundary of a node within a subset.
+ * @param cn The node to compute the coboundary for.
+ * @param S A map indicating which nodes are in the subset.
+ * @return A list of coboundary nodes in the subset.
+ */
 node_list MorseSequence::coboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S) {
     node_list coboundary;
     cofaces<> cobord(&simplex_tree, cn); // Iterator on the cofaces of the simplex cn
@@ -73,6 +86,11 @@ node_list MorseSequence::coboundary(const node_ptr& cn, const tsl::robin_map<nod
     return coboundary;
 }
 
+/**
+ * @brief Compute the full coboundary of a node.
+ * @param cn The node to compute the coboundary for.
+ * @return A list of coboundary nodes.
+ */
 node_list MorseSequence::coboundary(const node_ptr& cn) {
     
     node_list coboundary;
@@ -89,32 +107,51 @@ node_list MorseSequence::coboundary(const node_ptr& cn) {
     return coboundary;
 }
 
-
-
-
-// Returns the number of faces of the simplex linked to pointer cn with a filtration on S
+/**
+ * @brief Count the number of boundary nodes in the subset.
+ * @param cn The node whose boundary is considered.
+ * @param S A map of nodes in the subset.
+ * @return The number of boundary nodes in the subset.
+ */
 int MorseSequence::nbboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S){
     return (this->boundary(cn,S)).size();
 }
 
+/**
+ * @brief Get the full number of boundary nodes.
+ * @param cn The node to inspect.
+ * @return The size of the boundary list.
+ */
 int MorseSequence::nbboundary(const node_ptr& cn){
     return (this->boundary(cn)).size();
 }
 
 
-// Returns the number of cofaces of the simplex linked to pointer cn with a filtration on S
+/**
+ * @brief Count the number of coboundary nodes in the subset.
+ * @param cn The node whose coboundary is considered.
+ * @param S A map of nodes in the subset.
+ * @return The number of coboundary nodes in the subset.
+ */
 int MorseSequence::nbcoboundary(const node_ptr& cn, const tsl::robin_map<node_ptr, bool>& S){
     return (this->coboundary(cn, S)).size();
 }
 
+/**
+ * @brief Get the full number of coboundary nodes.
+ * @param cn The node to inspect.
+ * @return The size of the coboundary list.
+ */
 int MorseSequence::nbcoboundary(const node_ptr& cn){
     return (this->coboundary(cn)).size();
 }
 
 
-// Returns the p-simplices of the simplicial complex if p is specified
-// Returns all simplices if p is not specified
-// Let n = simplextree.size() : O(n)
+/**
+ * @brief Get all simplices of the optional given dimension.
+ * @param p The optional dimension to filter simplices.
+ * @return A list of simplices.
+ */
 node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 	node_list F;
 
@@ -141,8 +178,23 @@ node_list MorseSequence::simplices(std::optional<int> p = std::nullopt) const {
 }
 
 
-// Returns the pointer of a simplex in simplex_list that satisfies a condition on T and s_ptr
-// Private function
+/**
+ * @brief Find a simplex pointer in simplex_list that satisfies a condition based on T and s_ptr.
+ * 
+ * This function searches through simplex_list for a simplex v0 such that:
+ * - v0 is in map T with a false boolean value (i.e., !T[v0]),
+ * - and the depth condition holds:
+ *   * if order == "decreasing": depth(v0) == depth(s_ptr) + 1
+ *   * if order == "increasing": depth(v0) == depth(s_ptr) - 1
+ * 
+ * The function returns the last matching simplex pointer found.
+ * 
+ * @param T A map from simplex pointers to boolean flags.
+ * @param simplex_list The list of simplexes to search.
+ * @param order A string specifying the depth condition ("increasing" or "decreasing").
+ * @param s_ptr The reference simplex pointer used to compare depths.
+ * @return node_ptr The pointer to the found simplex, or nullptr if none matches.
+ */
 node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, std::string order, const node_ptr& s_ptr){
     node_ptr v = nullptr;
     if (order == "decreasing"){
@@ -164,8 +216,21 @@ node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const 
     return v;
 }
 
-// Returns the pointer of a simplex in simplex_list that satisfies a condition on T, s_ptr, and F
-// Private function
+/**
+ * @brief Find a simplex pointer in simplex_list that satisfies a condition based on T, s_ptr, and F.
+ * 
+ * This function searches through simplex_list for a simplex v0 such that:
+ * - v0 is in map T with a false boolean value,
+ * - and F[v0] == F[s_ptr].
+ * 
+ * The function returns the last matching simplex pointer found.
+ * 
+ * @param T A map from simplex pointers to boolean flags.
+ * @param simplex_list The list of simplexes to search.
+ * @param s_ptr The reference simplex pointer used to compare values in F.
+ * @param F A map from simplex pointers to integer values.
+ * @return node_ptr The pointer to the found simplex, or nullptr if none matches.
+ */
 node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
@@ -181,7 +246,25 @@ node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const n
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-// Creation of an increasing Morse sequence
+/**
+ * @brief Constructs an increasing discrete Morse sequence from a simplex tree.
+ * 
+ * This method computes a discrete Morse sequence where the matching is done by
+ * pairing simplices with one face, going from lower to higher dimension (increasing).
+ * It uses a queue of candidate simplices that can form free pairs and iteratively
+ * constructs the Morse sequence until all simplices are processed.
+ * 
+ * Algorithm overview:
+ * - Sort simplices by increasing dimension.
+ * - Initialize data structures for bookkeeping: T (used simplices), rho (number of faces), L (free pairs candidates).
+ * - While there remain unused simplices, try to add free pairs using simplices with exactly one face.
+ * - If no free pairs can be added, mark the next unused simplex as critical.
+ * 
+ * @param st The SimplexTree from which the Morse sequence is derived.
+ * @return std::pair<m_sequence, int> A pair consisting of:
+ *   - the Morse sequence as a vector of pairs (free pairs) or single simplices (critical simplices),
+ *   - the count of critical simplices.
+ */
 std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
 
     // Sort simplices by increasing dimension
@@ -275,7 +358,25 @@ std::pair<m_sequence, int> MorseSequence::increasing(const SimplexTree& st){
 }
 
 
-// Creation of a decreasing Morse sequence
+/**
+ * @brief Constructs a decreasing discrete Morse sequence from a simplex tree.
+ * 
+ * This method computes a discrete Morse sequence where the matching is done by
+ * pairing simplices with one coface, going from higher to lower dimension (decreasing).
+ * The algorithm is symmetric to the increasing case but uses cofaces instead of faces,
+ * and simplices are sorted by decreasing dimension.
+ * 
+ * Algorithm overview:
+ * - Sort simplices by decreasing dimension.
+ * - Initialize bookkeeping structures: T, rho (number of cofaces), L.
+ * - Iteratively add free pairs where simplices have exactly one coface.
+ * - Mark simplices as critical if no free pairs are possible.
+ * 
+ * @param st The SimplexTree from which the Morse sequence is derived.
+ * @return std::pair<m_sequence, int> A pair consisting of:
+ *   - the Morse sequence as a vector of pairs (free pairs) or single simplices (critical simplices),
+ *   - the count of critical simplices.
+ */
 std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 
     // Sort simplices by decreasing dimension
@@ -368,7 +469,18 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
 }
 
 
-// Build a maximal F-sequence
+/**
+ * @brief Build a maximal F-sequence on a given subset of simplices.
+ *
+ * This function constructs a maximal Morse sequence on the simplices in the cosimplicial complex S,
+ * using the values in the dictionary F to guide the pairing of simplices.
+ *
+ * @param S A cosimplicial complex.
+ * @param F A map from simplex pointers to integer weights used to select pairs.
+ * @return A pair consisting of:
+ *   - The maximal Morse sequence (vector of pairs of simplices or critical simplices).
+ *   - The number of critical simplices found.
+ */
 std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
@@ -448,7 +560,18 @@ std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const tsl::rob
 }
 
 
-// Build a minimal F-sequence
+/**
+ * @brief Build a minimal F-sequence on a given subset of simplices.
+ *
+ * This function constructs a minimal Morse sequence on the simplices in the cosimplicial complex S,
+ * using the values in the dictionary F to guide the pairing of simplices.
+ *
+ * @param S A cosimplicial complex.
+ * @param F A map from simplex pointers to integer weights used to select pairs.
+ * @return A pair consisting of:
+ *   - The minimal Morse sequence (vector of pairs of simplices or critical simplices).
+ *   - The number of critical simplices found.
+ */
 std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict;; // Marks whether the simplex is in S
@@ -530,47 +653,53 @@ std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const tsl::rob
 }
 
 
-// Print the morse_reference and the number of critical simplices
-void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit){
-    
-    // 1. Extract results from the function
-	auto& morse_sequence = result.first;  // Morse Sequence
-	int n_crit2 = result.second;  // Number of critical simplices
+/**
+ * @brief Print the Morse sequence and optionally the number of critical simplices.
+ *
+ * This function takes the result of a Morse sequence computation (a pair of a sequence and
+ * the number of critical simplices) and prints its content in a readable format.
+ * Critical simplices and free pairs are handled separately.
+ *
+ * @param result The Morse sequence result: a pair consisting of
+ *               - first: the sequence of simplices or pairs,
+ *               - second: the number of critical simplices.
+ * @param print_crit If true, print the number of critical simplices.
+ */
+void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& result, bool print_crit) {
+    // Extract the Morse sequence and critical simplex count
+    const auto& morse_sequence = result.first;
+    int n_crit = result.second;
 
-	// Display results (optional)
-    if (n_crit == true){
-        std::cout << "Number of critical points: " << n_crit2 << "\n" << std::endl;
+    // Optionally print the number of critical simplices
+    if (print_crit) {
+        std::cout << "Number of critical points: " << n_crit << "\n" << std::endl;
     }
-	
-	for (const auto& item : morse_sequence) {
-        // Check the type of the element
 
-        if (std::holds_alternative<node_ptr>(item)) { // Critical simplex
-            node_ptr face_ptr = std::get<node_ptr>(item);
-            // Check here if face_ptr is not a null pointer before using it
-            if (face_ptr) {
+    // Iterate over each element in the Morse sequence
+    for (const auto& item : morse_sequence) {
+        // If the item is a critical simplex (single node_ptr)
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr simplex = std::get<node_ptr>(item);
+            if (simplex) {
                 std::cout << "Critical simplex: ";
-                simplex_tree.print_simplex(std::cout, face_ptr, true);
+                simplex_tree.print_simplex(std::cout, simplex, true);
             } else {
-                std::cout << "Null pointer encountered!" << std::endl;
+                std::cout << "Null pointer encountered in critical simplex!" << std::endl;
             }
         }
-        else if (std::holds_alternative<node_pair>(item)) { // Free pair
+        // If the item is a free pair (pair of node_ptr)
+        else if (std::holds_alternative<node_pair>(item)) {
             node_pair pair = std::get<node_pair>(item);
-            
             if (pair.first && pair.second) {
                 std::cout << "Pair of simplices: ";
                 simplex_tree.print_simplex(std::cout, pair.first, false);
                 std::cout << " and ";
                 simplex_tree.print_simplex(std::cout, pair.second, true);
             } else {
-                std::cout << "Null pointer in pair!" << std::endl;
+                std::cout << "Null pointer encountered in simplex pair!" << std::endl;
             }
         }
-    }  
-    printf("\n"); 
+    }
+
+    std::cout << std::endl;
 }
-
-
-
-

@@ -10,7 +10,7 @@ PYBIND11_FLAGS := $(shell python3 -m pybind11 --includes)
 #  Source file that contains the shared implementation
 SRC_LIB := \
     ../../src/morse/_core/morse_sequence/morse_sequence.cpp \
-    ../../src/morse/_core/morse_frame/union_find.cpp \
+    ../../src/morse/_core/morse_frame/union_find_mf.cpp \
     ../../src/morse/_core/morse_frame/morse_frame_base.cpp \
 	../../src/morse/_core/morse_frame/ref_map.cpp \
 	../../src/morse/_core/morse_frame/coref_map.cpp 
@@ -49,4 +49,4 @@ test_bind: test_bindings.o $(OBJ_LIB)
 #  Clean up all build artifacts
 .PHONY: clean
 clean:
-	rm -f */*.o *.o test_m_seq timer_m_seq test_m_frm test_bind test_m_frm
+	rm -f */*.o *.o test_m_seq timer_m_seq test_m_frm test_bind test_m_frm 
