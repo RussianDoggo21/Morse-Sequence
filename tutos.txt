@@ -77,8 +77,7 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-1) Mettre à jour les fichiers : 
-    -bindings.cpp : m_frame_to_py_dict
+1) Commentaires sur tous les fichiers sources
 3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
 4) Lire papier Bertrand
 5) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)

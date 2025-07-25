@@ -28,16 +28,15 @@ void test_m_frame() {
     auto result = ms.increasing(st);
     m_sequence W = result.first;
 
-    //ms.print_morse_sequence(result, true);
+    ms.print_morse_sequence(result, true);
 
-    printf("===== Reference Map =====");
+    printf("\n ===== Reference Map ===== \n ");
     RefMap ref_map(ms, W);
     ref_map.print_m_frame(W);
 
-    printf("===== Coreference Map =====");
+    printf("\n ===== Coreference Map ===== \n ");
     CorefMap coref_map(ms, W);
-    coref_map.print_m_frame(W);
-    
+    coref_map.print_m_frame(W);    
 }
 
 int main() {

@@ -45,7 +45,6 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
 // Conversion m_frame -> py::dict
 // Used in _ref_map and _coref_map
 
-//A MODIFIER ICI, COMMENT ACCEDER AU M_FRAME DE REF_MAP ET CO_REF MAP
 py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
     py::dict py_map;
 
@@ -67,7 +66,7 @@ py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
     }
 
     return py_map;
-}x
+}
 
 
 // Conversion m_sequence -> py::list
@@ -208,7 +207,7 @@ py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
     m_frame bitarray = ref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
-    py::dict py_ref_map = m_frame_to_py_dict(ref_mapxx, st); 
+    py::dict py_ref_map = m_frame_to_py_dict(bitarray, st); 
 
     return py_ref_map;
 }
@@ -222,11 +221,11 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
     // Creation of a Morse Frame
-    RefMap ref_map = CorefMap(ms, W);
+    CorefMap ref_map = CorefMap(ms, W);
     m_frame bitarray = ref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
-    py::dict py_coref_map = m_frame_to_py_dict(coref_map, st); 
+    py::dict py_coref_map = m_frame_to_py_dict(bitarray, st); 
 
     return py_coref_map;
 }

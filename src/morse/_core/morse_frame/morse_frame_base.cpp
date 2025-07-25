@@ -50,17 +50,18 @@ void MorseFrameBase::print_bitmap(const bitmap& bm, const m_sequence& W) const {
     }
 }
 
-void MorseFrameBase::print_m_frame(const m_sequence& W) const {
-
+void MorseFrameBase::print_m_frame(const m_sequence& W) {
     tsl::robin_map<node_ptr, bitmap> bitarray = get_bitarray();
+
     for (const auto& item : W) {
         if (std::holds_alternative<node_ptr>(item)) {
             node_ptr face_ptr = std::get<node_ptr>(item);
             if (face_ptr) {
+                node_ptr root = _find(face_ptr);
                 std::cout << "Key (Critical simplex): ";
                 simplex_tree.print_simplex(std::cout, face_ptr, false);
                 std::cout << " -> Value: ";
-                print_bitmap(bitarray.at(face_ptr), W);
+                print_bitmap(bitarray.at(root), W);
                 std::cout << "\n";
             } else {
                 std::cout << "Null pointer encountered!" << std::endl;
@@ -69,21 +70,25 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) const {
 
         else if (std::holds_alternative<node_pair>(item)) {
             node_pair pair = std::get<node_pair>(item);
-
             if (pair.first && pair.second) {
                 std::cout << "Pair of simplices:\n";
 
+                // Lower pair
+                node_ptr root1 = _find(pair.first);
                 std::cout << "Key (Lower pair): ";
                 simplex_tree.print_simplex(std::cout, pair.first, false);
                 std::cout << " -> Value: ";
-                print_bitmap(bitarray.at(pair.first), W);
+                print_bitmap(bitarray.at(root1), W);
                 std::cout << "\n";
 
+                // Upper pair
+                node_ptr root2 = _find(pair.second);
                 std::cout << "Key (Upper pair): ";
                 simplex_tree.print_simplex(std::cout, pair.second, false);
                 std::cout << " -> Value: ";
-                print_bitmap(bitarray.at(pair.second), W);
+                print_bitmap(bitarray.at(root2), W);
                 std::cout << "\n";
+
             } else {
                 std::cout << "Null pointer in pair!" << std::endl;
             }
@@ -92,5 +97,3 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) const {
         std::cout << "\n";
     }
 }
-
-

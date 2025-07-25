@@ -52,3 +52,4 @@ bitmap UnionFindMF::get(const node_ptr& x) {
 tsl::robin_map<node_ptr, bitmap> UnionFindMF::get_bitarray() const{
     return this->bitarray;
 }
+

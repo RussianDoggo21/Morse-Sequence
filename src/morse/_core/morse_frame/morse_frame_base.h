@@ -21,7 +21,7 @@ public:
     MorseFrameBase(MorseSequence& ms, const m_sequence& W);
 
     void print_bitmap(const bitmap& bm, const m_sequence& W) const;
-    void print_m_frame(const m_sequence& W) const;
+    void print_m_frame(const m_sequence& W);
 };
 
 #endif // MORSE_MAP_BASE_H

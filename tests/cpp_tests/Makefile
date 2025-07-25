@@ -41,8 +41,9 @@ test_m_frm: test_m_frame.o $(OBJ_LIB)
 test_bind: test_bindings.o $(OBJ_LIB)
 	$(CXX) $^ $(LIBS) -o $@
 
-timer_m_frm : timer_m_frame.o $(OBJ_LIB)
-	$(CXX) $^ $(LIBS) -o $@
+
+#timer_m_frm : timer_m_frame.o $(OBJ_LIB)
+#	$(CXX) $^ $(LIBS) -o $@
 
 # -------------------------------------------------
 #  Clean up all build artifacts
