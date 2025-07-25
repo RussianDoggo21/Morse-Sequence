@@ -1,18 +1,20 @@
 #ifndef UNION_FIND_H
 #define UNION_FIND_H
 
-#include "morse_sequence.h" 
+#include "../morse_sequence/morse_sequence.h" 
 #include <boost/dynamic_bitset.hpp>
 
 using bitmap = boost::dynamic_bitset<>;
 
-class UnionFind {
+class UnionFindMF {
 public:
-    UnionFind();
+    UnionFindMF();
 
     node_ptr _find(const node_ptr& x);
     void _union(const node_ptr& x, const node_ptr& y);
     void add(const node_ptr& x, const bitmap& bitarray_val);
+    bitmap get(const node_ptr& x);
+    tsl::robin_map<node_ptr, bitmap> get_bitarray() const;
 
 private:
     tsl::robin_map<node_ptr, node_ptr> parent;

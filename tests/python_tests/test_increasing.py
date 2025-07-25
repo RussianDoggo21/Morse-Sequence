@@ -1,5 +1,5 @@
 from simplextree import SimplexTree
-from morse_sequence import MorseSequence
+from morse import MorseSequence
 from src.python.increasing import morse_seq_increasing
 import numpy as np
 

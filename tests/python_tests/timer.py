@@ -2,7 +2,7 @@
 # In both pure python and hybrid code
 
 from simplextree import SimplexTree
-from morse_sequence import MorseSequence
+from morse import MorseSequence
 
 from src.python.max import Max
 from src.python.min import Min

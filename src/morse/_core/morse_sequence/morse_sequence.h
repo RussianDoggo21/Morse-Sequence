@@ -1,7 +1,7 @@
 #ifndef MORSE_SEQUENCE_H
 #define MORSE_SEQUENCE_H
 
-#include "../../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
+#include "../../../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
 #include <list>
@@ -16,14 +16,15 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 
 #include <tsl/robin_map.h>
 
 using node_pair = std::pair<node_ptr, node_ptr>;
 using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
-//using SimplexList = std::vector<simplex_t>;  
-//using simplex_t = SimplexTree::simplex_t;
+using SimplexList = std::vector<simplex_t>;  
+using simplex_t = SimplexTree::simplex_t;
 
 
 class MorseSequence {

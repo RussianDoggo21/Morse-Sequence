@@ -1,10 +1,7 @@
-#include "../../src/morse_sequence/_core/morse_frame.h"
-#include <chrono>
+#include "../../src/morse/_core/morse_frame/ref_map.h"
+#include "../../src/morse/_core/morse_frame/coref_map.h"
 
 void test_m_frame() {
-
-    using clock = std::chrono::high_resolution_clock;
-    using duration = std::chrono::duration<double, std::milli>;
 
     printf("test_m_frame : start \n\n");
 
@@ -33,83 +30,14 @@ void test_m_frame() {
 
     //ms.print_morse_sequence(result, true);
 
-    MorseFrame mf(ms);
+    printf("===== Reference Map =====");
+    RefMap ref_map(ms, W);
+    ref_map.print_m_frame(W);
 
-    std::cout << "\n== Bitmap implementation ==\n";
-    auto t_bitmap_total_start = clock::now();
-
-    auto t0 = clock::now();
-    node_index_map crit_index = mf.generate_critical_index_map(W);
-    auto t1 = clock::now();
-    std::cout << "generate_critical_index_map: " << duration(t1 - t0).count() << " ms\n";
-
-    t0 = clock::now();
-    m_frame reference_map = mf.reference_map(W, crit_index);
-    t1 = clock::now();
-    std::cout << "reference_map: " << duration(t1 - t0).count() << " ms\n";
-
-    t0 = clock::now();
-    m_frame coreference_map = mf.coreference_map(W, crit_index);
-    t1 = clock::now();
-    std::cout << "coreference_map: " << duration(t1 - t0).count() << " ms\n";
-
-    /*
-    std::cout << "\nReference Map (bitmap):\n";
-    mf.print_m_frame(reference_map, W, crit_index);
-
-    std::cout << "\nCoreference Map (bitmap):\n";
-    mf.print_m_frame(coreference_map, W, crit_index);
-    */
+    printf("===== Coreference Map =====");
+    CorefMap coref_map(ms, W);
+    coref_map.print_m_frame(W);
     
-    auto t_bitmap_total_end = clock::now();
-    auto duration_bitmap = t_bitmap_total_end - t_bitmap_total_start;
-    std::cout << "Total Bitmap section: " << duration(duration_bitmap).count() << " ms\n";
-
-
-    std::cout << "\n== Simplex implementation ==\n";
-    auto t_simplex_total_start = clock::now();
-
-    t0 = clock::now();
-    m_frame0 ref2 = mf.reference_map0(W);
-    t1 = clock::now();
-    std::cout << "reference_map0: " << duration(t1 - t0).count() << " ms\n";
-
-    t0 = clock::now();
-    m_frame0 coref2 = mf.coreference_map0(W);
-    t1 = clock::now();
-    std::cout << "coreference_map0: " << duration(t1 - t0).count() << " ms\n";
-
-    /*
-    std::cout << "\nReference Map (simplex):\n";
-    mf.print_m_frame0(ref2, W);
-
-    std::cout << "\nCoreference Map (simplex):\n";
-    mf.print_m_frame0(coref2, W);
-    */
-    
-    auto t_simplex_total_end = clock::now();
-    auto duration_simplex = t_simplex_total_end - t_simplex_total_start;
-
-    std::cout << "Total Simplex section: " << duration(duration_simplex).count() << " ms\n";
-    
-    std::cout << "Difference (simplex - bitmap): " << duration(duration_simplex - duration_bitmap).count() << " ms\n";
-
-
-    /*
-    m_frame0 ref2 = ms.reference_map0(W);
-    std::cout << "\nReference Map (simplex):\n";
-    ms.print_m_frame0(ref2, W);
-
-    m_frame0 coref2 = ms.coreference_map0(W);
-    std::cout << "\nCoreference Map (simplex):\n";
-    ms.print_m_frame0(coref2, W);
-
-    node_index_map crit_index = ms.generate_critical_index_map(W);
-    m_frame reference_map = ms.reference_map(W, crit_index);
-    std::cout << "\nReference Map (bitmap):\n";
-    ms.print_m_frame(reference_map, W, crit_index);
-    */
-
 }
 
 int main() {

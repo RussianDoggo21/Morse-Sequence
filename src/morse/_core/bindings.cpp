@@ -4,7 +4,9 @@
 #include <pybind11/iostream.h>
 #include <pybind11/numpy.h>
 
-#include "morse_frame.h"
+#include "morse_frame/ref_map.h"
+#include "morse_frame/coref_map.h"
+#include "morse_sequence/morse_sequence.h"
 
 namespace py = pybind11;
 
@@ -42,6 +44,8 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
 
 // Conversion m_frame -> py::dict
 // Used in _ref_map and _coref_map
+
+//A MODIFIER ICI, COMMENT ACCEDER AU M_FRAME DE REF_MAP ET CO_REF MAP
 py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
     py::dict py_map;
 
@@ -63,37 +67,7 @@ py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
     }
 
     return py_map;
-}
-
-/*
-// Conversion m_frame0 -> py::dict
-// Used in _ref_map and _coref_map
-py::dict m_frame0_to_py_dict(const m_frame0& map, const SimplexTree& st){
-    py::dict py_map;
-
-    for (const auto &[key_ptr, lst] : map) {
-
-        // Python key : the full simplex linked to the node_ptr key_ptr
-        auto vec = st.full_simplex(key_ptr);
-        py::tuple py_key(vec.size());
-        for (std::size_t i = 0; i < vec.size(); ++i)
-            py_key[i] = vec[i];
-        //py::list py_key = py::cast(py::tuple(py::cast(vec)));
-
-        // Python value : list of critical simplices (or None)
-        py::list py_val;
-        for (node_ptr v : lst) {
-            if (v == nullptr)
-                py_val.append(py::none());
-            else
-                py_val.append(st.full_simplex(v));
-        }
-
-        py_map[py_key] = py_val;
-    }
-    return py_map;
-}
-*/
+}x
 
 
 // Conversion m_sequence -> py::list
@@ -230,14 +204,11 @@ py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
     // Creation of a Morse Frame
-    MorseFrame mf(ms);
-
-    // Call of C++ function
-    node_index_map critical_index_map = mf.generate_critical_index_map(W);
-    m_frame ref_map = mf.reference_map(W, critical_index_map);
+    RefMap ref_map = RefMap(ms, W);
+    m_frame bitarray = ref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
-    py::dict py_ref_map = m_frame_to_py_dict(ref_map, st); 
+    py::dict py_ref_map = m_frame_to_py_dict(ref_mapxx, st); 
 
     return py_ref_map;
 }
@@ -251,11 +222,8 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
     // Creation of a Morse Frame
-    MorseFrame mf(ms);
-
-    // Call of C++ function
-    node_index_map critical_index_map = mf.generate_critical_index_map(W);
-    m_frame coref_map = mf.coreference_map(W, critical_index_map);
+    RefMap ref_map = CorefMap(ms, W);
+    m_frame bitarray = ref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
     py::dict py_coref_map = m_frame_to_py_dict(coref_map, st); 

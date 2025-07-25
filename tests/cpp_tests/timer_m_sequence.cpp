@@ -1,7 +1,7 @@
 /*
     Modification of source code st_iterators.hpp, st_filtration.hpp, st.hpp (line 4 - changed import path of simplextree)
 */
-#include "../../src/morse_sequence/_core/morse_sequence.h"
+#include "../../src/morse/_core/morse_sequence/morse_sequence.h"
 
 SimplexList MakeFacesVectorized1(int Nr, int Nc) {
     SimplexList out;

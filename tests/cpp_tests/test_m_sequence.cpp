@@ -1,4 +1,4 @@
-#include "../../src/morse_sequence/_core/morse_sequence.h"
+#include "../../src/morse/_core/morse_sequence/morse_sequence.h"
 
 void test_m_sequence(){
 
