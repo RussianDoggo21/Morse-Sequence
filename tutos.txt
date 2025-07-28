@@ -77,10 +77,13 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-1) Commentaires sur tous les fichiers sources
+1) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
+    - implémenter le dictionnaire stack comme attribut de morse sequence et update en conséquence Min et Max (et d'autres ?)
+    - transform_bitarrays (UnionFindMF)
+    - __update_ba
+2) Implémenter cela pour l'interface python
 3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
 4) Lire papier Bertrand
-5) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
 6) Rapport : Ecrire de telle sorte que M.Cousty puisse comprendre le papier 
 (partie intéressante : difficultés que j'ai rencontrées, travail que j'ai effectué)
 (je connaissais pas C++, j'ai utilisé Chat GPT : comment ?)

@@ -3,6 +3,8 @@
 
 #include "union_find_mf.h"
 
+#include <limits>
+
 using m_frame = tsl::robin_map<node_ptr, bitmap>;
 using node_index_map = tsl::robin_map<node_ptr, std::size_t>;
 using index_node_map = tsl::robin_map<std::size_t, node_ptr>;

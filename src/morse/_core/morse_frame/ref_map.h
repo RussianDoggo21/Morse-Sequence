@@ -19,6 +19,8 @@ public:
      * @param W The Morse sequence (list of critical simplices and paired simplex pairs).
      */
     explicit RefMap(MorseSequence& ms, m_sequence W);
+
+    std::pair<node_list, std::vector<node_pair>> persistence();
 };
 
 #endif  // REF_MAP_H

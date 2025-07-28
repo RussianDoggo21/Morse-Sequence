@@ -40,3 +40,27 @@ RefMap::RefMap(MorseSequence& ms, m_sequence W) : MorseFrameBase(ms, W) {
         }
     }
 }
+
+
+std::pair<node_list, std::vector<node_pair>> RefMap::persistence(){
+    node_list essential;
+    std::vector<node_pair> pairs;
+
+    for (node_ptr sigma : critics){
+        node_list boundary = ms.boundary(sigma);
+        bitmap bsigma(dim_crit);
+        for (node_ptr tau : boundary){
+            bsigma ^= get(tau);
+        }
+        if (bsigma.any()){
+            double maxvalue = -std::numeric_limits<double>::infinity();
+            node_ptr nu;
+            for (size_t i = bsigma.find_first(); i != boost::dynamic_bitset<>::npos; i = bsigma.find_next(i)) {
+                node_ptr tau = indexToCrit[i];
+                // A COMPLETER
+            }
+        }
+
+    }
+
+}
