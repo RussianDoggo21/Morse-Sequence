@@ -1,4 +1,4 @@
-#include "morse_sequence.h"
+#include "morse_sequence/morse_sequence.h"
 
 /**
  * @brief Construct a MorseSequence from a SimplexTree.
@@ -6,6 +6,9 @@
  */
 MorseSequence::MorseSequence(const SimplexTree& st) : simplex_tree(st) {
 	std::cout << "MorseSequence created\n" << std::endl;
+    for (node_ptr cn: this->simplices(std::nullopt) ){
+        F[cn] = 0;
+    }
 }
 
 
@@ -231,7 +234,7 @@ node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T, const 
  * @param F A map from simplex pointers to integer values.
  * @return node_ptr The pointer to the found simplex, or nullptr if none matches.
  */
-node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F){
+node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const node_list& simplex_list, node_ptr s_ptr, const stack& F){
     node_ptr v = nullptr;
     for (node_ptr v0 : simplex_list){
         auto it = T.find(v0);
@@ -241,6 +244,34 @@ node_ptr MorseSequence::find_out(const tsl::robin_map<node_ptr, bool>& T,const n
     }
     
     return v;
+}
+
+/**
+ * @brief Get the stack values associated to the simplicial complex.
+ *
+ * Returns a constant reference to the internal map that associates
+ * each simplex (represented by a node pointer) to its filtration value
+ * or level in the Morse sequence.
+ *
+ * This data is typically used during the computation of persistence pairs
+ * or essential simplices.
+ *
+ * @return A constant reference to the map from simplex nodes to integer values.
+ */
+const stack& MorseSequence::get_stack() const{
+        return F;
+}
+
+/**
+ * @brief Update the internal stack map with a new mapping.
+ * 
+ * This function replaces the current stack (map associating nodes to integers)
+ * with the provided new stack.
+ * 
+ * @param new_F The new stack mapping to set. 
+ */
+void MorseSequence::update_stack(stack new_F){
+    F = new_F;
 }
 
 
@@ -476,12 +507,12 @@ std::pair<m_sequence, int> MorseSequence::decreasing(const SimplexTree& st){
  * using the values in the dictionary F to guide the pairing of simplices.
  *
  * @param S A cosimplicial complex.
- * @param F A map from simplex pointers to integer weights used to select pairs.
  * @return A pair consisting of:
  *   - The maximal Morse sequence (vector of pairs of simplices or critical simplices).
  *   - The number of critical simplices found.
  */
-std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
+//std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const stack& F) {
+std::pair<m_sequence, int> MorseSequence::Max(const node_list& S) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one face: (sigma, tau) is a free pair
@@ -567,12 +598,12 @@ std::pair<m_sequence, int> MorseSequence::Max(const node_list& S, const tsl::rob
  * using the values in the dictionary F to guide the pairing of simplices.
  *
  * @param S A cosimplicial complex.
- * @param F A map from simplex pointers to integer weights used to select pairs.
  * @return A pair consisting of:
  *   - The minimal Morse sequence (vector of pairs of simplices or critical simplices).
  *   - The number of critical simplices found.
  */
-std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F) {
+//std::pair<m_sequence, int> MorseSequence::Min(const node_list& S, const stack& F) {
+std::pair<m_sequence, int> MorseSequence::Min(const node_list& S) {
     tsl::robin_map<node_ptr, bool> T; // Boolean dictionary: T[s] == false means s is still "available"
     tsl::robin_map<node_ptr, bool> Sdict;; // Marks whether the simplex is in S
     std::deque<node_ptr> U; // Contains simplices with only one coface: (sigma, tau) is a free pair

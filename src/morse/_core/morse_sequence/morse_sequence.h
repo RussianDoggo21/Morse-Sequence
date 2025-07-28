@@ -1,7 +1,7 @@
 #ifndef MORSE_SEQUENCE_H
 #define MORSE_SEQUENCE_H
 
-#include "../../../../simplextree-py/include/simplextree.h"  // Inclusion of the library SimplexTree
+#include "simplextree.h"  // Inclusion of the library SimplexTree
 #include <optional>
 #include <variant>
 #include <list>
@@ -25,6 +25,7 @@ using m_sequence = std::vector<std::variant<node_ptr, node_pair>>;
 using node_list = std::vector<node_ptr>;
 using SimplexList = std::vector<simplex_t>;  
 using simplex_t = SimplexTree::simplex_t;
+using stack = tsl::robin_map<node_ptr, int>;
 
 /**
  * @class MorseSequence
@@ -141,19 +142,19 @@ public:
     /**
      * @brief Compute a maximal F-sequence based on a function F.
      * @param S List of simplices.
-     * @param F Filtration values.
      * @return Pair of Morse sequence and number of critical simplices.
      */
-    std::pair<m_sequence, int> Max(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
+    //std::pair<m_sequence, int> Max(const node_list& S, const stack& F);
+    std::pair<m_sequence, int> Max(const node_list& S);
 
 
     /**
      * @brief Compute a minimal F-sequence based on a function F.
      * @param S List of simplices.
-     * @param F Filtration values.
      * @return Pair of Morse sequence and number of critical simplices.
      */
-    std::pair<m_sequence, int> Min(const node_list& S, const tsl::robin_map<node_ptr, int>& F);
+    //std::pair<m_sequence, int> Min(const node_list& S, const stack& F);
+    std::pair<m_sequence, int> Min(const node_list& S);
 
 
     /**
@@ -163,8 +164,22 @@ public:
      */
     void print_morse_sequence(const std::pair<m_sequence, int>& result, bool n_crit = false);
 
+    /**
+     * @brief Get the stack values associated to the simplicial complex.
+     * @return A constant reference to the map from simplex nodes to integer values.
+     */
+    const stack& get_stack() const;
+
+     /**
+     * @brief Update the stack by remplacing it.
+     * @param new_stack New stack to replace the actual one.
+     */
+    void update_stack(stack new_F);
+
+
 private:
     const SimplexTree& simplex_tree;  ///< Reference to the simplicial complex given in input
+    stack F; // Stack values associated to the simplicial complex
 
     /**
      * @brief Internal function to find an eligible simplex in a list, based on a condition.
@@ -185,7 +200,7 @@ private:
      * @param F Filtration values.
      * @return Pointer to the selected simplex or nullptr.
      */
-    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, node_ptr s_ptr, const tsl::robin_map<node_ptr, int>& F);
+    node_ptr find_out(const tsl::robin_map<node_ptr, bool>& T, const node_list& simplex_list, node_ptr s_ptr, const stack& F);
 };
 
 #endif

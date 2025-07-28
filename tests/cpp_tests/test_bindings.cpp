@@ -4,9 +4,9 @@
 #include <pybind11/iostream.h>
 #include <pybind11/embed.h> 
 
-#include "../../src/morse/_core/morse_frame/ref_map.h"
-#include "../../src/morse/_core/morse_frame/coref_map.h"
-#include "../../src/morse/_core/bindings.cpp"
+#include "morse_frame/ref_map.h"
+#include "morse_frame/coref_map.h"
+#include "bindings.cpp"
 
 namespace py = pybind11;
 using namespace std::chrono;

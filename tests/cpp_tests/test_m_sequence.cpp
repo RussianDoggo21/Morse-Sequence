@@ -1,4 +1,4 @@
-#include "../../src/morse/_core/morse_sequence/morse_sequence.h"
+#include "morse_sequence/morse_sequence.h"
 
 void test_m_sequence(){
 
@@ -64,10 +64,13 @@ void test_m_sequence(){
     });
 
     // F = dict()
-    tsl::robin_map<node_ptr, int> F;
+    
+    tsl::robin_map<node_ptr, int> F = ms.get_stack();
+    /*
     for (node_ptr cn : S) {
        F[cn] = 0;
     }
+    */
 
     // Check if a simplex is included in another => function st.is_face(sigma, tau)
 
@@ -80,7 +83,7 @@ void test_m_sequence(){
 	
     printf("Max: \n\n");
     auto start_max = std::chrono::high_resolution_clock::now();
-	auto result_max = ms.Max(S, F);
+	auto result_max = ms.Max(S);
     auto end_max = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_max = end_max - start_max;
     std::cout << "Execution time: " << duration_max.count() << " ms" << std::endl;
@@ -100,10 +103,12 @@ void test_m_sequence(){
     });
 
     // 2. Initialize F
-    tsl::robin_map<node_ptr, int> F2;
+    tsl::robin_map<node_ptr, int> F2 = ms.get_stack();
+    /*
     for (node_ptr cn : S2) {
         F2[cn] = 0;
     }
+    */
 
     // 3. Manually set a value of F if needed (example here: F[(0, 1, 2)] = 0)
 
@@ -116,7 +121,7 @@ void test_m_sequence(){
 
 	printf("Min\n\n");
     auto start_min = std::chrono::high_resolution_clock::now();
-	auto result_min = ms.Min(S2, F2);
+	auto result_min = ms.Min(S2);
     auto end_min = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_min = end_min - start_min;
     std::cout << "Execution time: " << duration_min.count() << " ms" << std::endl;
@@ -126,45 +131,8 @@ void test_m_sequence(){
 	printf("\n\n\n");
 }
 
-void test_coboundary(){
-
-	SimplexTree st;  // Creation of a simplicial complex
-    
-    SimplexList L = {
-                        {1, 5, 7}, {1, 2, 7},  // Top left
-                        {2, 7, 9}, {2, 3, 9},  // Top middle
-                        {3, 5, 9}, {1, 3, 5},  // Top right
-                        {5, 4, 6}, {5, 6, 7},  // Middle left
-                        {7, 6, 8}, {7, 8, 9},  // Middle center
-                        {9, 8, 4}, {9, 4, 5},  // Middle right
-                        {1, 2, 4}, {2, 4, 6},  // Bottom left
-                        {2, 3, 6}, {3, 6, 8},  // Bottom middle
-                        {1, 3, 8}, {1, 4, 8}   // Bottom right
-                    };
-	for (simplex_t s : L){
-		st.insert(s);
-	}
-
-	MorseSequence ms(st); 
-
-    simplex_t sigma = {1};
-    node_ptr sigma_ptr = st.find(sigma);
-    node_list coboundary = ms.coboundary(sigma_ptr);
-
-    std::cout << "Coboundary of" ;
-    st.print_simplex(std::cout, sigma_ptr, true);
-    printf("\n");
-    for (node_ptr cn : coboundary ) {
-        st.print_simplex(std::cout, cn, true);
-    }
-	
-	printf("\n\n\n");
-
-}
-
 int main() {
     test_m_sequence();
-    //test_coboundary();
     return 0;
 }
 /* Compilation commands (terminal in Morse-Sequence/src/morse_sequence/cpp_tests)

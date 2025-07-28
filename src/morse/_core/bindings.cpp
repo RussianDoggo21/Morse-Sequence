@@ -164,7 +164,7 @@ py::tuple _Min_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
-    tsl::robin_map<node_ptr, int> cpp_F_full;
+    stack cpp_F_full;
 
     // Fill cpp_S_full with vector_handler
     vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
@@ -180,8 +180,9 @@ py::tuple _Min_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
         node_ptr ptr = st.find(sigma);
         cpp_F_full[ptr] = value;
     });
+    ms.update_stack(cpp_F_full);
 
-    auto [out, ncrit] = ms.Min(cpp_S_full, cpp_F_full);
+    auto [out, ncrit] = ms.Min(cpp_S_full);
     return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
 
@@ -199,7 +200,7 @@ py::tuple _Max_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
     SimplexTree& st = const_cast<SimplexTree&>(ms.get_simplex_tree());
 
     node_list cpp_S_full;
-    tsl::robin_map<node_ptr, int> cpp_F_full;
+    stack cpp_F_full;
 
     // Fill cpp_S_full with vector_handler
     vector_handler(st, S_buffer, [&](idx_t* b, idx_t* e) {
@@ -215,8 +216,9 @@ py::tuple _Max_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
         node_ptr ptr = st.find(sigma);
         cpp_F_full[ptr] = value;
     });
+    ms.update_stack(cpp_F_full);
 
-    auto [out, ncrit] = ms.Max(cpp_S_full, cpp_F_full);
+    auto [out, ncrit] = ms.Max(cpp_S_full);
     return py::make_tuple(m_sequence_to_py_list(out, st), ncrit);
 }
 

@@ -1,4 +1,4 @@
-#include "coref_map.h"
+#include "morse_frame/coref_map.h"
 
 /**
  * @brief Construct the CorefMap from the given Morse sequence.

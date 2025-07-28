@@ -1,5 +1,5 @@
-#include "../../src/morse/_core/morse_frame/ref_map.h"
-#include "../../src/morse/_core/morse_frame/coref_map.h"
+#include "morse_frame/ref_map.h"
+#include "morse_frame/coref_map.h"
 
 void test_m_frame() {
 

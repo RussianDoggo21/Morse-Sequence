@@ -1,6 +1,6 @@
 # -------------------------------------------------
 #  Global compiler options
-INCLUDES := -I ../../external/
+INCLUDES := -I ../../external/ -I ../../src/morse/_core -I ../../simplextree-py/include
 CXX      := g++
 CXXFLAGS := -std=c++20 -O3 -march=native -flto -funroll-loops -Wall $(INCLUDES)
 
@@ -20,7 +20,8 @@ OBJ_LIB  := $(SRC_LIB:.cpp=.o)   # → morse_sequence.o
 # -------------------------------------------------
 #  Default target: build every executable
 .PHONY: all
-all: test_m_seq timer_m_seq test_m_frm test_bind timer_m_frm
+all: test_m_seq timer_m_seq test_m_frm test_bind 
+# timer_m_frm deleted
 
 # -------------------------------------------------
 #  Generic rule: compile any .cpp file to a .o file

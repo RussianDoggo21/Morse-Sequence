@@ -1,7 +1,7 @@
 /*
     Modification of source code st_iterators.hpp, st_filtration.hpp, st.hpp (line 4 - changed import path of simplextree)
 */
-#include "../../src/morse/_core/morse_sequence/morse_sequence.h"
+#include "morse_sequence/morse_sequence.h"
 
 SimplexList MakeFacesVectorized1(int Nr, int Nc) {
     SimplexList out;
@@ -85,10 +85,12 @@ void timer_m_sequence() {
         std::sort(S_max.begin(), S_max.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) < st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) < st.full_simplex(b) );
         });
-        tsl::robin_map<node_ptr, int> F_max;
+        tsl::robin_map<node_ptr, int> F_max = ms.get_stack();
+        /*
         for (const auto& s : S_max){
             F_max[s] = 0;
         }
+        */
         std::sort(S_max.begin(), S_max.end(), [&st, &F_max](const node_ptr& a, const node_ptr& b) {
             return (F_max[a] < F_max[b]) || (F_max[a] == F_max[b] && st.full_simplex(a) < st.full_simplex(b));
         });
@@ -99,7 +101,7 @@ void timer_m_sequence() {
         write_timing_result(k, "max_preprocessing", "cpp", time_max_preprocess);
 
         auto start_max = std::chrono::high_resolution_clock::now();
-        auto [max, n_crit_max] = ms.Max(S_max, F_max);
+        auto [max, n_crit_max] = ms.Max(S_max);
         auto end_max = std::chrono::high_resolution_clock::now();
         double time_max = std::chrono::duration<double>(end_max - start_max).count();
         std::cout << "max C++ : " << time_max << " seconds\n\n";
@@ -112,8 +114,8 @@ void timer_m_sequence() {
         std::sort(S_min.begin(), S_min.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) > st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) > st.full_simplex(b));
         });
-        tsl::robin_map<node_ptr, int> F_min;
-        for (const auto& s : S_min) F_min[s] = 0;
+        tsl::robin_map<node_ptr, int> F_min = ms.get_stack();
+        //for (const auto& s : S_min) F_min[s] = 0;
         std::sort(S_min.begin(), S_min.end(), [&st, &F_min](const node_ptr& a, const node_ptr& b) {
             return (F_min[a] > F_min[b]) || (F_min[a] == F_min[b] && st.full_simplex(a) > st.full_simplex(b));
         });
@@ -124,7 +126,7 @@ void timer_m_sequence() {
         write_timing_result(k, "min_preprocessing", "cpp", time_min_preprocess);
 
         auto start_min = std::chrono::high_resolution_clock::now();
-        auto [min, n_crit_min] = ms.Min(S_min, F_min);
+        auto [min, n_crit_min] = ms.Min(S_min);
         auto end_min = std::chrono::high_resolution_clock::now();
         double time_min = std::chrono::duration<double>(end_min - start_min).count();
         std::cout << "Min C++ : " << time_min << " seconds\n";

@@ -1,7 +1,7 @@
 #ifndef UNION_FIND_H
 #define UNION_FIND_H
 
-#include "../morse_sequence/morse_sequence.h" 
+#include "morse_sequence/morse_sequence.h" 
 #include <boost/dynamic_bitset.hpp>
 
 using bitmap = boost::dynamic_bitset<>;

@@ -78,7 +78,7 @@ PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
 1) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
-    - implémenter le dictionnaire stack comme attribut de morse sequence et update en conséquence Min et Max (et d'autres ?)
+    - Régler les warnings dû au mauvais pathing (ajout des -I dans makefile)
     - transform_bitarrays (UnionFindMF)
     - __update_ba
 2) Implémenter cela pour l'interface python

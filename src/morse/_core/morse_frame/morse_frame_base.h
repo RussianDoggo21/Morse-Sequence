@@ -1,7 +1,7 @@
 #ifndef MORSE_FRAME_BASE_H
 #define MORSE_FRAME_BASE_H
 
-#include "union_find_mf.h"
+#include "morse_frame/union_find_mf.h"
 
 #include <limits>
 

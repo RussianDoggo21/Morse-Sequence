@@ -1,7 +1,7 @@
 #ifndef COREF_MAP_H
 #define COREF_MAP_H
 
-#include "morse_frame_base.h"
+#include "morse_frame/morse_frame_base.h"
 
 /**
  * @brief Class computing the *coreference map* from a Morse sequence.
