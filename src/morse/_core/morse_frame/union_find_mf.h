@@ -59,6 +59,13 @@ public:
      * @return A map from node_ptr to bitmap.
      */
     tsl::robin_map<node_ptr, bitmap> get_bitarray() const;
+
+    /**
+     * @brief Applies a transformation to all bitarrays stored in the structure.
+     * @param func A function taking a `const bitmap&` and returning a `bitmap`,
+     *             representing the transformation to apply.
+     */
+    void transform_bitarrays(const std::function<bitmap(const bitmap&)>& func);
     
 
 private:

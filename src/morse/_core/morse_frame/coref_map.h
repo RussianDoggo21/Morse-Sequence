@@ -22,6 +22,15 @@ public:
      * @param W The Morse sequence (list of critical simplices and paired simplex pairs).
      */
     explicit CorefMap(MorseSequence& ms, m_sequence W);
+
+    /**
+     * @brief Computes the copersistence pairs and essential simplices from the coreference map.
+     * 
+     * @return A pair consisting of:
+     *         - A list of essential critical simplices (node_list).
+     *         - A vector of persistence pairs (vector of pairs ((node_ptr, node_ptr), int)) sorted by persistence ascending.
+     */
+    std::pair<node_list, std::vector<std::pair<node_pair, int>>> copersistence();
 };
 
 #endif  // COREF_MAP_H

@@ -97,3 +97,60 @@ bitmap UnionFindMF::get(const node_ptr& x) {
 tsl::robin_map<node_ptr, bitmap> UnionFindMF::get_bitarray() const {
     return this->bitarray;
 }
+
+/**
+ * @brief Applies a transformation to all bitarrays stored in the structure.
+ *
+ * This function iterates over all bitarrays associated with Union-Find roots,
+ * applies a user-defined transformation, and performs component merging
+ * if the transformed bitarray already exists in the structure.
+ *
+ * If a transformed bitarray is already present, the corresponding components
+ * are merged via `_union`. If not, the current component is updated with the new
+ * bitarray.
+ *
+ * @param func A function taking a `const bitmap&` and returning a `bitmap`,
+ *             representing the transformation to apply.
+ */
+void UnionFindMF::transform_bitarrays(const std::function<bitmap(const bitmap&)>& func) {
+    // Snapshot of the original bitarrays to avoid modifying the map during iteration
+    std::vector<bitmap> originals;
+    originals.reserve(bitarray_to_root.size());
+    for (const auto& [ba, _] : bitarray_to_root) {
+        originals.push_back(ba);
+    }
+
+    for (const bitmap& old_ba : originals) {
+        auto old_root_it = bitarray_to_root.find(old_ba);
+        if (old_root_it == bitarray_to_root.end()) continue;
+        node_ptr old_root = old_root_it->second;
+
+        bitmap new_ba = func(old_ba);
+
+        if (new_ba == old_ba) continue;
+
+        auto new_root_it = bitarray_to_root.find(new_ba);
+        if (new_root_it != bitarray_to_root.end()) {
+            node_ptr new_root = new_root_it->second;
+            if (old_root != new_root) {
+                _union(old_root, new_root);
+                node_ptr merged_root = _find(old_root);
+
+                bitarray[merged_root] = new_ba;
+                bitarray_to_root[new_ba] = merged_root;
+
+                if (old_root != merged_root) {
+                    bitarray.erase(old_root);
+                }
+                if (new_root != merged_root) {
+                    bitarray.erase(new_root);
+                }
+            }
+            bitarray_to_root.erase(old_ba);
+        } else {
+            bitarray[old_root] = new_ba;
+            bitarray_to_root[new_ba] = old_root;
+            bitarray_to_root.erase(old_ba);
+        }
+    }
+}

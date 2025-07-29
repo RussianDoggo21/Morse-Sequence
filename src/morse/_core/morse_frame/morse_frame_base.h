@@ -32,6 +32,18 @@ protected:
     // Number of critical simplices
     size_t dim_crit;
 
+    /**
+     * @brief Update the bitarray during persistence or copersistence computation.
+     *
+     * @param ba The bitarray to update (passed by reference).
+     * @param indexsigma Index of the critical simplex sigma in the bitarray.
+     * @param indexnu Index of the critical simplex nu in the bitarray.
+     * @param bsigma The bitarray representing the boundary of sigma.
+     *
+     * @return The updated bitarray.
+     */
+    bitmap update_bitarray(const bitmap& ba, size_t indexsigma, size_t indexnu, const bitmap& bsigma) const;
+
 public:
     /**
      * @brief Constructor initializes the Morse frame base.
@@ -53,6 +65,8 @@ public:
      * @param W The sequence of critical simplices and pairs.
      */
     void print_m_frame(const m_sequence& W);
+
+    void print_persistence_results(const std::pair<node_list, std::vector<std::pair<node_pair, int>>>& results) const;
 };
 
 #endif // MORSE_FRAME_BASE_H

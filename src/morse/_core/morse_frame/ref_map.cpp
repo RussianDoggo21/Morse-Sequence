@@ -41,26 +41,74 @@ RefMap::RefMap(MorseSequence& ms, m_sequence W) : MorseFrameBase(ms, W) {
     }
 }
 
+/**
+ * @brief Computes the persistence pairs and essential simplices from the reference map.
+ * 
+ * The persistence is a list of pairs ((ν, σ), λ) where ν is a critical simplex,
+ * σ is the critical simplex paired with ν, and λ is the persistence value (difference in weights).
+ * Essential simplices are those with infinite persistence.
+ * 
+ * @return A pair consisting of:
+ *         - A list of essential critical simplices (node_list).
+ *         - A vector of persistence pairs (vector of pairs ((node_ptr, node_ptr), int)) sorted by persistence ascending.
+ * 
+ * @note The persistence result is analogous to the copersistence result computed from the coreference map
+ *       when both maps are constructed from the same Morse sequence.
+ */
 
-std::pair<node_list, std::vector<node_pair>> RefMap::persistence(){
+// To test on a copy of the original refmap
+// RefMap morse_frame = ref_map;
+// morse_frame.persistence();
+std::pair<node_list, std::vector<std::pair<node_pair, int>>> RefMap::persistence() {
     node_list essential;
-    std::vector<node_pair> pairs;
+    std::vector<std::pair<node_pair, int>> pairs;
 
-    for (node_ptr sigma : critics){
+    for (node_ptr sigma : critics) {
+        // Compute the boundary vector of sigma
         node_list boundary = ms.boundary(sigma);
         bitmap bsigma(dim_crit);
-        for (node_ptr tau : boundary){
-            bsigma ^= get(tau);
+        for (node_ptr tau : boundary) {
+            bsigma ^= get(tau);  // XOR the bitarrays from the boundary
         }
-        if (bsigma.any()){
-            double maxvalue = -std::numeric_limits<double>::infinity();
+
+        if (bsigma.any()) {
+            // Find the critical simplex nu that maximizes F[tau]
+            double max_value = -std::numeric_limits<double>::infinity();
             node_ptr nu;
+            stack F = ms.get_stack();
             for (size_t i = bsigma.find_first(); i != boost::dynamic_bitset<>::npos; i = bsigma.find_next(i)) {
                 node_ptr tau = indexToCrit[i];
-                // A COMPLETER
+                if (F[tau] >= max_value) {
+                    max_value = F[tau];
+                    nu = tau;
+                }
             }
-        }
 
+            // Store the persistence pair ((nu, sigma), F[sigma] - F[nu])
+            pairs.push_back({{nu, sigma}, F[sigma] - F[nu]});
+
+            // Update all bitarrays to account for the persistence pair
+            int index_sigma = critToIndex[sigma];
+            int index_nu = critToIndex[nu];
+            transform_bitarrays([&](const bitmap& ba) -> bitmap {
+                return update_bitarray(ba, index_sigma, index_nu, bsigma);
+            });
+        }
     }
 
+    // Sort the persistence pairs by increasing persistence
+    std::sort(pairs.begin(), pairs.end(),
+        [](const std::pair<node_pair, int>& a, const std::pair<node_pair, int>& b) {
+            return a.second < b.second;
+        });
+
+    // Identify essential critical simplices
+    for (node_ptr sigma : critics) {
+        int idx = critToIndex[sigma];
+        if (get(sigma)[idx]) {  // If sigma is still present in its bitarray
+            essential.push_back(sigma);
+        }
+    }
+
+    return {essential, pairs};
 }

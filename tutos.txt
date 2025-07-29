@@ -78,9 +78,8 @@ PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
 1) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
-    - Régler les warnings dû au mauvais pathing (ajout des -I dans makefile)
-    - transform_bitarrays (UnionFindMF)
-    - __update_ba
+    - tester persistance (sur le bonnet d'âne ?)
+    - implémenter nombre Betti
 2) Implémenter cela pour l'interface python
 3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
 4) Lire papier Bertrand
@@ -94,5 +93,6 @@ RACONTER UNE HISTOIRE DANS LE RAPPORT !! Objectif, problème, comment régler le
 PROBLEMES SECONDAIRES
 ==========================================================================================================================================================================
 
+- Ecrire la documentation uniquement sur les fichiers .cpp ? La supprimer des fichiers .h ?
 - Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
 - Vérifier les unités (secondes, millisecondes ?) affichées dans les plots

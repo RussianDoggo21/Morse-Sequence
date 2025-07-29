@@ -111,3 +111,52 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) {
         std::cout << "\n";
     }
 }
+
+/**
+ * @brief Update the bitarray during persistence or copersistence computation.
+ *
+ * This function updates the bitarray by removing the bit corresponding to the
+ * critical simplex sigma and, if nu is already present in the bitarray,
+ * it performs a symmetric difference (XOR) with the boundary of sigma.
+ *
+ * @param ba The bitarray to update (passed by reference).
+ * @param indexsigma Index of the critical simplex sigma in the bitarray.
+ * @param indexnu Index of the critical simplex nu in the bitarray.
+ * @param bsigma The bitarray representing the boundary of sigma.
+ *
+ * @return The updated bitarray.
+ */
+bitmap MorseFrameBase::update_bitarray(const bitmap& ba, size_t indexsigma, size_t indexnu, const bitmap& bsigma) const {
+    bitmap copy = ba;  // copy the const input
+    copy[indexsigma] = 0;
+    if (copy[indexnu]) {
+        copy ^= bsigma;
+    }
+    return copy;
+}
+
+void MorseFrameBase::print_persistence_results(const std::pair<node_list, std::vector<std::pair<node_pair, int>>>& results) const {
+    const node_list& essential = results.first;
+    const std::vector<std::pair<node_pair, int>>& pairs = results.second;
+
+    std::cout << "Persistence / Copersistence pairs (birth, death) with persistence value:\n";
+    for (const auto& p : pairs) {
+        const node_ptr& birth = p.first.first;
+        const node_ptr& death = p.first.second;
+        int persistence_val = p.second;
+
+        // Print birth simplex without newline
+        simplex_tree.print_simplex(std::cout, birth, false);
+        std::cout << " , ";
+        // Print death simplex with newline
+        simplex_tree.print_simplex(std::cout, death, true);
+
+        std::cout << "Persistence value: " << persistence_val << "\n";
+    }
+
+    std::cout << "\nEssential critical simplices (infinite persistence):\n";
+    for (const auto& sigma : essential) {
+        simplex_tree.print_simplex(std::cout, sigma, true);
+    }
+}
+

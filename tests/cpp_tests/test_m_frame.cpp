@@ -34,9 +34,19 @@ void test_m_frame() {
     RefMap ref_map(ms, W);
     ref_map.print_m_frame(W);
 
+    printf("\n ===== Persistence ===== \n ");
+    RefMap morse_frame1 = ref_map;
+    auto result_ref = morse_frame1.persistence();
+    morse_frame1.print_persistence_results(result_ref);
+
     printf("\n ===== Coreference Map ===== \n ");
     CorefMap coref_map(ms, W);
     coref_map.print_m_frame(W);    
+
+    printf("\n ===== Copersistence ===== \n ");
+    CorefMap morse_frame2 = coref_map;
+    auto result_coref = morse_frame2.copersistence();
+    morse_frame2.print_persistence_results(result_coref);
 }
 
 int main() {

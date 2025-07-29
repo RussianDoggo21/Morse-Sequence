@@ -20,7 +20,14 @@ public:
      */
     explicit RefMap(MorseSequence& ms, m_sequence W);
 
-    std::pair<node_list, std::vector<node_pair>> persistence();
+    /**
+     * @brief Computes the persistence pairs and essential simplices from the reference map.
+     * 
+     * @return A pair consisting of:
+     *         - A list of essential critical simplices (node_list).
+     *         - A vector of persistence pairs (vector of pairs ((node_ptr, node_ptr), int)) sorted by persistence ascending.
+     */
+    std::pair< node_list, std::vector<std::pair<node_pair, int>> > persistence();
 };
 
 #endif  // REF_MAP_H
