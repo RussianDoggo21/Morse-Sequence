@@ -1,5 +1,5 @@
 project('morse_sequence', 'cpp',
-  version : '0.4',
+  version : '0.1.4',
   default_options : ['cpp_std=c++20', 'optimization=3', 'b_lto=true']
 )
 
@@ -19,8 +19,12 @@ tsl_inc = include_directories('external')
 # --------------------------------------------------------------------
 # sources C++
 core_sources = files(
-  'src/morse_sequence/_core/bindings.cpp',
-  'src/morse_sequence/_core/morse_sequence.cpp',
+  'src/morse/_core/bindings.cpp',
+  'src/morse/_core/morse_sequence/morse_sequence.cpp',
+  'src/morse/_core/morse_frame/ref_map.cpp',
+  'src/morse/_core/morse_frame/coref_map.cpp',
+  'src/morse/_core/morse_frame/union_find_mf.cpp',     
+  'src/morse/_core/morse_frame/utils.cpp', 
   'simplextree-py/simplextree/_simplextree.cpp'
 )
 
@@ -30,7 +34,7 @@ py.extension_module(
   '_core',        # nom logique du module
   sources            : core_sources,
   include_directories: [
-      include_directories('src/morse_sequence/_core'),
+      include_directories('src/morse/_core'),
       simplextree_inc, 
       tsl_inc
   ],
@@ -42,6 +46,6 @@ py.extension_module(
 # --------------------------------------------------------------------
 # installe également __init__.py pour constituer un vrai package
 install_data(
-  'src/morse_sequence/__init__.py',
+  'src/morse/__init__.py',
   install_dir : pkg_dir
 )

@@ -2,10 +2,10 @@
   {
     "name": "pybind11",
     "type": "config-tool",
-    "version": "2.13.6",
+    "version": "3.0.0",
     "compile_args": [
       "-I/usr/include/python3.13",
-      "-I/home/kali/T\u00e9l\u00e9chargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include"
+      "-I/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/pybind11/include"
     ],
     "link_args": [],
     "include_directories": [],

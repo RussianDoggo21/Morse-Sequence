@@ -1,7 +1,7 @@
 #ifndef REF_MAP_H
 #define REF_MAP_H
 
-#include "morse_frame/morse_frame_base.h"
+#include "morse_frame/utils.h"
 
 /**
  * @brief Class computing the reference map from a Morse sequence.

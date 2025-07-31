@@ -38,7 +38,7 @@ pip install morse-sequence==0.1.1
 HOW TO BUILD AND INSTALL MORSE-SEQUENCE LOCALLY
 ==========================================================================================================================================================================
 Step 1 : 
-Go to the racine of the project ~/Téléchargements/Morse-Sequence
+Go to the racine of the project ~/Téléchargements/Morse
 
 Step 2 : 
 Update your files if necessary
@@ -55,8 +55,8 @@ HOW TO PROFILE A BINARY
 ==========================================================================================================================================================================
 
 Step 1 : 
-cd ~/Téléchargements/Morse-Sequence/tests/cpp_tests
-cd ~/Téléchargements/Morse-Sequence/tests/python_tests
+cd ~/Téléchargements/Morse/tests/cpp_tests
+cd ~/Téléchargements/Morse/tests/python_tests
 
 Step 2 : 
 Update your Makefile if necessary (pour les fichiers .cpp)
@@ -78,10 +78,11 @@ PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
 1) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
-    - tester persistance (sur le bonnet d'âne ?)
     - implémenter nombre Betti
 2) Implémenter cela pour l'interface python
-3) Fonctions print_m_sequence et print_m_frame exposées via pybind ou gérées directement en python ?
+    - régler problème d'exécution des tests python
+    - Fonctions print_m_frame et print_m_sequence à écrire en python ?
+    - persistance et copersistance
 4) Lire papier Bertrand
 6) Rapport : Ecrire de telle sorte que M.Cousty puisse comprendre le papier 
 (partie intéressante : difficultés que j'ai rencontrées, travail que j'ai effectué)

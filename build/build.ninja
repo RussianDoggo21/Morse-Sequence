@@ -21,7 +21,7 @@ rule cpp_LINKER
  description = Linking target $out
 
 rule SHSYM
- command = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' --internal symbolextractor '/home/kali/Téléchargements/Morse-Sequence/build' $in $IMPLIB $out $CROSS
+ command = /usr/bin/meson --internal symbolextractor '/home/kali/Téléchargements/Morse/build' $in $IMPLIB $out $CROSS
  description = Generating symbol file $out
  restat = 1
 
@@ -33,7 +33,7 @@ rule CUSTOM_COMMAND
  restat = 1
 
 rule REGENERATE_BUILD
- command = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' --internal regenerate '/home/kali/Téléchargements/Morse-Sequence' .
+ command = /usr/bin/meson --internal regenerate '/home/kali/Téléchargements/Morse' .
  description = Regenerating build files
  generator = 1
 
@@ -43,25 +43,45 @@ build PHONY: phony
 
 # Build rules for targets
 
-build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o: cpp_COMPILER ../src/morse_sequence/_core/bindings.cpp
- DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o.d
- DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o.d
- ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_bindings.cpp.o: cpp_COMPILER ../src/morse/_core/bindings.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_bindings.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_bindings.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
 
-build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o: cpp_COMPILER ../src/morse_sequence/_core/morse_sequence.cpp
- DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o.d
- DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o.d
- ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_sequence_morse_sequence.cpp.o: cpp_COMPILER ../src/morse/_core/morse_sequence/morse_sequence.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_sequence_morse_sequence.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_sequence_morse_sequence.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_ref_map.cpp.o: cpp_COMPILER ../src/morse/_core/morse_frame/ref_map.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_ref_map.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_ref_map.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_coref_map.cpp.o: cpp_COMPILER ../src/morse/_core/morse_frame/coref_map.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_coref_map.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_coref_map.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_union_find_mf.cpp.o: cpp_COMPILER ../src/morse/_core/morse_frame/union_find_mf.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_union_find_mf.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_union_find_mf.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+
+build _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_utils.cpp.o: cpp_COMPILER ../src/morse/_core/morse_frame/utils.cpp
+ DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_utils.cpp.o.d
+ DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_utils.cpp.o.d
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
 
 build _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o: cpp_COMPILER ../simplextree-py/simplextree/_simplextree.cpp
  DEPFILE = _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o.d
  DEPFILE_UNQUOTED = _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o.d
- ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse_sequence/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse-Sequence/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
+ ARGS = -I_core.cpython-313-x86_64-linux-gnu.so.p -I. -I.. -I../src/morse/_core -I../simplextree-py/include -I../external -I/usr/include/python3.13 '-I/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/pybind11/include' -fvisibility=hidden -fvisibility-inlines-hidden -flto=auto -fdiagnostics-color=always -D_GLIBCXX_ASSERTIONS=1 -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c++20 -O3 -g -march=native -flto -funroll-loops -fPIC
 
 build _core.cpython-313-x86_64-linux-gnu.so.p/_core.cpython-313-x86_64-linux-gnu.so.symbols: SHSYM _core.cpython-313-x86_64-linux-gnu.so
  IMPLIB = _core.cpython-313-x86_64-linux-gnu.so
 
-build _core.cpython-313-x86_64-linux-gnu.so: cpp_LINKER _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_bindings.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse_sequence__core_morse_sequence.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o
+build _core.cpython-313-x86_64-linux-gnu.so: cpp_LINKER _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_bindings.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_sequence_morse_sequence.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_ref_map.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_coref_map.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_union_find_mf.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/src_morse__core_morse_frame_utils.cpp.o _core.cpython-313-x86_64-linux-gnu.so.p/simplextree-py_simplextree__simplextree.cpp.o
  LINK_ARGS = -flto -Wl,--as-needed -Wl,--allow-shlib-undefined -Wl,-O1 -shared -fPIC
 
 # Test rules
@@ -69,14 +89,14 @@ build _core.cpython-313-x86_64-linux-gnu.so: cpp_LINKER _core.cpython-313-x86_64
 build test: phony meson-internal__test
 
 build meson-internal__test: CUSTOM_COMMAND all meson-test-prereq PHONY
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' test --no-rebuild --print-errorlogs
+ COMMAND = /usr/bin/meson test --no-rebuild --print-errorlogs
  DESC = Running$ all$ tests
  pool = console
 
 build benchmark: phony meson-internal__benchmark
 
 build meson-internal__benchmark: CUSTOM_COMMAND all meson-benchmark-prereq PHONY
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' test --benchmark --logbase benchmarklog --num-processes=1 --no-rebuild
+ COMMAND = /usr/bin/meson test --benchmark --logbase benchmarklog --num-processes=1 --no-rebuild
  DESC = Running$ benchmark$ suite
  pool = console
 
@@ -86,14 +106,14 @@ build install: phony meson-internal__install
 
 build meson-internal__install: CUSTOM_COMMAND PHONY | all
  DESC = Installing$ files
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' install --no-rebuild
+ COMMAND = /usr/bin/meson install --no-rebuild
  pool = console
 
 build dist: phony meson-internal__dist
 
 build meson-internal__dist: CUSTOM_COMMAND PHONY
  DESC = Creating$ source$ packages
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' dist
+ COMMAND = /usr/bin/meson dist
  pool = console
 
 # Suffix
@@ -101,7 +121,7 @@ build meson-internal__dist: CUSTOM_COMMAND PHONY
 build uninstall: phony meson-internal__uninstall
 
 build meson-internal__uninstall: CUSTOM_COMMAND PHONY
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/meson' --internal uninstall
+ COMMAND = /usr/bin/meson --internal uninstall
  pool = console
 
 build all: phony _core.cpython-313-x86_64-linux-gnu.so
@@ -113,7 +133,7 @@ build meson-benchmark-prereq: phony
 build clean: phony meson-internal__clean
 
 build meson-internal__clean: CUSTOM_COMMAND PHONY
- COMMAND = '/home/kali/Téléchargements/Morse-Sequence/venv/bin/ninja' -t clean
+ COMMAND = /usr/bin/ninja -t clean
  description = Cleaning
 
 build build.ninja: REGENERATE_BUILD ../meson.build /usr/bin/python3.13 meson-private/coredata.dat

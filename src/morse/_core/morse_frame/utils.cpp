@@ -1,4 +1,4 @@
-#include "morse_frame/morse_frame_base.h"
+#include "morse_frame/utils.h"
 
 /**
  * @brief Constructor initializes critical simplex mapping and bitmap size.

@@ -1,4 +1,4 @@
-from morse import MorseSequence
+from morse_sequence import MorseSequence
 from simplextree import SimplexTree
 
 

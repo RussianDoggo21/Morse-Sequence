@@ -13,10 +13,6 @@ namespace py = pybind11;
 /**
  * @brief Convert a Python list representing a Morse sequence into an m_sequence (C++ variant type).
  * 
- * The Python list elements can be either:
- * - a list of ints representing a critical simplex,
- * - or a tuple of two lists representing a free pair of simplices.
- * 
  * @param py_W Python list representing the Morse sequence.
  * @param st Reference to the SimplexTree to find nodes.
  * @return m_sequence Converted Morse sequence as C++ variant vector.
@@ -55,9 +51,6 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
 /**
  * @brief Convert a Morse frame (map from node_ptr to bitset) into a Python dictionary.
  * 
- * The keys in the Python dict are tuples representing full simplices.
- * The values are Python lists of indices where the bits are set in the bitset.
- * 
  * @param map Morse frame (C++ map).
  * @param st Reference to the SimplexTree to get full simplices.
  * @return py::dict Python dictionary representation of the Morse frame.
@@ -88,8 +81,6 @@ py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
 /**
  * @brief Convert an m_sequence (C++ Morse sequence) to a Python list.
  * 
- * Each element is either a list (critical simplex) or a tuple of two lists (free pair).
- * 
  * @param W Morse sequence as C++ variant vector.
  * @param st Reference to SimplexTree to get full simplices.
  * @return py::list Python list representing the Morse sequence.
@@ -115,8 +106,6 @@ py::list m_sequence_to_py_list(const m_sequence& W, const SimplexTree& st) {
 
 /**
  * @brief Generic handler to iterate over 1D or 2D numpy arrays representing simplices.
- * 
- * Calls a provided lambda for each simplex range.
  * 
  * @tparam Lambda Type of the lambda function to apply on each simplex range.
  * @param st Reference to SimplexTree.
@@ -153,8 +142,6 @@ void vector_handler(SimplexTree& st, const py::array_t< idx_t >& simplices, Lamb
 /**
  * @brief Wrapper for MorseSequence::Min to use numpy arrays as input.
  * 
- * Converts numpy arrays to C++ structures and returns the Morse sequence and number of critical simplices.
- * 
  * @param ms MorseSequence object.
  * @param S_buffer Numpy array representing simplices.
  * @param F_buffer Numpy array representing weights (last element in each simplex).
@@ -188,8 +175,6 @@ py::tuple _Min_buffered(MorseSequence& ms, const py::array_t<idx_t>& S_buffer, c
 
 /**
  * @brief Wrapper for MorseSequence::Max to use numpy arrays as input.
- * 
- * Converts numpy arrays to C++ structures and returns the Morse sequence and number of critical simplices.
  * 
  * @param ms MorseSequence object.
  * @param S_buffer Numpy array representing simplices.
@@ -261,12 +246,6 @@ py::tuple _decreasing(MorseSequence& ms, const SimplexTree& st){
 /**
  * @brief Computes the reference map of a MorseSequence for a given Morse sequence W.
  * 
- * This function converts a Python list representing a Morse sequence into
- * the internal m_sequence format, constructs a RefMap object from the MorseSequence
- * and the Morse sequence, then retrieves the corresponding bitarray representing
- * the reference map. Finally, it converts this bitarray into a Python dictionary
- * suitable for use in Python code.
- * 
  * @param ms Reference to a MorseSequence object.
  * @param py_W Python list representing a Morse sequence.
  * @return A Python dictionary representing the reference map, mapping simplices (as keys)
@@ -294,12 +273,6 @@ py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
 /**
  * @brief Computes the coreference map of a MorseSequence for a given Morse sequence W.
  * 
- * This function converts a Python list representing a Morse sequence into
- * the internal m_sequence format, constructs a CorefMap object from the MorseSequence
- * and the Morse sequence, then retrieves the corresponding bitarray representing
- * the coreference map. Finally, it converts this bitarray into a Python dictionary
- * suitable for use in Python code.
- * 
  * @param ms Reference to a MorseSequence object.
  * @param py_W Python list representing a Morse sequence.
  * @return A Python dictionary representing the coreference map, mapping simplices (as keys)
@@ -322,6 +295,8 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
 
     return py_coref_map;
 }
+
+//py::tuple _persistence()
 
 /**
  * @brief Python module initialization.
@@ -346,10 +321,6 @@ PYBIND11_MODULE(MorseSequence_bindings, m) {
  
 /**
  * @brief Internal aliases for MorseSequence member function pointer types.
- * 
- * These typedefs are used to simplify the use of member function pointers
- * for boundary, coboundary, nbboundary, and nbcoboundary functions, 
- * with and without an additional map parameter.
  */
 namespace {
     using boundary_fn_1 = node_list (MorseSequence::*)(const node_ptr&) ;
@@ -368,19 +339,6 @@ namespace {
 
 /**
  * @brief Pybind11 module definition for the MorseSequence Python interface.
- * 
- * This module exposes the C++ MorseSequence class to Python,
- * allowing creation and manipulation of MorseSequence objects from Python code.
- * 
- * The module provides:
- * - Constructor from a SimplexTree
- * - Methods for boundary and coboundary computations, with and without additional maps
- * - Methods to count boundary and coboundary elements
- * - Accessors for simplices and maximal/minimal elements
- * - Methods to get decreasing and increasing sequences
- * - Reference and coreference maps
- * 
- * Note: Printing functions are suggested to be implemented directly in Python.
  */
 PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
