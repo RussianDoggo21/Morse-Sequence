@@ -1,4 +1,4 @@
 {
-  "/home/kali/T\u00e9l\u00e9chargements/Morse/build/_core.cpython-313-x86_64-linux-gnu.so": "/usr/local/lib/python3.13/dist-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so",
-  "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/__init__.py": "/usr/local/lib/python3.13/dist-packages/morse_sequence/__init__.py"
+  "/home/kali/T\u00e9l\u00e9chargements/Morse/build/_core.cpython-313-x86_64-linux-gnu.so": "/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so",
+  "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/__init__.py": "/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/__init__.py"
 }

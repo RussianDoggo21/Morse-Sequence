@@ -64,7 +64,7 @@ void timer_m_sequence() {
 
         // Decreasing
         auto start_dec = std::chrono::high_resolution_clock::now();
-        auto [ms_dec, n_crit_dec] = ms.decreasing(st);
+        auto [ms_dec, n_crit_dec] = ms.decreasing();
         auto end_dec = std::chrono::high_resolution_clock::now();
         double time_dec = std::chrono::duration<double>(end_dec - start_dec).count();
         std::cout << "decreasing C++ : " << std::fixed << std::setprecision(6) << time_dec << " seconds\n";
@@ -72,7 +72,7 @@ void timer_m_sequence() {
 
         // Increasing
         auto start_crois = std::chrono::high_resolution_clock::now();
-        auto [ms_crois, n_crit_crois] = ms.increasing(st);
+        auto [ms_crois, n_crit_crois] = ms.increasing();
         auto end_crois = std::chrono::high_resolution_clock::now();
         double time_crois = std::chrono::duration<double>(end_crois - start_crois).count();
         std::cout << "increasing C++ : " << time_crois << " seconds\n\n";
@@ -85,12 +85,8 @@ void timer_m_sequence() {
         std::sort(S_max.begin(), S_max.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) < st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) < st.full_simplex(b) );
         });
+
         tsl::robin_map<node_ptr, int> F_max = ms.get_stack();
-        /*
-        for (const auto& s : S_max){
-            F_max[s] = 0;
-        }
-        */
         std::sort(S_max.begin(), S_max.end(), [&st, &F_max](const node_ptr& a, const node_ptr& b) {
             return (F_max[a] < F_max[b]) || (F_max[a] == F_max[b] && st.full_simplex(a) < st.full_simplex(b));
         });
@@ -114,8 +110,8 @@ void timer_m_sequence() {
         std::sort(S_min.begin(), S_min.end(), [&st](const node_ptr& a, const node_ptr& b) {
             return (st.depth(a) > st.depth(b)) || (st.depth(a) == st.depth(b) && st.full_simplex(a) > st.full_simplex(b));
         });
+        
         tsl::robin_map<node_ptr, int> F_min = ms.get_stack();
-        //for (const auto& s : S_min) F_min[s] = 0;
         std::sort(S_min.begin(), S_min.end(), [&st, &F_min](const node_ptr& a, const node_ptr& b) {
             return (F_min[a] > F_min[b]) || (F_min[a] == F_min[b] && st.full_simplex(a) > st.full_simplex(b));
         });

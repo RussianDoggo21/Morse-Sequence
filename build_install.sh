@@ -14,8 +14,8 @@ echo "🧹 Removing build directory..."
 rm -rf build
 
 # Set up Meson
-echo "🔧 Setting up Meson..."
-meson setup build --prefix=/usr/local
+echo "♻️ Forcing full rebuild..."
+meson setup build --wipe --prefix=/usr/local
 
 # Compile
 echo "🛠️ Compiling..."

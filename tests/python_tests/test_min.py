@@ -22,4 +22,4 @@ Min(S, st, F)
 min, n_crit = Min(S, st, F)
 print(f"n_crit = {n_crit}\n Min = {min} ")
 
-# To run the file from the root : python3 -m src.python.python_tests.test_min
+# To run the file from the root : python3 -m tests.python_tests.test_min

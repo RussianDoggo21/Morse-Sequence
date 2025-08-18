@@ -38,4 +38,4 @@ S_max = sorted(S_max, key=lambda s: (F_max_dict[tuple(s)], len(s)))
 max, n_crit = Max(S_max, st, F_max)
 print(f" n_crit = {n_crit}\n Max = {max} ")
 
-# To run the file from the root : python3 -m src.python.python_tests.test_max
+# To run the file from the root : python3 -m tests.python_tests.test_max

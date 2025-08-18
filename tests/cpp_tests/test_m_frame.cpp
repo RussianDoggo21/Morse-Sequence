@@ -38,7 +38,7 @@ void test_m_frame() {
 
     MorseSequence ms(st);
 
-    auto result = ms.increasing(st);
+    auto result = ms.increasing();
     m_sequence W = result.first;
 
     ms.print_morse_sequence(result, true);

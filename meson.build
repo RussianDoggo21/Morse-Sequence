@@ -1,5 +1,5 @@
 project('morse_sequence', 'cpp',
-  version : '0.1.4',
+  version : '0.1.5',
   default_options : ['cpp_std=c++20', 'optimization=3', 'b_lto=true']
 )
 
@@ -13,19 +13,19 @@ pybind11_dep = dependency('pybind11', required : true)
 py_site      = run_command(py, '-c', 'import site, sys; print(site.getsitepackages()[0])',
                            check : true).stdout().strip()
 pkg_dir      = join_paths(py_site, 'morse_sequence')   # => …/site-packages/morse_sequence
-simplextree_inc = include_directories('simplextree-py/include')
+simplextree_inc = include_directories('src/simplextree-py/include')
 tsl_inc = include_directories('external')
 
 # --------------------------------------------------------------------
 # sources C++
 core_sources = files(
-  'src/morse/_core/bindings.cpp',
-  'src/morse/_core/morse_sequence/morse_sequence.cpp',
-  'src/morse/_core/morse_frame/ref_map.cpp',
-  'src/morse/_core/morse_frame/coref_map.cpp',
-  'src/morse/_core/morse_frame/union_find_mf.cpp',     
-  'src/morse/_core/morse_frame/utils.cpp', 
-  'simplextree-py/simplextree/_simplextree.cpp'
+  'src/morse_cpp/_core/bindings.cpp',
+  'src/morse_cpp/_core/morse_sequence/morse_sequence.cpp',
+  'src/morse_cpp/_core/morse_frame/ref_map.cpp',
+  'src/morse_cpp/_core/morse_frame/coref_map.cpp',
+  'src/morse_cpp/_core/morse_frame/union_find_mf.cpp',     
+  'src/morse_cpp/_core/morse_frame/utils.cpp', 
+  'src/simplextree-py/simplextree/_simplextree.cpp'
 )
 
 # --------------------------------------------------------------------
@@ -34,7 +34,7 @@ py.extension_module(
   '_core',        # nom logique du module
   sources            : core_sources,
   include_directories: [
-      include_directories('src/morse/_core'),
+      include_directories('src/morse_cpp/_core'),
       simplextree_inc, 
       tsl_inc
   ],
@@ -46,6 +46,6 @@ py.extension_module(
 # --------------------------------------------------------------------
 # installe également __init__.py pour constituer un vrai package
 install_data(
-  'src/morse/__init__.py',
+  'src/morse_cpp/__init__.py',
   install_dir : pkg_dir
 )

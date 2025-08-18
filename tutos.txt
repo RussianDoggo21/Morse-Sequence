@@ -77,19 +77,18 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-1) Implémenter persistance et calcul nombre Betti (voir frames.py de gitlab esiee)
-    - implémenter nombre Betti
+1) Conversion SimplexTree python vers SimplexTree C++ nécessaire pour l'initialisation de ms 
+    - voir example.py et test_reference.py
 2) Implémenter cela pour l'interface python
-    - régler problème d'exécution des tests python
     - Fonctions print_m_frame et print_m_sequence à écrire en python ?
     - persistance et copersistance
-4) Lire papier Bertrand
+
 6) Rapport : Ecrire de telle sorte que M.Cousty puisse comprendre le papier 
 (partie intéressante : difficultés que j'ai rencontrées, travail que j'ai effectué)
 (je connaissais pas C++, j'ai utilisé Chat GPT : comment ?)
 (Quelles étaient les raisons de mes choix ?)
 RACONTER UNE HISTOIRE DANS LE RAPPORT !! Objectif, problème, comment régler le problème
-
+4) Lire papier Bertrand
 ==========================================================================================================================================================================
 PROBLEMES SECONDAIRES
 ==========================================================================================================================================================================
@@ -97,3 +96,4 @@ PROBLEMES SECONDAIRES
 - Ecrire la documentation uniquement sur les fichiers .cpp ? La supprimer des fichiers .h ?
 - Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
 - Vérifier les unités (secondes, millisecondes ?) affichées dans les plots
+

@@ -1,0 +1,152 @@
+---
+format:
+  html:
+    code-fold: false
+jupyter: python3
+execute: 
+  freeze: auto
+  enabled: true
+draft: false
+---
+
+## Quick Start 
+
+You can construct a `SimplexTree` by supplying simplices. Any collection of integer-valued `Iterable`'s will do, e.g. a list of lists: 
+```{python}
+#| echo: true
+#| lst-cap: The SimplexTree class provides light wrapper around the extension module
+#| output: true
+#| code-summary: SimplexTree constructor
+from simplextree import SimplexTree
+st = SimplexTree([[0,1,2], [0,1], [4,5]]) 
+print(st) 
+```
+
+Batch insertion, removal, and membership queries are supported
+
+```{python}
+#| echo: true
+#| output: true
+#| code-summary: Batch operations
+st.insert([[1,4], [1,5], [6]])
+print(st)
+```
+
+```{python}
+st.remove([[6]])
+print(st)
+```
+
+```{python}
+print(st.find([[6], [0,1]]))
+```
+
+Collections of simplices are returned as simple lists-of-tuples:
+```{python}
+#| echo: true
+#| output: true
+#| code-summary: Complex collections 
+print(st.simplices())
+```
+
+You can restrict to specific dimensions by supplying the argument `p`:
+```{python}
+#| echo: true
+#| output: true
+print(st.simplices(p=1)) 
+```
+
+Familiar Pythonic [Collection semantics](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes) are supported, including \_\_contains\_\_, \_\_iter\_\_ support, and \_\_len\_\_:
+```{python}
+#| echo: true
+#| output: true
+print([0,1,2] in st)
+print([len(simplex) for simplex in st])
+print(len(st))
+```
+
+The cofaces of any simplex can be listed with `cofaces`:
+
+```{python}
+print("Cofaces([1]): " + str(st.cofaces([1])))
+```
+
+The maximal simplices can be listed with `maximal`:
+```{python}
+print("Maximal: " + str(st.maximal()))
+```
+
+Basic properties are also available as attributes 
+```{python}
+st.n_simplices, st.dimension, st.vertices, st.connected_components
+```
+
+Interoperability with numpy is provided whenever possible
+```{python}
+import numpy as np 
+all(np.all(st.triangles == np.array(st.simplices(p=2)), axis=0))
+```
+
+Other complex-wide operations are supported, like $k$-expansions 
+```{python}
+st.insert([[1,4]]) 
+st.expand(2)       
+print(st)
+```
+
+The trie-structure can also be inspected on the python side with `print_tree`:
+```{python}
+st.print_tree()
+```
+
+Another way to inspect the trie structure is to use a _traversal_, e.g. the depth-first manner (prefix-order):
+```{python}
+st.traverse("dfs", f=print)
+```
+
+Several traversal orderings are provided, e.g. breadth-first (or level-order) could be used as well:
+
+```{python}
+st.traverse("bfs", f=print)
+```
+
+In fact, most operations on the Simplex tree are actually _implemented_ using traversals. For example, you can traverse only the maximal faces like so: 
+
+```{python}
+st.traverse("maximal", f=print)
+```
+
+You can supply any `Callable` to `f` (the default is to print). For example, to extract the dimensions of the maximal simplices:
+
+```{python}
+maximal_dims = []
+st.traverse("maximal", f=lambda s: maximal_dims.append(len(s)-1))
+print(maximal_dims)
+```
+
+The simplex type can be configured via the `s_type` attribute. 
+
+```{python}
+st.s_type = list
+print(st.maximal())
+```
+
+The default (and recommended) type is `tuple`. If the type is `Hashable`, simplex properties can be tracked easily external dictionary (a technique inspired by Boosts [property maps](https://www.boost.org/doc/libs/1_86_0/libs/property_map/doc/property_map.html)):
+
+```{python}
+st.s_type = tuple
+colors = ["red", "orange", "yellow", "purple"]
+simplex_colors = { s : colors[len(s) - 1] for s in st }
+print(simplex_colors)
+```
+
+On the other hand, if you work a lot with numpy, you may want the default simplex type to be an array:
+
+```{python}
+st.s_type = np.array
+edges = np.array(st.simplices(p=1))
+print(edges)
+```
+
+
+

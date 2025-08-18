@@ -1,0 +1,33 @@
+# SimplexTree { #simplextree.SimplexTree }
+
+`SimplexTree`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [SimplexTree.insert](simplextree.SimplexTree.SimplexTree.insert.qmd#simplextree.SimplexTree.SimplexTree.insert) | Inserts simplices into the Simplex Tree. |
+| [SimplexTree.remove](simplextree.SimplexTree.SimplexTree.remove.qmd#simplextree.SimplexTree.SimplexTree.remove) | Removes simplices into the Simplex Tree. |
+| [SimplexTree.find](simplextree.SimplexTree.SimplexTree.find.qmd#simplextree.SimplexTree.SimplexTree.find) | Finds whether simplices exist in Simplex Tree. |
+| [SimplexTree.adjacent](simplextree.SimplexTree.SimplexTree.adjacent.qmd#simplextree.SimplexTree.SimplexTree.adjacent) | Finds adjacent vertices of a collection of vertices. |
+| [SimplexTree.collapse](simplextree.SimplexTree.SimplexTree.collapse.qmd#simplextree.SimplexTree.SimplexTree.collapse) | Performs an elementary collapse on two given simplices. |
+| [SimplexTree.contract](simplextree.SimplexTree.SimplexTree.contract.qmd#simplextree.SimplexTree.SimplexTree.contract) | Performs an pair contraction. |
+| [SimplexTree.vertex_collapse](simplextree.SimplexTree.SimplexTree.vertex_collapse.qmd#simplextree.SimplexTree.SimplexTree.vertex_collapse) | Maps a pair of vertices into a single vertex. |
+| [SimplexTree.degree](simplextree.SimplexTree.SimplexTree.degree.qmd#simplextree.SimplexTree.SimplexTree.degree) | Computes the degree of select vertices in the trie. |
+| [SimplexTree.traverse](simplextree.SimplexTree.SimplexTree.traverse.qmd#simplextree.SimplexTree.SimplexTree.traverse) | Traverses the simplex tree in the specified order, calling `f` on each simplex encountered. |
+| [SimplexTree.cofaces](simplextree.SimplexTree.SimplexTree.cofaces.qmd#simplextree.SimplexTree.SimplexTree.cofaces) | Returns the cofaces of `sigma`. |
+| [SimplexTree.skeleton](simplextree.SimplexTree.SimplexTree.skeleton.qmd#simplextree.SimplexTree.SimplexTree.skeleton) | Returns the simplices in the p-skeleton of `sigma`. |
+| [SimplexTree.simplices](simplextree.SimplexTree.SimplexTree.simplices.qmd#simplextree.SimplexTree.SimplexTree.simplices) | Returns the p-simplices in the complex. |
+| [SimplexTree.faces](simplextree.SimplexTree.SimplexTree.faces.qmd#simplextree.SimplexTree.SimplexTree.faces) | Returns the p-faces of a given simplex. |
+| [SimplexTree.maximal](simplextree.SimplexTree.SimplexTree.maximal.qmd#simplextree.SimplexTree.SimplexTree.maximal) | Returns the maximal simplices in the complex. |
+| [SimplexTree.link](simplextree.SimplexTree.SimplexTree.link.qmd#simplextree.SimplexTree.SimplexTree.link) | Returns the simplices in the link of `sigma`. |
+| [SimplexTree.expand](simplextree.SimplexTree.SimplexTree.expand.qmd#simplextree.SimplexTree.SimplexTree.expand) | Performs a k-expansion of the complex. |
+| [SimplexTree.reindex](simplextree.SimplexTree.SimplexTree.reindex.qmd#simplextree.SimplexTree.SimplexTree.reindex) | Reindexes the vertex labels of the complex. |
+| [SimplexTree.dim](simplextree.SimplexTree.SimplexTree.dim.qmd#simplextree.SimplexTree.SimplexTree.dim) |  |
+| [SimplexTree.card](simplextree.SimplexTree.SimplexTree.card.qmd#simplextree.SimplexTree.SimplexTree.card) | Returns the cardinality of various skeleta of the complex. |
+| [SimplexTree.print](simplextree.SimplexTree.SimplexTree.print.qmd#simplextree.SimplexTree.SimplexTree.print) |  |
+| [SimplexTree.__iter__](simplextree.SimplexTree.SimplexTree.__iter__.qmd#simplextree.SimplexTree.SimplexTree.__iter__) |  |
+| [SimplexTree.__contains__](simplextree.SimplexTree.SimplexTree.__contains__.qmd#simplextree.SimplexTree.SimplexTree.__contains__) |  |
+| [SimplexTree.__len__](simplextree.SimplexTree.SimplexTree.__len__.qmd#simplextree.SimplexTree.SimplexTree.__len__) |  |

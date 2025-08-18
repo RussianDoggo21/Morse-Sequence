@@ -1,5 +1,4 @@
 from simplextree import SimplexTree
-from morse import MorseSequence
 from src.python.increasing import morse_seq_increasing
 import numpy as np
 
@@ -58,4 +57,4 @@ max, n_crit_max = ms.Max(batch_S, batch_F)
 
 
 """
-# To run the file from the root : python3 -m src.python.python_tests.test_increasing
+# To run the file from the root : python3 -m tests.python_tests.test_increasing

@@ -1,6 +1,6 @@
 # -------------------------------------------------
 #  Global compiler options
-INCLUDES := -I ../../external/ -I ../../src/morse/_core -I ../../simplextree-py/include
+INCLUDES := -I ../../external/ -I ../../src/morse_cpp/_core -I ../../src/simplextree-py/include/
 CXX      := g++
 CXXFLAGS := -std=c++20 -O3 -march=native -flto -funroll-loops -Wall $(INCLUDES)
 
@@ -9,11 +9,11 @@ PYBIND11_FLAGS := $(shell python3 -m pybind11 --includes)
 
 #  Source file that contains the shared implementation
 SRC_LIB := \
-    ../../src/morse/_core/morse_sequence/morse_sequence.cpp \
-    ../../src/morse/_core/morse_frame/union_find_mf.cpp \
-    ../../src/morse/_core/morse_frame/morse_frame_base.cpp \
-	../../src/morse/_core/morse_frame/ref_map.cpp \
-	../../src/morse/_core/morse_frame/coref_map.cpp 
+    ../../src/morse_cpp/_core/morse_sequence/morse_sequence.cpp \
+    ../../src/morse_cpp/_core/morse_frame/union_find_mf.cpp \
+    ../../src/morse_cpp/_core/morse_frame/morse_frame_base.cpp \
+	../../src/morse_cpp/_core/morse_frame/ref_map.cpp \
+	../../src/morse_cpp/_core/morse_frame/coref_map.cpp 
 
 OBJ_LIB  := $(SRC_LIB:.cpp=.o)   # → morse_sequence.o
 

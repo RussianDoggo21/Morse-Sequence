@@ -19,8 +19,8 @@
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/build/_core.cpython-313-x86_64-linux-gnu.so.p",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/build",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse",
-          "-I/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core",
-          "-I/home/kali/T\u00e9l\u00e9chargements/Morse/simplextree-py/include",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core",
+          "-I/home/kali/T\u00e9l\u00e9chargements/Morse/src/simplextree-py/include",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/external",
           "-I/usr/include/python3.13",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/pybind11/include",
@@ -41,13 +41,13 @@
           "-fPIC"
         ],
         "sources": [
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/bindings.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/morse_sequence/morse_sequence.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/morse_frame/ref_map.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/morse_frame/coref_map.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/morse_frame/union_find_mf.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse/_core/morse_frame/utils.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/simplextree-py/simplextree/_simplextree.cpp"
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/bindings.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_sequence/morse_sequence.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/ref_map.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/coref_map.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/union_find_mf.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/utils.cpp",
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/simplextree-py/simplextree/_simplextree.cpp"
         ],
         "generated_sources": [],
         "unity_sources": []
@@ -75,7 +75,7 @@
     "depends": [],
     "installed": true,
     "install_filename": [
-      "/usr/local/lib/python3.13/dist-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so"
+      "/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so"
     ]
   }
 ]

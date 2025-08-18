@@ -31,7 +31,7 @@ void test_m_sequence(){
 
     printf("Decreasing Morse sequence: \n\n");
     auto start_dec = std::chrono::high_resolution_clock::now();
-	auto result_dec = ms.decreasing(st);
+	auto result_dec = ms.decreasing();
     auto end_dec = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_dec = end_dec - start_dec;
     std::cout << "Execution time: " << duration_dec.count() << " ms" << std::endl;
@@ -44,7 +44,7 @@ void test_m_sequence(){
 
     printf("Increasing Morse sequence: \n\n");
     auto start_crois = std::chrono::high_resolution_clock::now();
-	auto result_increasing = ms.increasing(st);
+	auto result_increasing = ms.increasing();
     auto end_crois = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration_crois = end_crois - start_crois;
     std::cout << "Execution time: " << duration_crois.count() << " ms" << std::endl;

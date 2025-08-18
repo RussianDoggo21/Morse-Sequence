@@ -1,0 +1,13 @@
+# API Reference {.doc .doc-index}
+
+## Simplex Tree
+
+| | |
+| --- | --- |
+| [SimplexTree](SimplexTree.qmd#simplextree.SimplexTree) |  |
+
+## UnionFind
+
+| | |
+| --- | --- |
+| [UnionFind](UnionFind.qmd#simplextree.UnionFind) |  |

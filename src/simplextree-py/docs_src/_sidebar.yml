@@ -1,0 +1,12 @@
+website:
+  sidebar:
+  - contents:
+    - pages/reference/index.qmd
+    - contents:
+      - pages/reference/SimplexTree.qmd
+      section: Simplex Tree
+    - contents:
+      - pages/reference/UnionFind.qmd
+      section: UnionFind
+    id: pages/reference
+  - id: dummy-sidebar
