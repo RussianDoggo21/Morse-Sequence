@@ -301,6 +301,14 @@
     "description": "Maximum number of linker processes to run or 0 for no limit"
   },
   {
+    "name": "b_lto",
+    "value": true,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Use link time optimization"
+  },
+  {
     "name": "b_pgo",
     "value": "off",
     "section": "base",
@@ -314,46 +322,6 @@
     "description": "Use profile guided optimization"
   },
   {
-    "name": "b_lto_threads",
-    "value": 0,
-    "section": "base",
-    "machine": "any",
-    "type": "integer",
-    "description": "Use multiple threads for Link Time Optimization"
-  },
-  {
-    "name": "b_coverage",
-    "value": false,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Enable coverage tracking."
-  },
-  {
-    "name": "b_lto",
-    "value": true,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use link time optimization"
-  },
-  {
-    "name": "b_pch",
-    "value": true,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use precompiled headers"
-  },
-  {
-    "name": "b_sanitize",
-    "value": [],
-    "section": "base",
-    "machine": "any",
-    "type": "array",
-    "description": "Code sanitizer to use"
-  },
-  {
     "name": "b_pie",
     "value": false,
     "section": "base",
@@ -362,25 +330,17 @@
     "description": "Build executables as position independent"
   },
   {
-    "name": "b_asneeded",
-    "value": true,
-    "section": "base",
-    "machine": "any",
-    "type": "boolean",
-    "description": "Use -Wl,--as-needed when linking"
-  },
-  {
-    "name": "b_ndebug",
-    "value": "false",
+    "name": "b_colorout",
+    "value": "always",
     "section": "base",
     "machine": "any",
     "choices": [
-      "true",
-      "false",
-      "if-release"
+      "auto",
+      "always",
+      "never"
     ],
     "type": "combo",
-    "description": "Disable asserts"
+    "description": "Use colored output"
   },
   {
     "name": "b_lundef",
@@ -399,17 +359,57 @@
     "description": "Build static libraries as position independent"
   },
   {
-    "name": "b_colorout",
-    "value": "always",
+    "name": "b_ndebug",
+    "value": "false",
     "section": "base",
     "machine": "any",
     "choices": [
-      "auto",
-      "always",
-      "never"
+      "true",
+      "false",
+      "if-release"
     ],
     "type": "combo",
-    "description": "Use colored output"
+    "description": "Disable asserts"
+  },
+  {
+    "name": "b_coverage",
+    "value": false,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Enable coverage tracking."
+  },
+  {
+    "name": "b_pch",
+    "value": true,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Use precompiled headers"
+  },
+  {
+    "name": "b_sanitize",
+    "value": [],
+    "section": "base",
+    "machine": "any",
+    "type": "array",
+    "description": "Code sanitizer to use"
+  },
+  {
+    "name": "b_lto_threads",
+    "value": 0,
+    "section": "base",
+    "machine": "any",
+    "type": "integer",
+    "description": "Use multiple threads for Link Time Optimization"
+  },
+  {
+    "name": "b_asneeded",
+    "value": true,
+    "section": "base",
+    "machine": "any",
+    "type": "boolean",
+    "description": "Use -Wl,--as-needed when linking"
   },
   {
     "name": "cpp_args",
@@ -491,7 +491,7 @@
   },
   {
     "name": "prefix",
-    "value": "/usr/local",
+    "value": "/home/kali/T\u00e9l\u00e9chargements/Morse/venv",
     "section": "directory",
     "machine": "any",
     "type": "string",
@@ -563,7 +563,7 @@
   },
   {
     "name": "localstatedir",
-    "value": "/var/local",
+    "value": "var",
     "section": "directory",
     "machine": "any",
     "type": "string",
@@ -587,7 +587,7 @@
   },
   {
     "name": "sharedstatedir",
-    "value": "/var/local/lib",
+    "value": "com",
     "section": "directory",
     "machine": "any",
     "type": "string",

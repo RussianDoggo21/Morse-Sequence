@@ -1,8 +1,19 @@
-from morse_sequence import MorseSequence
 from simplextree import SimplexTree
-#from 
+import morse_sequence._core
+from morse_sequence._core import MorseSequence
+
+st = SimplexTree([[1,2,3]])
+cpp_ms = morse_sequence._core.cpp_ms_from_py_st(st)
+
+print("python st type", type(st))
+print("cpp st type", type(cpp_ms))
+
+ms = MorseSequence(st)
+#print(ms.simplices())
+W, n_crit = ms.increasing()
 
 
+"""
 from typing import Union, Tuple, List
 
 def show_morse_frame(title: str, mf: dict, W: list) -> None:
@@ -58,5 +69,5 @@ coreference_map = ms.coreference_map(W)
 print("W (Morse sequence) :\n", W, "\n")
 show_morse_frame("Reference map",   reference_map, W)
 show_morse_frame("Coreference map", coreference_map, W)
-
+"""
 # To run the file from the root : python3 -m tests.python_tests.test_reference

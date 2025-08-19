@@ -1,6 +1,8 @@
+import morse_sequence._core
+print(morse_sequence._core.__file__)
+print(dir(morse_sequence._core))
+print(dir(morse_sequence._core.MorseSequence))
 
-import morse_sequence._core as _core
-print(_core.__file__)
 """
 #from morse_sequence import MorseSequence
 import morse_sequence._core as _core

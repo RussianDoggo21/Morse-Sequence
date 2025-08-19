@@ -13,24 +13,20 @@ fi
 echo "🧹 Removing build directory..."
 rm -rf build
 
-# Set up Meson
-echo "♻️ Forcing full rebuild..."
-meson setup build --wipe --prefix=/usr/local
+# Set up Meson for full rebuild with prefix pointing to the venv
+echo "♻️ Setting up Meson with venv prefix..."
+meson setup build --wipe --prefix="$VIRTUAL_ENV"
 
 # Compile
 echo "🛠️ Compiling..."
 meson compile -C build
 
-# Install into a temporary directory inside the venv
-echo "📦 Installing to venv using --destdir..."
-meson install -C build --destdir="$VIRTUAL_ENV"
+# Install into the venv
+echo "📦 Installing into venv..."
+meson install -C build
 
-# Find Python's site-packages in venv
+# Verify installation
 SITEPKG=$(python3 -c "import site; print(site.getsitepackages()[0])")
+echo "📌 Python site-packages detected at: $SITEPKG"
 
-# Copy installed files from venv/usr/local/... to site-packages
-echo "📁 Copying installed files to site-packages..."
-cp -r "$VIRTUAL_ENV/usr/local/lib/python3.13/dist-packages/morse_sequence" "$SITEPKG" 2>/dev/null || true
-cp "$VIRTUAL_ENV/usr/local/lib/python3.13/dist-packages/"_core*.so "$SITEPKG/morse_sequence/" 2>/dev/null || true
-
-echo "✅ Done. The package is now installed in your virtual environment."
+echo "✅ Done. morse_sequence and _core.so are installed in your venv."

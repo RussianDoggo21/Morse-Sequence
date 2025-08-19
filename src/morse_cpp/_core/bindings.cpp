@@ -155,7 +155,6 @@ MorseSequence morse_from_py_simplextree(py::object py_st) {
         }
         cpp_st.insert(simplex);
     }
-    std::cout << "[C++] MorseSequence constructed from Python SimplexTree\n";
 
     return MorseSequence(cpp_st);
 }
@@ -344,8 +343,10 @@ namespace {
  */
 PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
+    m.def("cpp_ms_from_py_st", morse_from_py_simplextree);
 
     py::class_<MorseSequence>(m, "MorseSequence")
+
         .def(py::init([](py::object py_st) {
             std::cout << "[C++] Lambda constructor called\n";
             return MorseSequence(morse_from_py_simplextree(py_st));

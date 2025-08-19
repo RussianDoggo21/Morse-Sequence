@@ -1,4 +1,4 @@
 # List of files installed by Meson
 # Does not contain files installed by custom scripts.
-/home/kali/Téléchargements/Morse/venv/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so
-/home/kali/Téléchargements/Morse/venv/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/__init__.py
+/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/_core.cpython-313-x86_64-linux-gnu.so
+/home/kali/Téléchargements/Morse/venv/lib/python3.13/site-packages/morse_sequence/__init__.py

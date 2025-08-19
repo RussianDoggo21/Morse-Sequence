@@ -1,5 +1,5 @@
 [options]
-prefix = /usr/local
+prefix = /home/kali/Téléchargements/Morse/venv
 
 [properties]
 
