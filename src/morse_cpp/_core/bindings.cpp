@@ -6,7 +6,6 @@
 
 #include "morse_frame/ref_map.h"
 #include "morse_frame/coref_map.h"
-#include "morse_sequence/morse_sequence.h"
 
 namespace py = pybind11;
 
@@ -137,26 +136,6 @@ void vector_handler(SimplexTree& st, const py::array_t< idx_t >& simplices, Lamb
     } else {
         std::cerr << "[vector_handler] ERROR: Unexpected ndim = " << s_buffer.ndim << std::endl;
     }
-}
-
-/**
- * @brief Constructor of MorseSequence from a Python SimplexTree object.
- * 
- * @param st_py SimplexTree object coming from Python.
- */
-MorseSequence morse_from_py_simplextree(py::object py_st) {
-    SimplexTree cpp_st;
-
-    py::list simplices = py_st.attr("simplices")();
-    for (auto s : simplices) {
-        std::vector<idx_t> simplex;
-        for (auto v : s) {
-            simplex.push_back(v.cast<idx_t>());
-        }
-        cpp_st.insert(simplex);
-    }
-
-    return MorseSequence(cpp_st);
 }
 
 
@@ -319,6 +298,43 @@ py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
     return py_coref_map;
 }
 
+
+/**
+ * @brief Constructor of MorseSequence from a Python SimplexTree object.
+ * 
+ * @param st_py SimplexTree object coming from Python.
+ */
+/*
+std::unique_ptr<MorseSequence> morse_from_py_simplextree(py::object py_st) {
+    SimplexTree cpp_st;
+
+    py::list simplices = py_st.attr("simplices")();
+    for (auto s : simplices) {
+        std::vector<idx_t> simplex;
+        for (auto v : s) {
+            simplex.push_back(v.cast<idx_t>());
+        }
+        cpp_st.insert(simplex);
+    }
+    
+    std::cout << "CPP TREE";
+
+    node_list F;
+	auto lambda_f = [&F](node_ptr cn, idx_t depth, const simplex_t& sigma) -> bool{
+        F.push_back(cn);
+        return true;
+    };
+    auto tr = st::k_skeleton<true>(&cpp_st, cpp_st.find(std::vector<idx_t>{}), cpp_st.dimension()); 
+    traverse(tr, lambda_f); 
+	
+    for (node_ptr cn : F){
+        cpp_st.print_simplex(std::cout, cn, false);
+    }
+    printf("\n");
+
+    return std::make_unique<MorseSequence>(cpp_st);
+}
+*/
  
 /**
  * @brief Internal aliases for MorseSequence member function pointer types.
@@ -343,14 +359,27 @@ namespace {
  */
 PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
-    m.def("cpp_ms_from_py_st", morse_from_py_simplextree);
+    
+    //py::module_::import("simplextree");
+    auto st_mod = py::module_::import("simplextree._simplextree");
+    py::object st_cls = st_mod.attr("SimplexTree");
+    py::print(">>> SimplexTree seen from _core.cpp:", st_cls);
+
+
+    //m.def("cpp_ms_from_py_st", morse_from_py_simplextree);
 
     py::class_<MorseSequence>(m, "MorseSequence")
-
+        
+        .def(py::init<const SimplexTree&>(), py::arg("st"))
+        //.def(py::init<const SimplexTree&>())
+        /*
         .def(py::init([](py::object py_st) {
             std::cout << "[C++] Lambda constructor called\n";
-            return MorseSequence(morse_from_py_simplextree(py_st));
+            return morse_from_py_simplextree(py_st);
         }))
+        */
+        
+        
         // Boundary methods
         .def("boundary", static_cast<boundary_fn_1>(&MorseSequence::boundary))
         .def("boundary2", static_cast<boundary_fn_2>(&MorseSequence::boundary))

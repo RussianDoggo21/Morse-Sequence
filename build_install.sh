@@ -9,23 +9,27 @@ if [ -z "$VIRTUAL_ENV" ]; then
   exit 1
 fi
 
-# Remove previous build
-echo "🧹 Removing build directory..."
+# === Step 1: Clean previous installation ===
+echo "🧹 Removing previous build directory..."
 rm -rf build
 
-# Set up Meson for full rebuild with prefix pointing to the venv
+echo "🧹 Removing previously installed morse_sequence from venv..."
+rm -rf "$VIRTUAL_ENV/lib/python3.13/site-packages/morse_sequence"
+rm -f "$VIRTUAL_ENV/lib/python3.13/site-packages/_core"*.so
+
+# === Step 2: Set up Meson ===
 echo "♻️ Setting up Meson with venv prefix..."
 meson setup build --wipe --prefix="$VIRTUAL_ENV"
 
-# Compile
+# === Step 3: Compile ===
 echo "🛠️ Compiling..."
 meson compile -C build
 
-# Install into the venv
+# === Step 4: Install ===
 echo "📦 Installing into venv..."
 meson install -C build
 
-# Verify installation
+# === Step 5: Verify installation ===
 SITEPKG=$(python3 -c "import site; print(site.getsitepackages()[0])")
 echo "📌 Python site-packages detected at: $SITEPKG"
 

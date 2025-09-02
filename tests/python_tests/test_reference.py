@@ -9,7 +9,6 @@ print("python st type", type(st))
 print("cpp st type", type(cpp_ms))
 
 ms = MorseSequence(st)
-#print(ms.simplices())
 W, n_crit = ms.increasing()
 
 

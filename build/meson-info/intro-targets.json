@@ -46,8 +46,7 @@
           "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/ref_map.cpp",
           "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/coref_map.cpp",
           "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/union_find_mf.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/utils.cpp",
-          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/simplextree-py/simplextree/_simplextree.cpp"
+          "/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core/morse_frame/utils.cpp"
         ],
         "generated_sources": [],
         "unity_sources": []

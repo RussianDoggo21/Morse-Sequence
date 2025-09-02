@@ -1,5 +1,5 @@
 project('morse_sequence', 'cpp',
-  version : '0.1.5.1',
+  version : '0.1.5.2',
   default_options : ['cpp_std=c++20', 'optimization=3', 'b_lto=true']
 )
 
@@ -24,9 +24,10 @@ core_sources = files(
   'src/morse_cpp/_core/morse_frame/ref_map.cpp',
   'src/morse_cpp/_core/morse_frame/coref_map.cpp',
   'src/morse_cpp/_core/morse_frame/union_find_mf.cpp',     
-  'src/morse_cpp/_core/morse_frame/utils.cpp', 
-  'src/simplextree-py/simplextree/_simplextree.cpp'
+  'src/morse_cpp/_core/morse_frame/utils.cpp'
 )
+
+#'src/simplextree-py/simplextree/_simplextree.cpp'
 
 # --------------------------------------------------------------------
 # module natif pybind11 : morse_sequence._core

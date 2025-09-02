@@ -541,7 +541,8 @@ void expansion_f(SimplexTree& st, const size_t k, py::function f){
 // clang -Wall -fPIC -c src/simplicial/simplextree_module.cpp -std=c++17 -I/Users/mpiekenbrock/pbsig/extern/pybind11/include -I/Users/mpiekenbrock/simplicial/src/simplicial/include -I/Users/mpiekenbrock/opt/miniconda3/envs/pbsig/include/python3.9
 PYBIND11_MODULE(_simplextree, m) {
 
-  py::class_<SimplexTree>(m, "SimplexTree", py::module_local())
+  //py::class_<SimplexTree>(m, "SimplexTree", py::module_local())
+  py::class_<SimplexTree>(m, "SimplexTree")
     .def(py::init<>())
     .def_property_readonly("n_simplices", &simplex_counts)
     .def_property_readonly("dimension", &SimplexTree::dimension)
