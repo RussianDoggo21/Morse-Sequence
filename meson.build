@@ -1,5 +1,5 @@
 project('morse_sequence', 'cpp',
-  version : '0.1.5.3',
+  version : '0.1.6',
   default_options : ['cpp_std=c++20', 'optimization=3', 'b_lto=true']
 )
 

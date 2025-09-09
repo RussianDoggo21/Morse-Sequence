@@ -1,7 +1,7 @@
 #ifndef SIMPLEXTREE_HPP_
 #define SIMPLEXTREE_HPP_
 
-#include "../simplextree.h"
+#include "simplextree.h"
 
 #include <iostream>
 

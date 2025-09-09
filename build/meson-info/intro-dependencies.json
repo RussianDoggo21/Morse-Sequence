@@ -1,11 +1,10 @@
 [
   {
     "name": "pybind11",
-    "type": "config-tool",
-    "version": "3.0.1",
+    "type": "pkgconfig",
+    "version": "2.13.6",
     "compile_args": [
-      "-I/usr/include/python3.13",
-      "-I/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/pybind11/include"
+      "-I/include"
     ],
     "link_args": [],
     "include_directories": [],
@@ -18,11 +17,12 @@
     ]
   },
   {
-    "name": "python",
-    "type": "system",
+    "name": "python-3.13",
+    "type": "pkgconfig",
     "version": "3.13",
     "compile_args": [
-      "-I/usr/include/python3.13"
+      "-I/usr/include/python3.13",
+      "-I/usr/include/x86_64-linux-gnu/python3.13"
     ],
     "link_args": [],
     "include_directories": [],

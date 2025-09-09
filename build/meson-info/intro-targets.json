@@ -22,8 +22,9 @@
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/src/morse_cpp/_core",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/src/simplextree-py/include",
           "-I/home/kali/T\u00e9l\u00e9chargements/Morse/external",
+          "-I/include",
           "-I/usr/include/python3.13",
-          "-I/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/pybind11/include",
+          "-I/usr/include/x86_64-linux-gnu/python3.13",
           "-fvisibility=hidden",
           "-fvisibility-inlines-hidden",
           "-flto=auto",
@@ -69,7 +70,7 @@
     "subproject": null,
     "dependencies": [
       "pybind11",
-      "python"
+      "python-3.13"
     ],
     "depends": [],
     "installed": true,

@@ -47,35 +47,53 @@ m_sequence py_list_to_m_sequence(const py::list& py_W, const SimplexTree& st){
     return W;
 }
 
+
 /**
- * @brief Convert a Morse frame (map from node_ptr to bitset) into a Python dictionary.
- * 
- * @param map Morse frame (C++ map).
- * @param st Reference to the SimplexTree to get full simplices.
- * @return py::dict Python dictionary representation of the Morse frame.
+ * @brief Convert a Morse frame (C++ map from node_ptr to bitmap) into a Python-friendly list.
+ *
+ * @param map   Morse frame (C++ map: node_ptr → bitmap)
+ * @param st    SimplexTree to get full simplices
+ * @param W     Morse sequence (needed to translate bitmap indices back to node_ptrs)
+ * @return py::list of tuples (key_tuple, list_of_value_tuples)
  */
-py::dict m_frame_to_py_dict(const m_frame& map, const SimplexTree& st) {
-    py::dict py_map;
-
-    for (const auto& [key_ptr, bits] : map) {
-        // Python key : the full simplex corresponding to key_ptr
-        auto vec = st.full_simplex(key_ptr);
-        py::tuple py_key(vec.size());
-        for (std::size_t i = 0; i < vec.size(); ++i)
-            py_key[i] = vec[i];
-
-        // Python value : list of indices where bits are set to 1
-        py::list py_val;
-        for (std::size_t i = 0; i < bits.size(); ++i) {
-            if (bits.test(i))
-                py_val.append(py::int_(i));
+py::list m_frame_to_py_list(const m_frame& map, const SimplexTree& st, const m_sequence& W) {
+    py::list py_mf;
+    // Precompute: map each bit index to its critical simplex
+    std::vector<node_ptr> index_to_crit(W.size(), nullptr);
+    for (size_t i = 0; i < W.size(); ++i) {
+        if (std::holds_alternative<node_ptr>(W[i])) {
+            index_to_crit[i] = std::get<node_ptr>(W[i]);
         }
-
-        py_map[py_key] = py_val;
     }
-
-    return py_map;
+    // For each entry in the map (key = node_ptr, value = bitmap)
+    for (const auto& [key_ptr, bits] : map) {
+        if (!key_ptr) continue;  // Skip null keys
+        // --- Key: convert the simplex to a Python tuple ---
+        auto key_simplex = st.full_simplex(key_ptr);
+        py::tuple py_key(key_simplex.size());
+        for (size_t i = 0; i < key_simplex.size(); ++i) {
+            py_key[i] = key_simplex[i];
+        }
+        // --- Values: convert set bits to a list of Python tuples ---
+        py::list py_values;
+        for (size_t i = 0; i < bits.size(); ++i) {
+            if (bits[i]) {
+                node_ptr crit_ptr = index_to_crit[i];
+                if (!crit_ptr) continue;
+                auto crit_simplex = st.full_simplex(crit_ptr);
+                py::tuple py_crit(crit_simplex.size());
+                for (size_t j = 0; j < crit_simplex.size(); ++j) {
+                    py_crit[j] = crit_simplex[j];
+                }
+                py_values.append(py_crit);
+            }
+        }
+        // Add the (key, values) entry to the list
+        py_mf.append(py::make_tuple(py_key, py_values));
+    }
+    return py_mf;
 }
+
 
 /**
  * @brief Convert an m_sequence (C++ Morse sequence) to a Python list.
@@ -102,6 +120,7 @@ py::list m_sequence_to_py_list(const m_sequence& W, const SimplexTree& st) {
 
     return py::cast(result); // vector<py::object> → list
 }
+
 
 /**
  * @brief Generic handler to iterate over 1D or 2D numpy arrays representing simplices.
@@ -220,7 +239,7 @@ py::tuple _increasing(MorseSequence& ms){
     auto [output, n] = ms.increasing();
 
     // Conversion  m_sequence -> py::list
-    SimplexTree st = ms.get_simplex_tree();
+    const SimplexTree& st = ms.get_simplex_tree();
     py::list out_list = m_sequence_to_py_list(output, st);
 
     return py::make_tuple(out_list, n);
@@ -239,7 +258,7 @@ py::tuple _decreasing(MorseSequence& ms){
     auto [output, n] = ms.decreasing();
 
     // Conversion  m_sequence -> py::list
-    SimplexTree st = ms.get_simplex_tree();
+    const SimplexTree& st = ms.get_simplex_tree();
     py::list out_list = m_sequence_to_py_list(output, st);
 
     return py::make_tuple(out_list, n);
@@ -253,20 +272,23 @@ py::tuple _decreasing(MorseSequence& ms){
  * @return A Python dictionary representing the reference map, mapping simplices (as keys)
  *         to boolean values indicating their reference status.
  */
-py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
+py::list _ref_map(MorseSequence& ms, const py::list& py_W){
 
     // Access to the SimplexTree
-    const SimplexTree &st = ms.get_simplex_tree();
+    const SimplexTree& st = ms.get_simplex_tree();
 
     // Conversion py::list -> m_sequence
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
     // Creation of a Morse Frame
     RefMap ref_map = RefMap(ms, W);
+
+    ref_map.print_m_frame(W);
+
     m_frame bitarray = ref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
-    py::dict py_ref_map = m_frame_to_py_dict(bitarray, st); 
+    py::list py_ref_map = m_frame_to_py_list(bitarray, st, W); 
 
     return py_ref_map;
 }
@@ -280,20 +302,23 @@ py::dict _ref_map(MorseSequence& ms, const py::list& py_W){
  * @return A Python dictionary representing the coreference map, mapping simplices (as keys)
  *         to boolean values indicating their coreference status.
  */
-py::dict _coref_map(MorseSequence& ms, const py::list& py_W){
+py::list _coref_map(MorseSequence& ms, const py::list& py_W){
 
     // Access to the SimplexTree
-    const SimplexTree &st = ms.get_simplex_tree();
+    const SimplexTree& st = ms.get_simplex_tree();
 
     // Conversion py::list -> m_sequence
     m_sequence W = py_list_to_m_sequence(py_W, st);
 
     // Creation of a Morse Frame
-    CorefMap ref_map = CorefMap(ms, W);
-    m_frame bitarray = ref_map.get_bitarray();
+    CorefMap coref_map = CorefMap(ms, W);
+
+    coref_map.print_m_frame(W);
+
+    m_frame bitarray = coref_map.get_bitarray();
 
     // Conversion m_frame -> py::list
-    py::dict py_coref_map = m_frame_to_py_dict(bitarray, st); 
+    py::list py_coref_map = m_frame_to_py_list(bitarray, st, W); 
 
     return py_coref_map;
 }
@@ -360,12 +385,13 @@ namespace {
 PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
 
-    auto st_mod = py::module_::import("_simplextree");
-    py::object st_cls = st_mod.attr("SimplexTree");
+    //auto st_mod = py::module_::import("_simplextree");
+    //py::object st_cls = st_mod.attr("SimplexTree");
 
     py::class_<MorseSequence>(m, "MorseSequence")
-        //.def(py::init<const SimplexTree&>())
+        .def(py::init<const SimplexTree&>())
 
+        /*
         .def(py::init([](py::object py_st) {
             // On essaie de caster directement l'objet Python en SimplexTree*
             try {
@@ -375,7 +401,8 @@ PYBIND11_MODULE(_core, m) {
                 throw std::runtime_error(std::string("Failed to cast Python object to SimplexTree*: ") + e.what());
             }
         }))
-        
+        */
+
         // Boundary methods
         .def("boundary", static_cast<boundary_fn_1>(&MorseSequence::boundary))
         .def("boundary2", static_cast<boundary_fn_2>(&MorseSequence::boundary))

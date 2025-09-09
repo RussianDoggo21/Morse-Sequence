@@ -1,7 +1,7 @@
 #ifndef ST_ITERS_H
 #define ST_ITERS_H
 
-#include "../simplextree.h"
+#include "simplextree.h"
 #include <stack>
 #include <queue>
 #include <functional>

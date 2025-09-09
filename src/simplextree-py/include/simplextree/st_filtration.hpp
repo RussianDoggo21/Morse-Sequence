@@ -1,7 +1,7 @@
 #ifndef ST_FILTRATION_HPP_
 #define ST_FILTRATION_HPP_
 
-#include "../simplextree.h"
+#include "simplextree.h"
 
 // Intermediate struct to enable faster filtration building
 struct weighted_simplex {
