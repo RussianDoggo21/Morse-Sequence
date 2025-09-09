@@ -13,7 +13,7 @@
  * @param ms The Morse sequence context.
  * @param W The Morse sequence.
  */
-CorefMap::CorefMap(MorseSequence& ms, m_sequence W) : MorseFrameBase(ms, W) {
+CorefMap::CorefMap(MorseSequence& ms, m_sequence W) : Utils(ms, W) {
     for (auto it = W.rbegin(); it != W.rend(); ++it) {
         const auto& item = *it;
 

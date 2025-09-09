@@ -15,7 +15,7 @@ using index_node_map = tsl::robin_map<std::size_t, node_ptr>;
  * Provides utility functions to manage critical simplices and
  * manipulate bitmaps associated to each node.
  */
-class MorseFrameBase : public UnionFindMF {
+class Utils : public UnionFindMF {
 protected:
     MorseSequence& ms;
     const SimplexTree& simplex_tree;
@@ -51,7 +51,7 @@ public:
      * @param ms MorseSequence instance reference.
      * @param W Sequence of critical simplices and pairs.
      */
-    MorseFrameBase(MorseSequence& ms, const m_sequence& W);
+    Utils(MorseSequence& ms, const m_sequence& W);
 
     /**
      * @brief Print the bitmap as a list of critical simplices.

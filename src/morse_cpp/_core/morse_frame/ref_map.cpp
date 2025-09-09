@@ -10,7 +10,7 @@
  * @param ms The Morse sequence context.
  * @param W The Morse sequence.
  */
-RefMap::RefMap(MorseSequence& ms, m_sequence W) : MorseFrameBase(ms, W) {
+RefMap::RefMap(MorseSequence& ms, m_sequence W) : Utils(ms, W) {
     for (const auto& item : W) {
         if (std::holds_alternative<node_ptr>(item)) {
             // Critical simplex gets a canonical basis vector

@@ -2,7 +2,7 @@
   {
     "name": "pybind11",
     "type": "config-tool",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "compile_args": [
       "-I/usr/include/python3.13",
       "-I/home/kali/T\u00e9l\u00e9chargements/Morse/venv/lib/python3.13/site-packages/pybind11/include"

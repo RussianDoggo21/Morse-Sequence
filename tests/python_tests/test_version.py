@@ -31,11 +31,20 @@ def check_simplextree_conflict():
 #check_simplextree_conflict()
 
 
-from simplextree._simplextree import SimplexTree
-import morse_sequence._core as core
+from simplextree import SimplexTree
+from morse_sequence._core import MorseSequence
 
 st = SimplexTree([[1,2,3]])
-ms = core.MorseSequence(st)  # Ça fonctionne car c'est le bon type
+ms = MorseSequence(st)  
+
+
+""""
+from _simplextree import SimplexTree as SimplexTreeCpp
+from morse_sequence._core import MorseSequence
+st = SimplexTreeCpp()
+st._insert_list([[1,2,3]])
+ms = MorseSequence(st)  # Doit fonctionner
+"""
 
 
 """

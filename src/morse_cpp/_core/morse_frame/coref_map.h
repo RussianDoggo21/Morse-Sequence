@@ -9,7 +9,7 @@
  * In contrast to RefMap (reference map), the computation here proceeds in reverse order
  * and uses *coboundaries* rather than boundaries.
  */
-class CorefMap : public MorseFrameBase {
+class CorefMap : public Utils {
 public:
     /**
      * @brief Construct a CorefMap and compute the corresponding Morse frame.

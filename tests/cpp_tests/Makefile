@@ -11,7 +11,7 @@ PYBIND11_FLAGS := $(shell python3 -m pybind11 --includes)
 SRC_LIB := \
     ../../src/morse_cpp/_core/morse_sequence/morse_sequence.cpp \
     ../../src/morse_cpp/_core/morse_frame/union_find_mf.cpp \
-    ../../src/morse_cpp/_core/morse_frame/morse_frame_base.cpp \
+    ../../src/morse_cpp/_core/morse_frame/utils.cpp \
 	../../src/morse_cpp/_core/morse_frame/ref_map.cpp \
 	../../src/morse_cpp/_core/morse_frame/coref_map.cpp 
 

@@ -79,6 +79,8 @@ PROBLEME A RESOUDRE ACTUELLEMENT
 
 1) Conversion SimplexTree python vers SimplexTree C++ nécessaire pour l'initialisation de ms 
     - voir example.py et test_reference.py
+    - PROBLEME : l'utilisateur donne un objet python SimplexTree pour construire l'objet MorseSequence C++ qui attend un objet C++ SimplexTree
+    -            comment "traduire" l'objet python SimplexTree vers l'objet C++ SimplexTree ?
 2) Implémenter cela pour l'interface python
     - Fonctions print_m_frame et print_m_sequence à écrire en python ?
     - persistance et copersistance

@@ -6,7 +6,7 @@
 /**
  * @brief Class computing the reference map from a Morse sequence.
  */
-class RefMap : public MorseFrameBase {
+class RefMap : public Utils {
 public:
     /**
      * @brief Construct a RefMap and compute the corresponding Morse frame.

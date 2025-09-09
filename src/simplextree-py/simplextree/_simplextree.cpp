@@ -542,6 +542,7 @@ void expansion_f(SimplexTree& st, const size_t k, py::function f){
 PYBIND11_MODULE(_simplextree, m) {
 
   //py::class_<SimplexTree>(m, "SimplexTree", py::module_local())
+  // Modif 1
   py::class_<SimplexTree>(m, "SimplexTree")
     .def(py::init<>())
     .def_property_readonly("n_simplices", &simplex_counts)

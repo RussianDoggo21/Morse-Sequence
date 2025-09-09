@@ -359,26 +359,22 @@ namespace {
  */
 PYBIND11_MODULE(_core, m) {
     m.doc() = "Python interface for MorseSequence";
-    
-    //py::module_::import("simplextree");
-    auto st_mod = py::module_::import("simplextree._simplextree");
+
+    auto st_mod = py::module_::import("_simplextree");
     py::object st_cls = st_mod.attr("SimplexTree");
-    py::print(">>> SimplexTree seen from _core.cpp:", st_cls);
-
-
-    //m.def("cpp_ms_from_py_st", morse_from_py_simplextree);
 
     py::class_<MorseSequence>(m, "MorseSequence")
-        
-        .def(py::init<const SimplexTree&>(), py::arg("st"))
         //.def(py::init<const SimplexTree&>())
-        /*
+
         .def(py::init([](py::object py_st) {
-            std::cout << "[C++] Lambda constructor called\n";
-            return morse_from_py_simplextree(py_st);
+            // On essaie de caster directement l'objet Python en SimplexTree*
+            try {
+                auto st = py::cast<SimplexTree*>(py_st);
+                return MorseSequence(*st);
+            } catch (const std::exception& e) {
+                throw std::runtime_error(std::string("Failed to cast Python object to SimplexTree*: ") + e.what());
+            }
         }))
-        */
-        
         
         // Boundary methods
         .def("boundary", static_cast<boundary_fn_1>(&MorseSequence::boundary))

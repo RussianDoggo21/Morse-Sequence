@@ -5,7 +5,7 @@
  * @param ms Reference to the MorseSequence.
  * @param W Sequence of critical simplices and pairs.
  */
-MorseFrameBase::MorseFrameBase(MorseSequence& ms, const m_sequence& W)
+Utils::Utils(MorseSequence& ms, const m_sequence& W)
     : UnionFindMF(), ms(ms), simplex_tree(ms.get_simplex_tree()) {
 
     // Extract critical simplices
@@ -36,7 +36,7 @@ MorseFrameBase::MorseFrameBase(MorseSequence& ms, const m_sequence& W)
  * @param bm Bitmap to print.
  * @param W Sequence of critical simplices and pairs.
  */
-void MorseFrameBase::print_bitmap(const bitmap& bm, const m_sequence& W) const {
+void Utils::print_bitmap(const bitmap& bm, const m_sequence& W) const {
     bool empty = true;
 
     for (size_t i = 0; i < bm.size(); ++i) {
@@ -64,7 +64,7 @@ void MorseFrameBase::print_bitmap(const bitmap& bm, const m_sequence& W) const {
  * @brief Print all entries in the Morse frame with their associated bitmaps.
  * @param W Sequence of critical simplices and pairs.
  */
-void MorseFrameBase::print_m_frame(const m_sequence& W) {
+void Utils::print_m_frame(const m_sequence& W) {
     tsl::robin_map<node_ptr, bitmap> bitarray = get_bitarray();
 
     for (const auto& item : W) {
@@ -126,7 +126,7 @@ void MorseFrameBase::print_m_frame(const m_sequence& W) {
  *
  * @return The updated bitarray.
  */
-bitmap MorseFrameBase::update_bitarray(const bitmap& ba, size_t indexsigma, size_t indexnu, const bitmap& bsigma) const {
+bitmap Utils::update_bitarray(const bitmap& ba, size_t indexsigma, size_t indexnu, const bitmap& bsigma) const {
     bitmap copy = ba;  // copy the const input
     copy[indexsigma] = 0;
     if (copy[indexnu]) {
@@ -135,7 +135,7 @@ bitmap MorseFrameBase::update_bitarray(const bitmap& ba, size_t indexsigma, size
     return copy;
 }
 
-void MorseFrameBase::print_persistence_results(const std::pair<node_list, std::vector<std::pair<node_pair, int>>>& results) const {
+void Utils::print_persistence_results(const std::pair<node_list, std::vector<std::pair<node_pair, int>>>& results) const {
     const node_list& essential = results.first;
     const std::vector<std::pair<node_pair, int>>& pairs = results.second;
 

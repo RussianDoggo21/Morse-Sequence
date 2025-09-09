@@ -49,10 +49,13 @@ void UnionFindMF::add(const node_ptr& x, const bitmap& bitarray_val) {
 
     // Case 1: An equivalence class for bitarray_val already exists
     if (it != bitarray_to_root.end()) {
-        // Retrieve the representative (root) of this class
+        // Retrieve the representative (root) of the class of bitarray_val
         node_ptr existing_root = it->second;
 
-        // Subcase A: x already belongs to a class — merge it with the existing class
+        // Subcase A: 
+        // if parent.count(x) != 0, it means that x is the root of an existing class 
+        // different from bitarray_val
+        // we merge the existing class of x with the new class represented by bitarray_val
         if (parent.count(x)) {
             _union(x, existing_root);
         }
