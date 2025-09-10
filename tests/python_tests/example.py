@@ -12,4 +12,8 @@ morse_seq_inc, n_crit_inc = ms.increasing() # Computation of an increasing Morse
 print(f"Critical simplices = {n_crit_inc}") # Critical simplices = 1
 print(f"Increasing Morse Sequence = {morse_seq_inc}") # Increasing Morse Sequence = [[1], ([3], [1, 3]), ([2], [2, 3]), ([1, 2], [1, 2, 3])]
 
+#TO ADD MIN AND MAX 
+
+#REF AND COREF IF IT WORKS (not for now)
+
 # To run the file from the root : python3 -m tests.python_tests.example

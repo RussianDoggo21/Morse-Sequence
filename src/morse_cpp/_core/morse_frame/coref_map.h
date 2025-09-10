@@ -10,6 +10,9 @@
  * and uses *coboundaries* rather than boundaries.
  */
 class CorefMap : public Utils {
+private:
+    m_sequence W;
+    
 public:
     /**
      * @brief Construct a CorefMap and compute the corresponding Morse frame.
@@ -31,6 +34,10 @@ public:
      *         - A vector of persistence pairs (vector of pairs ((node_ptr, node_ptr), int)) sorted by persistence ascending.
      */
     std::pair<node_list, std::vector<std::pair<node_pair, int>>> copersistence();
+
+    //tsl::robin_map<node_ptr, bitmap> get_full_bitarray();
+
+    //void print_full_bitarray(const m_sequence& W);
 };
 
 #endif  // COREF_MAP_H

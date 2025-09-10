@@ -156,6 +156,12 @@ public:
     //std::pair<m_sequence, int> Min(const node_list& S, const node_stack& F);
     std::pair<m_sequence, int> Min(const node_list& S);
 
+    /**
+     * @brief Print the Morse sequence in a readable format.
+     * @param morse_sequence The Morse sequence to print, which can contain both critical simplices
+     *                        (as node_ptr) and free pairs (as node_pair).
+     */
+    void print_morse_sequence0(m_sequence);
 
     /**
      * @brief Print the Morse sequence and optionally the number of critical simplices.

@@ -34,12 +34,13 @@ ms = MorseSequence(st)
 W, n_crit = ms.increasing()
 
 reference_map = ms.reference_map(W)
-coreference_map = ms.coreference_map(W)
+#coreference_map = ms.coreference_map(W)
 
-print("W (Morse sequence) :\n", W, "\n")
+#print("W (Morse sequence) :\n", W, "\n")
 print("Raw reference_map:", reference_map)
+#print("Raw co-reference_map:", coreference_map)
 
-show_morse_frame("Reference map",   reference_map)
+#show_morse_frame("Reference map",   reference_map)
 #show_morse_frame("Coreference map", coreference_map)
 
 

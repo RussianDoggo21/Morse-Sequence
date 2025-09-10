@@ -9,7 +9,7 @@ Update Documentation: Ensure that any relevant documentation is updated to refle
 This includes updating the README.md file, docstrings, and any other documentation.
 
 Step 2: Update the Version Number
-Versioning: Increment the version number in your pyproject.toml, setup.py and setup.cfg files. 
+Versioning: Increment the version number in your pyproject.toml files. 
 Follow semantic versioning (e.g., 0.1.0 to 0.1.1 for a patch, 0.2.0 for a minor update, or 1.0.0 for a major update).
 
 rm -rf dist build
@@ -77,25 +77,22 @@ perf report
 PROBLEME A RESOUDRE ACTUELLEMENT
 ==========================================================================================================================================================================
 
-1) Conversion SimplexTree python vers SimplexTree C++ nécessaire pour l'initialisation de ms 
-    - voir example.py et test_reference.py
-    - PROBLEME : l'utilisateur donne un objet python SimplexTree pour construire l'objet MorseSequence C++ qui attend un objet C++ SimplexTree
-    -            comment "traduire" l'objet python SimplexTree vers l'objet C++ SimplexTree ?
+1) Implémentation des reference map et coreference map
+    - Comment récupérer correctement le "full_bitarray" (fonction get_full_bitarray)
+        - Fonctions get_full_bitarray et print_full_bitarray à centraliser dans Utils 
+            - Fonctions à supprimer de ref_map.h et .cpp et coref_map.h et .cpp
+        - full_bitarray à séparer entre tuple (critic, value) et tuple de tuple ((lower, lower_value), (upper, upper_value))
+        - Création d'un attribut full_bitarray dans Utils
+            - mauvaise MAJ de full_bitarray dans RefMap et CorefMap ? A cause de UnionFind ?
 2) Implémenter cela pour l'interface python
     - Fonctions print_m_frame et print_m_sequence à écrire en python ?
     - persistance et copersistance
+3) Make the latest version of the library available via pip install
 
 6) Rapport : Ecrire de telle sorte que M.Cousty puisse comprendre le papier 
 (partie intéressante : difficultés que j'ai rencontrées, travail que j'ai effectué)
 (je connaissais pas C++, j'ai utilisé Chat GPT : comment ?)
 (Quelles étaient les raisons de mes choix ?)
 RACONTER UNE HISTOIRE DANS LE RAPPORT !! Objectif, problème, comment régler le problème
-4) Lire papier Bertrand
-==========================================================================================================================================================================
-PROBLEMES SECONDAIRES
-==========================================================================================================================================================================
 
-- Ecrire la documentation uniquement sur les fichiers .cpp ? La supprimer des fichiers .h ?
-- Supprimer les chemins absolus dans timer.py et timer_m_sequence.cpp
-- Vérifier les unités (secondes, millisecondes ?) affichées dans les plots
 

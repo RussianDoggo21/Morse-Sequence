@@ -683,28 +683,16 @@ std::pair<m_sequence, int> MorseSequence::Min(const node_list& S) {
     return {MorseSequence, n_crit};
 }
 
-
 /**
- * @brief Print the Morse sequence and optionally the number of critical simplices.
+ * @brief Print the Morse sequence in a readable format.
  *
- * This function takes the result of a Morse sequence computation (a pair of a sequence and
- * the number of critical simplices) and prints its content in a readable format.
- * Critical simplices and free pairs are handled separately.
+ * This function iterates over each element in the Morse sequence and prints it.
+ * It distinguishes between critical simplices and free pairs, printing each in a specific format.
  *
- * @param result The Morse sequence result: a pair consisting of
- *               - first: the sequence of simplices or pairs,
- *               - second: the number of critical simplices.
- * @param print_crit If true, print the number of critical simplices.
+ * @param morse_sequence The Morse sequence to print, which can contain both critical simplices
+ *                        (as node_ptr) and free pairs (as node_pair).
  */
-void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& result, bool print_crit) {
-    // Extract the Morse sequence and critical simplex count
-    const auto& morse_sequence = result.first;
-    int n_crit = result.second;
-
-    // Optionally print the number of critical simplices
-    if (print_crit) {
-        std::cout << "Number of critical points: " << n_crit << "\n" << std::endl;
-    }
+void MorseSequence::print_morse_sequence0(m_sequence morse_sequence){
 
     // Iterate over each element in the Morse sequence
     for (const auto& item : morse_sequence) {
@@ -733,4 +721,30 @@ void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& resul
     }
 
     std::cout << std::endl;
+}
+
+
+/**
+ * @brief Print the Morse sequence and optionally the number of critical simplices.
+ *
+ * This function takes the result of a Morse sequence computation and prints its content
+ * in a readable format. It uses `print_morse_sequence0` to handle the actual printing of the sequence.
+ * Critical simplices and free pairs are handled separately.
+ *
+ * @param result The Morse sequence result: a pair consisting of
+ *               - first: the sequence of simplices or pairs,
+ *               - second: the number of critical simplices.
+ * @param print_crit If true, print the number of critical simplices.
+ */
+void MorseSequence::print_morse_sequence(const std::pair<m_sequence, int>& result, bool print_crit) {
+    // Extract the Morse sequence and critical simplex count
+    const auto& morse_sequence = result.first;
+    int n_crit = result.second;
+
+    // Optionally print the number of critical simplices
+    if (print_crit) {
+        std::cout << "Number of critical points: " << n_crit << "\n" << std::endl;
+    }
+
+    this->print_morse_sequence0(morse_sequence);
 }

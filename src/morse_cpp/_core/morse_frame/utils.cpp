@@ -160,3 +160,36 @@ void Utils::print_persistence_results(const std::pair<node_list, std::vector<std
     }
 }
 
+
+FullBitArray Utils::get_full_bitarray() const {
+    return full_bitarray;
+}
+
+void Utils::print_full_bitarray() const {
+    for (const auto& element : full_bitarray) {
+        if (element.is_critical) {
+            for (const auto& [crit_ptr, b] : element.critical_simplex) {
+                std::cout << "Key (Critical simplex): ";
+                simplex_tree.print_simplex(std::cout, crit_ptr, false);
+                std::cout << " -> Value: ";
+                print_bitmap(b, W);
+                std::cout << "\n";
+            }
+        } else {
+            std::cout << "Pair of simplices:\n";
+            // Lower simplex
+            std::cout << "Key (Lower pair): ";
+            simplex_tree.print_simplex(std::cout, element.pair.first.first, false);
+            std::cout << " -> Value: ";
+            print_bitmap(element.pair.first.second, W);
+            std::cout << "\n";
+            // Upper simplex
+            std::cout << "Key (Upper pair): ";
+            simplex_tree.print_simplex(std::cout, element.pair.second.first, false);
+            std::cout << " -> Value: ";
+            print_bitmap(element.pair.second.second, W);
+            std::cout << "\n";
+        }
+    }
+}
+

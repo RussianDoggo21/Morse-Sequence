@@ -7,6 +7,9 @@
  * @brief Class computing the reference map from a Morse sequence.
  */
 class RefMap : public Utils {
+private:
+    m_sequence W;
+
 public:
     /**
      * @brief Construct a RefMap and compute the corresponding Morse frame.
@@ -28,6 +31,10 @@ public:
      *         - A vector of persistence pairs (vector of pairs ((node_ptr, node_ptr), int)) sorted by persistence ascending.
      */
     std::pair< node_list, std::vector<std::pair<node_pair, int>> > persistence();
+
+    //tsl::robin_map<node_ptr, bitmap> get_full_bitarray();
+
+    //void print_full_bitarray(const m_sequence& W);
 };
 
 #endif  // REF_MAP_H

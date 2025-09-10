@@ -9,6 +9,15 @@ using m_frame = tsl::robin_map<node_ptr, bitmap>;
 using node_index_map = tsl::robin_map<node_ptr, std::size_t>;
 using index_node_map = tsl::robin_map<std::size_t, node_ptr>;
 
+
+struct FullBitArrayElement {
+    bool is_critical;  
+    tsl::robin_map<node_ptr, bitmap> critical_simplex;  
+    std::pair<std::pair<node_ptr, bitmap>, std::pair<node_ptr, bitmap>> pair;
+};
+typedef std::vector<FullBitArrayElement> FullBitArray;
+
+
 /**
  * @brief Base class for computing Morse frames.
  * 
@@ -44,6 +53,8 @@ protected:
      */
     bitmap update_bitarray(const bitmap& ba, size_t indexsigma, size_t indexnu, const bitmap& bsigma) const;
 
+    FullBitArray full_bitarray;
+
 public:
     /**
      * @brief Constructor initializes the Morse frame base.
@@ -67,6 +78,10 @@ public:
     void print_m_frame(const m_sequence& W);
 
     void print_persistence_results(const std::pair<node_list, std::vector<std::pair<node_pair, int>>>& results) const;
+
+    FullBitArray get_full_bitarray() const;
+
+    void print_full_bitarray() const;
 };
 
 #endif // MORSE_FRAME_BASE_H

@@ -10,14 +10,17 @@
  * @param ms The Morse sequence context.
  * @param W The Morse sequence.
  */
-RefMap::RefMap(MorseSequence& ms, m_sequence W) : Utils(ms, W) {
-    for (const auto& item : W) {
+RefMap::RefMap(MorseSequence& ms, m_sequence W) : Utils(ms, W), W(W) {
+    for (const auto& item : this->W) {
+        FullBitArrayElement element;
         if (std::holds_alternative<node_ptr>(item)) {
             // Critical simplex gets a canonical basis vector
             node_ptr crit_ptr = std::get<node_ptr>(item);
             bitmap b(dim_crit);
             b.set(critToIndex.at(crit_ptr));
             add(crit_ptr, b);
+            element.is_critical = true;
+            element.critical_simplex[crit_ptr] = b;
         }
         else if (std::holds_alternative<node_pair>(item)) {
             auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
@@ -34,10 +37,13 @@ RefMap::RefMap(MorseSequence& ms, m_sequence W) : Utils(ms, W) {
                 b_sigma ^= get(cn);
             }
             add(sigma_ptr, b_sigma);
+            element.is_critical = false;
+            element.pair = {{sigma_ptr, b_sigma}, {tau_ptr, bitmap(dim_crit)}};
         }
         else {
             throw std::runtime_error("Unknown simplex type encountered in Morse sequence.");
         }
+        this->full_bitarray.push_back(element);
     }
 }
 
@@ -112,3 +118,58 @@ std::pair<node_list, std::vector<std::pair<node_pair, int>>> RefMap::persistence
 
     return {essential, pairs};
 }
+
+/*
+tsl::robin_map<node_ptr, bitmap> RefMap::get_full_bitarray() {
+    tsl::robin_map<node_ptr, bitmap> full_bitarray;
+    tsl::robin_map<node_ptr, bitmap> bitarray = get_bitarray();
+
+    std::cout << "DEBUG: Building full_bitarray..." << std::endl;
+
+    std::cout << "DEBUG: W size = " << this->W.size() << std::endl;
+    for (const auto& item : this->W) {
+        if (std::holds_alternative<node_ptr>(item)) {
+            node_ptr crit_ptr = std::get<node_ptr>(item);
+            node_ptr root = _find(crit_ptr);
+            
+            full_bitarray[crit_ptr] = bitarray.at(root);
+        }
+        else if (std::holds_alternative<node_pair>(item)) {
+            auto [sigma_ptr, tau_ptr] = std::get<node_pair>(item);
+            node_ptr sigma_root = _find(sigma_ptr);
+            node_ptr tau_root = _find(tau_ptr);
+            
+            full_bitarray[sigma_ptr] = bitarray.at(sigma_root);
+            full_bitarray[tau_ptr] = bitarray.at(tau_root);
+        }
+    }
+
+
+    return full_bitarray;
+}
+
+
+
+void RefMap::print_full_bitarray(const m_sequence& W) {
+    // Récupère la m_frame complète (racines + paires)
+    tsl::robin_map<node_ptr, bitmap> full_bitarray = get_full_bitarray();
+
+    // Affiche chaque entrée de la full_bitarray
+    for (const auto& [key_ptr, bm] : full_bitarray) {
+        if (!key_ptr) {
+            std::cout << "Null key encountered!" << std::endl;
+            continue;
+        }
+
+        // Affiche la clé (simplex)
+        std::cout << "Key: ";
+        simplex_tree.print_simplex(std::cout, key_ptr, false);
+        std::cout << " -> Value: ";
+
+        // Affiche le bitmap associé
+        print_bitmap(bm, W);
+        std::cout << "\n";
+    }
+}
+
+*/
