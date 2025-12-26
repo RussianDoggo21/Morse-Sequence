@@ -13,9 +13,10 @@ dependencies = ["simplextree>=0.1.0"]
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.6"
-urls = { 
-    "Homepage" = "https://github.com/RussianDoggo21/morse-sequence", 
-    "Repository" = "https://github.com/RussianDoggo21/morse-sequence.git", 
-}
+
+[project.urls]
+"Homepage" = "https://github.com/RussianDoggo21/morse-sequence", 
+"Repository" = "https://github.com/RussianDoggo21/morse-sequence.git", 
+
 
 
