@@ -32,7 +32,7 @@ jobs:
       # This command looks into the 'src' folder and creates a 'docs' website
       - name: Generate HTML
         run: |
-          pdoc --html --output-dir docs src/python 
+          pdoc -o docs src/python
 
       # Step 5: Upload the result as an Artifact
       # This allows you to download the website as a .zip from GitHub Actions
