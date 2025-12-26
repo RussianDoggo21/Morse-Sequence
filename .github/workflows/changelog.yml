@@ -26,8 +26,9 @@ jobs:
       - name: Build Changelog content
         run: |
           echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
           echo "## Latest Changes - $(date +'%Y-%m-%d')" >> CHANGELOG.md
-          git log --header --pretty=format:"- %s" -n 10 >> CHANGELOG.md
+          git log --pretty=format:"- %s" -n 10 >> CHANGELOG.md
 
       # Step 3: Commit and Push the CHANGELOG.md file back to the repository
       - name: Commit and Push
