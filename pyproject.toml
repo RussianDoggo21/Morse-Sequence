@@ -15,8 +15,8 @@ readme = "README.md"
 requires-python = ">=3.6"
 
 [project.urls]
-"Homepage" = "https://github.com/RussianDoggo21/morse-sequence", 
-"Repository" = "https://github.com/RussianDoggo21/morse-sequence.git", 
+"Homepage" = "https://github.com/RussianDoggo21/morse-sequence"
+"Repository" = "https://github.com/RussianDoggo21/morse-sequence.git"
 
 
 
