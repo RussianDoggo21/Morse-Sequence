@@ -1,24 +1,45 @@
+# Name displayed in the GitHub Actions tab
 name: Python Linting with Ruff
 
-on: [push, pull_request]
+# Defines when the workflow will be triggered
+on:
+  # Runs every time you push code to the repository
+  push:
+    branches: [ "main" ]
+  # Runs every time a Pull Request is created or updated
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   lint:
+    # Uses the latest Ubuntu environment provided by GitHub
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Fetch the source code from the repository into the virtual machine
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Install the Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
+      # Step 3: Install the Ruff tool using pip
       - name: Install Ruff
-        run: pip install ruff
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
 
+      # Step 4: Logical Analysis (Linter)
+      # Scans for code errors (unused variables, missing imports, etc.)
+      # The "." indicates it scans the entire current directory
       - name: Run Ruff Check
         run: ruff check .
 
+      # Step 5: Style Analysis (Formatter)
+      # Checks if the code adheres to formatting rules (spacing, quotes, etc.)
+      # The --check flag fails the build if the code is not properly formatted
       - name: Run Ruff Format
         run: ruff format --check .
