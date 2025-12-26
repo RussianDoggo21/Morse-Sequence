@@ -1,4 +1,3 @@
-from simplextree import SimplexTree
 from itertools import combinations
 
 # Compute the boundary of the simplexe sigma in the complex S

@@ -1,4 +1,3 @@
-from simplextree import SimplexTree
 from itertools import combinations
 
 """

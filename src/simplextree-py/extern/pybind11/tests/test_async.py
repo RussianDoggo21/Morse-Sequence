@@ -4,7 +4,7 @@ asyncio = pytest.importorskip("asyncio")
 m = pytest.importorskip("pybind11_tests.async_module")
 
 
-@pytest.fixture()
+@pytest.fixture
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop

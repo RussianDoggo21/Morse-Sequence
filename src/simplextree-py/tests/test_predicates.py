@@ -1,5 +1,4 @@
 import numpy as np
-from math import comb
 from simplextree.predicates import *
 from itertools import combinations
 

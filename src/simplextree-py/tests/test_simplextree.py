@@ -1,7 +1,6 @@
 ## python -m pytest tests/
 import numpy as np
 from simplextree import SimplexTree
-from more_itertools import unique_everseen
 
 
 def test_construct():
@@ -111,7 +110,6 @@ def test_traversals():
 
 
 def test_link():
-	from itertools import chain
 
 	st = SimplexTree([[0, 1, 2, 3, 4]])
 	closure_star = [tuple(set(s) - set([0])) for s in st.cofaces([0]) if set(s) != set([0])]
@@ -187,7 +185,7 @@ def test_contract():
 	)
 	assert st.contract([1, 2]), "Contraction failed"
 	assert st.simplices(2) == [(1, 3, 5), (1, 3, 8), (1, 4, 7), (1, 4, 10), (1, 5, 6), (1, 6, 7), (1, 8, 9), (1, 9, 10)]
-	assert not ([2] in st), "Vertex in contraction not removed"
+	assert [2] not in st, "Vertex in contraction not removed"
 
 	# ## Non-edge contraction
 	# st = SimplexTree([[1,2,3], [4,5,6]])

@@ -1,7 +1,6 @@
 from simplextree import SimplexTree
 from src.python.decreasing import morse_seq_decreasing
 
-import numpy as np
 
 
 st = SimplexTree([[1, 5, 7], [1, 2, 7],    # Top left

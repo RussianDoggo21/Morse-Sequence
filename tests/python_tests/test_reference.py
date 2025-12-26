@@ -1,6 +1,5 @@
 from simplextree import SimplexTree
 from morse_sequence._core import MorseSequence
-from typing import List, Tuple, Union
 
 def show_morse_frame(title: str, mf: list) -> None:
     print(f"{title} ({len(mf)} entries):\n")

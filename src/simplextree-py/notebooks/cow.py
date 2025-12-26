@@ -1,7 +1,7 @@
 # %% Imports 
 import numpy as np
 import pywavefront
-from scipy.spatial.distance import pdist, cdist, squareform
+from scipy.spatial.distance import pdist
 from combin import comb_to_rank, rank_to_comb
 from simplextree import SimplexTree
 
@@ -194,7 +194,6 @@ np.sum(X.sum(axis=1) == 0)
 
 # %% Visualize 
 import open3d as o3
-import open3d.core as o3c
 cow_mesh = o3.io.read_triangle_mesh("/Users/mpiekenbrock/Downloads/cow.obj")
 cow_mesh.compute_vertex_normals()
 o3.visualization.draw(cow_mesh, raw_mode=False)
@@ -216,7 +215,6 @@ cow_mesh.vertices
 
 heapq.merge()
 
-import open3d
 
 
 X[1936,:] = 0

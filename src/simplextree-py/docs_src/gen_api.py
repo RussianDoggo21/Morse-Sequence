@@ -4,9 +4,7 @@ doc_root = '/Users/mpiekenbrock/simplextree-py/docs_src'
 os.chdir(doc_root)
 
 import yaml
-import quartodoc
-from more_itertools import unique_everseen
-from quartodoc import Builder, preview, blueprint, collect, MdRenderer
+from quartodoc import Builder, preview, blueprint, collect
 from quartodoc.builder.blueprint import BlueprintTransformer
 from _renderer import Renderer as NumpyRenderer
 
@@ -37,7 +35,6 @@ builder.write_sidebar(blueprint)
 insert_obj = pages[0].contents[0].members[9]
 preview(insert_obj)
 
-import quarto
 from griffe.docstrings.dataclasses import DocstringSectionExamples
 
 for ds_section in insert_obj.obj.docstring.parsed:

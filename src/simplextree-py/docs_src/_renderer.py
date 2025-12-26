@@ -5,11 +5,9 @@ from typing import *
 
 # from griffe.expressions import Name, Expression
 from quartodoc.renderers import *
-from quartodoc.ast import ExampleCode, ExampleText
 
 # Name, Expression = Name, Expression
 
-import dataclasses as dc
 from griffe import *
 
 
