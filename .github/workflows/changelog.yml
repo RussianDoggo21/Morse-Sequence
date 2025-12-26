@@ -1,0 +1,40 @@
+# Name of the workflow to automate the history of changes
+name: Update Changelog
+
+on:
+  # This runs only when code is pushed to the main branch
+  push:
+    branches: [ "main" ]
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    # Required permissions to commit the change back to the repo
+    permissions:
+      contents: write
+
+    steps:
+      # Step 1: Fetch code with full history (fetch-depth: 0)
+      # We need the full history to see previous commit messages
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 2: Generate the Changelog
+      # This simple script takes the last 10 commit titles and puts them in a file
+      - name: Build Changelog content
+        run: |
+          echo "# Changelog" > CHANGELOG.md
+          echo "## Latest Changes - $(date +'%Y-%m-%d')" >> CHANGELOG.md
+          git log --header --pretty=format:"- %s" -n 10 >> CHANGELOG.md
+
+      # Step 3: Commit and Push the CHANGELOG.md file back to the repository
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          # The || true prevents the build from failing if there are no changes
+          git commit -m "docs: update CHANGELOG.md [skip ci]" || true
+          git push
