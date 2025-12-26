@@ -1,4 +1,6 @@
-[build-system] requires = ["meson-python", "pybind11"] build-backend = "mesonpy"
+[build-system] 
+requires = ["meson-python", "pybind11"] 
+build-backend = "mesonpy"
 
 [project]
 name = "morse-sequence"
